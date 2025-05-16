@@ -5,13 +5,13 @@ Voici un sommaire court et simple adapté au contenu du document :
 
 Introduction
 
-Collecte et préparation des données
+enjeu des abeilles
 
-Architecture du modèle CNN
+Architecture du modèle CNN,spectro,miniaturisation
 
 Entraînement et résultats
 
-Déploiement sur microcontrôleur
+
 
 Conclusion
 Comment automatiser la détection de l’absence de la reine dans une ruche grâce à l’analyse acoustique, afin d’aider les apiculteurs à surveiller efficacement la santé de leurs colonies sans intervention intrusive ?
