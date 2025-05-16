@@ -244,3 +244,25 @@ Mémoire utilisée : 28 Ko de RAM.
 Pourquoi c’est important ?
 Le modèle peut fonctionner en continu dans la ruche, sans intervention humaine, et sans consommer beaucoup d’énergie.
 
+Idee clair 
+les réseaux de neurones convolutifs (CNN) sont des architectures d'apprentissage profond spécialisées dans le traitement de données structurées spatialement, comme les images ou les spectrogrammes sonores. Leur application à la reconnaissance sonore repose sur une transformation préalable des signaux audio en représentations visuelles 2D (spectrogrammes), puis sur l'extraction automatisée de motifs caractéristiques.
+
+Reconnaissance sonore par spectrogrammes
+Les CNN analysent les sons via leur représentation temps-fréquence (spectrogramme), où :
+
+L'axe horizontal représente le temps
+
+L'axe vertical indique les fréquences
+
+La couleur code l'intensité énergétique
+
+Cette transformation permet d'appliquer des techniques de vision artificielle :
+
+Extraction de motifs : Les couches convolutives détectent automatiquement des structures locales (formants, transitoires)
+
+Invariance translationnelle : Conservation des caractéristiques quel que soit le moment d'apparition dans le signal
+
+Réduction dimensionnelle : Pooling et striding compressent progressivement l'information
+
+Optimisation pour microcontrôleurs
+Pour intégrer ces modèles dans des ruches équipées de microcontrôleurs, trois techniques clés sont utilisées :
