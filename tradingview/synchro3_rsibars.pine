@@ -1,0 +1,199 @@
+//@version=6
+// =====================================================================================================
+// SYNCHRO 3 COULEURS — RSI Bars (idée de Florent, v62 du projet AbsorptionMW)
+//
+// L'idée : quand les 3 couleurs RSI Bars (lent = Vol 5K, moyen = Vol 700, rapide = 1 min) sont
+// alignées, on entre. On sort dès qu'une des 3 couleurs change de côté (ou au bout de 30 min).
+//
+// LE RSI, RECOPIÉ DU CODE DE « PAHLAWAN - RSI Bars » (RSIBars.jar) :
+//   gain = max(clôture - clôture précédente, 0), perte = max(-(...), 0)
+//   moyennes = EMA(période), alpha = 2 / (n + 1)   (ce n'est PAS le RSI de Wilder : ~2x plus rapide)
+//   RSI = 100 - 100 / (1 + moyGain / moyPerte) ; moyPerte = 0 -> 50 si moyGain = 0, sinon 100
+//   8 couleurs, seuils 87,5 / 75 / 62,5 / 50 / 37,5 / 25 / 12,5 ; période 24 (comme dans Ollama Main)
+//
+// MODES (figés comme dans synchro3.py) :
+//   S1 synchro simple : les 3 >= 50 (cyan) -> ACHAT ; les 3 < 50 (magenta) -> VENTE
+//   S2 synchro forte  : les 3 >= 62,5 -> ACHAT ; les 3 < 37,5 -> VENTE (couleurs vives)
+//   Entrée à la clôture de la barre où la synchro COMMENCE. Un trade à la fois.
+//   Sortie « Désynchro » : dès qu'une des 3 couleurs repasse de l'autre côté de 50.
+//   Sortie « 30 min »    : 30 minutes après l'entrée. Toujours : sortie forcée en fin de séance.
+//
+// RÉGLAGES CONSEILLÉS
+//   Graphique en 1 minute (c'est la jambe « rapide »).
+//   Barres de volume : reconstruites à partir des barres du « TF interne ». Par défaut « 1 » (1 minute),
+//   accessible à tous, mais alors une barre Vol 700 ne peut pas être plus courte qu'1 minute : en
+//   séance US l'ES fait plusieurs Vol 700 par minute, donc la jambe « moyen » ressemble au 1 min.
+//   Avec un abonnement qui donne les secondes, mettre « 1S » ou « 5S » : c'est bien plus fidèle.
+//   Sur un symbole sans vrai volume (XAUUSD spot, Forex), passer les jambes en mode « Temps ».
+//   Or (GC) : séance d'entrée 0840-1300 et sortie forcée 1329-1330 (heure de New York).
+//
+// ATTENTION : le Strategy Tester ne compare pas aux entrées tirées au hasard. Un résultat positif
+// sur une seule période ne prouve rien : regarder aussi une période de test séparée.
+// =====================================================================================================
+strategy("Synchro 3 couleurs - RSI Bars", shorttitle = "Synchro3", overlay = false,
+     process_orders_on_close = true, pyramiding = 0,
+     default_qty_type = strategy.fixed, default_qty_value = 1, initial_capital = 10000,
+     commission_type = strategy.commission.cash_per_contract, commission_value = 2.25, slippage = 1)
+
+// ------------------------------------------------------------------------------------------- réglages
+string G1 = "Signal"
+string mode     = input.string("S1 synchro simple", "Mode", options = ["S1 synchro simple", "S2 synchro forte"], group = G1)
+string sortie   = input.string("Désynchro", "Sortie", options = ["Désynchro", "30 min"], group = G1)
+int    minutesMax = input.int(30, "Durée de la sortie « 30 min » (minutes)", minval = 1, group = G1)
+string sensOk   = input.string("Les deux", "Sens autorisé", options = ["Les deux", "Achats seulement", "Ventes seulement"], group = G1)
+
+string G2 = "Jambe lente (Vol 5K)"
+string typeLent = input.string("Volume", "Type", options = ["Volume", "Temps"], group = G2)
+float  volLent  = input.float(5000, "Volume par barre", minval = 1, group = G2)
+string tfLent   = input.timeframe("5", "Unité de temps (si Type = Temps)", group = G2)
+int    pLent    = input.int(24, "Période RSI", minval = 2, group = G2)
+
+string G3 = "Jambe moyenne (Vol 700)"
+string typeMoy  = input.string("Volume", "Type", options = ["Volume", "Temps"], group = G3)
+float  volMoy   = input.float(700, "Volume par barre", minval = 1, group = G3)
+string tfMoy    = input.timeframe("3", "Unité de temps (si Type = Temps)", group = G3)
+int    pMoy     = input.int(24, "Période RSI", minval = 2, group = G3)
+
+string G4 = "Jambe rapide (graphique, 1 min conseillé)"
+int    pRapide  = input.int(24, "Période RSI", minval = 2, group = G4)
+
+string G5 = "Barres de volume"
+string tfInterne = input.timeframe("1", "TF interne pour construire les barres de volume", group = G5,
+     tooltip = "Doit être inférieur ou égal à l'unité du graphique. « 1S » ou « 5S » si ton abonnement le permet.")
+
+string G6 = "Séance (heure de New York)"
+string sessEntree = input.session("0935-1530", "Entrées autorisées", group = G6,
+     tooltip = "ES/NQ : 0935-1530 (ni les 5 premières ni les 30 dernières minutes). Or : 0840-1300.")
+string sessFin    = input.session("1559-1600", "Sortie forcée", group = G6, tooltip = "ES/NQ : 1559-1600. Or : 1329-1330.")
+string tz = "America/New_York"
+
+string G7 = "Affichage"
+bool colorerBarres = input.bool(true, "Colorer les bougies du graphique (jambe rapide)", group = G7)
+
+// ------------------------------------------------------------------------------ RSI Bars (formule jar)
+rsiDe(float mg, float mp) =>
+    mp == 0 ? (mg == 0 ? 50.0 : 100.0) : 100.0 - 100.0 / (1.0 + mg / mp)
+
+// RSI Bars sur les barres de l'unité de temps courante (graphique ou contexte request.security)
+rsiBarsTemps(int n) =>
+    var float mg  = 0.0
+    var float mp  = 0.0
+    var int   cnt = 0
+    float a  = 2.0 / (n + 1)
+    float ch = nz(close - close[1])
+    mg  := mg + a * (math.max(ch, 0.0) - mg)
+    mp  := mp + a * (math.max(-ch, 0.0) - mp)
+    cnt := cnt + 1
+    cnt >= 3 * n ? rsiDe(mg, mp) : na
+
+// Valeur de la dernière barre TERMINÉE d'une autre unité de temps (pas de repaint)
+rsiBarsTempsPrec(int n) =>
+    float r = rsiBarsTemps(n)
+    r[1]
+
+// RSI Bars sur des barres de volume reconstruites (valeur de la dernière barre de volume FERMÉE)
+type VolRsi
+    float thr
+    int   n
+    float cum = 0.0
+    float last
+    float mg  = 0.0
+    float mp  = 0.0
+    int   cnt = 0
+    float rsi
+
+method feed(VolRsi this, float px, float vol) =>
+    this.cum := this.cum + nz(vol)
+    if this.cum >= this.thr and not na(px)
+        this.cum := this.cum - math.floor(this.cum / this.thr) * this.thr
+        if not na(this.last)
+            float a  = 2.0 / (this.n + 1)
+            float ch = px - this.last
+            this.mg  := this.mg + a * (math.max(ch, 0.0) - this.mg)
+            this.mp  := this.mp + a * (math.max(-ch, 0.0) - this.mp)
+            this.cnt := this.cnt + 1
+            if this.cnt >= 3 * this.n
+                this.rsi := rsiDe(this.mg, this.mp)
+        this.last := px
+    this.rsi
+
+// 8 couleurs RSI Bars : 4 cyans au-dessus de 50, 4 magentas en dessous
+couleur(float r) =>
+    na(r)      ? color.new(color.gray, 60) :
+     r >= 87.5 ? #00FFFF :
+     r >= 75.0 ? #00CFE0 :
+     r >= 62.5 ? #0098B0 :
+     r >= 50.0 ? #00606E :
+     r >= 37.5 ? #6E2A60 :
+     r >= 25.0 ? #A8389A :
+     r >= 12.5 ? #D63FCB : #FF00FF
+
+// ------------------------------------------------------------------------------------- les 3 jambes
+[ltC, ltV] = request.security_lower_tf(syminfo.tickerid, tfInterne, [close, volume])
+var VolRsi vLent = VolRsi.new(volLent, pLent)
+var VolRsi vMoy  = VolRsi.new(volMoy, pMoy)
+int nIntra = array.size(ltC)
+if nIntra > 0
+    for i = 0 to nIntra - 1
+        float px = array.get(ltC, i)
+        float vo = array.get(ltV, i)
+        vLent.feed(px, vo)
+        vMoy.feed(px, vo)
+
+float rLentT = request.security(syminfo.tickerid, tfLent, rsiBarsTempsPrec(pLent), lookahead = barmerge.lookahead_on)
+float rMoyT  = request.security(syminfo.tickerid, tfMoy,  rsiBarsTempsPrec(pMoy),  lookahead = barmerge.lookahead_on)
+
+float rLent   = typeLent == "Volume" ? vLent.rsi : rLentT
+float rMoy    = typeMoy  == "Volume" ? vMoy.rsi  : rMoyT
+float rRapide = rsiBarsTemps(pRapide)
+
+// ------------------------------------------------------------------------------------------ synchro
+bool pret = not na(rLent) and not na(rMoy) and not na(rRapide)
+int cote  = not pret ? 0 :
+     rLent >= 50 and rMoy >= 50 and rRapide >= 50 ? 1 :
+     rLent < 50 and rMoy < 50 and rRapide < 50 ? -1 : 0
+int forte = not pret ? 0 :
+     rLent >= 62.5 and rMoy >= 62.5 and rRapide >= 62.5 ? 1 :
+     rLent < 37.5 and rMoy < 37.5 and rRapide < 37.5 ? -1 : 0
+int s = mode == "S1 synchro simple" ? cote : forte
+
+bool dansEntree = not na(time(timeframe.period, sessEntree, tz))
+bool finSeance  = not na(time(timeframe.period, sessFin, tz))
+bool achatOk    = sensOk != "Ventes seulement"
+bool venteOk    = sensOk != "Achats seulement"
+
+bool achat = s == 1  and s[1] != 1  and dansEntree and achatOk
+bool vente = s == -1 and s[1] != -1 and dansEntree and venteOk
+
+// ------------------------------------------------------------------------------------ ordres
+var float tEntree = na
+bool sortieSignal = false
+if strategy.position_size == 0
+    if achat
+        strategy.entry("Achat", strategy.long)
+        tEntree := time_close
+        alert("Synchro3 : ACHAT (3 couleurs alignées)", alert.freq_once_per_bar_close)
+    else if vente
+        strategy.entry("Vente", strategy.short)
+        tEntree := time_close
+        alert("Synchro3 : VENTE (3 couleurs alignées)", alert.freq_once_per_bar_close)
+else
+    bool desynchro = (strategy.position_size > 0 and cote != 1) or (strategy.position_size < 0 and cote != -1)
+    bool tempsFini = time_close - tEntree >= minutesMax * 60 * 1000
+    bool sortir = finSeance or (sortie == "Désynchro" ? desynchro : tempsFini)
+    if sortir
+        strategy.close_all(comment = finSeance ? "Fin de séance" : sortie)
+        sortieSignal := true
+        alert("Synchro3 : SORTIE (" + (finSeance ? "fin de séance" : sortie) + ")", alert.freq_once_per_bar_close)
+
+// ---------------------------------------------------------------------------------------- affichage
+// 3 lignes de carrés : 1 = rapide (1 min), 2 = moyen (Vol 700), 3 = lent (Vol 5K)
+plotshape(1, "Rapide (1 min)", shape.square, location.absolute, couleur(rRapide), size = size.tiny)
+plotshape(2, "Moyen (Vol 700)", shape.square, location.absolute, couleur(rMoy), size = size.tiny)
+plotshape(3, "Lent (Vol 5K)", shape.square, location.absolute, couleur(rLent), size = size.tiny)
+plotshape(achat and strategy.position_size == 0 ? 4 : na, "Achat", shape.triangleup, location.absolute, #00E5FF, size = size.small)
+plotshape(vente and strategy.position_size == 0 ? 0 : na, "Vente", shape.triangledown, location.absolute, #FF2BD6, size = size.small)
+plotshape(sortieSignal ? 4.6 : na, "Sortie", shape.xcross, location.absolute, color.gray, size = size.tiny)
+hline(0.5, color = color.new(color.gray, 100))
+hline(4.5, color = color.new(color.gray, 100))
+barcolor(colorerBarres ? couleur(rRapide) : na)
