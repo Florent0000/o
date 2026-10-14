@@ -7,7 +7,7 @@
 //     (avant : lignes infinies recréées à chaque tick)
 //   - moins de bandes affichées par défaut (1 et 2), les autres activables
 //   - couleurs des courbes VWAP fixes (TradingView compte double une couleur réglable : limite de 64 dépassée).
-//     Pour changer une couleur : onglet « Style » de l'indicateur.
+//     Pour changer la couleur d'une BANDE : onglet « Style ». La ligne VWAP centrale se règle dans l'onglet « Paramètres ».
 
 //@version=6
 indicator("ICT KZ+VWAP + Absorption [TFO]", "ICT KZ+VWAP+ABS [TFO]", true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 500)
@@ -52,8 +52,10 @@ show_vwap = input.bool(true, "Afficher les VWAP", display = display.none)
 // ── DAILY ────────────────────────────────────────────────────
 var g_VD = "VWAP Daily (D)"
 show_vD  = input.bool(true, "Afficher", inline = "vD0", group = g_VD)
-col_vD   = input.color(color.green, "Ligne", inline = "vD0", group = g_VD)
+col_vD   = input.color(color.green, "Couleur VWAP", inline = "vD0", group = g_VD)
 hide_vD  = input.bool(false, "Masquer en 1D et plus", inline = "vD0", group = g_VD)
+lw_vD    = input.int(2, "Épaisseur VWAP", 1, 4, inline = "vD1", group = g_VD)
+st_vD    = input.string("Ligne", "Style", options = ["Ligne", "Escalier", "Cercles"], inline = "vD1", group = g_VD)
 src_vD   = input.source(hlc3, "Source", group = g_VD, display = display.none, tooltip = "Mets la même que dans MotiveWave. hlc3 = (Haut + Bas + Clôture) / 3.")
 mode_vD  = input.string("Écart-type", "Calcul des bandes", options = ["Écart-type", "Pourcentage"], group = g_VD, display = display.none)
 on1_D = input.bool(true,  "", inline = "D1", group = g_VD)
@@ -71,7 +73,9 @@ stop_D = input.bool(true, "Arrêter un niveau précédent quand le prix le touch
 // ── WEEKLY ───────────────────────────────────────────────────
 var g_VW = "VWAP Weekly (W)"
 show_vW  = input.bool(true, "Afficher", inline = "vW0", group = g_VW)
-col_vW   = input.color(color.orange, "Ligne", inline = "vW0", group = g_VW)
+col_vW   = input.color(color.orange, "Couleur VWAP", inline = "vW0", group = g_VW)
+lw_vW    = input.int(2, "Épaisseur VWAP", 1, 4, inline = "vW1", group = g_VW)
+st_vW    = input.string("Ligne", "Style", options = ["Ligne", "Escalier", "Cercles"], inline = "vW1", group = g_VW)
 src_vW   = input.source(hlc3, "Source", group = g_VW, display = display.none)
 mode_vW  = input.string("Écart-type", "Calcul des bandes", options = ["Écart-type", "Pourcentage"], group = g_VW, display = display.none)
 on1_W = input.bool(true,  "", inline = "W1", group = g_VW)
@@ -87,7 +91,9 @@ stop_W = input.bool(true, "Arrêter un niveau précédent quand le prix le touch
 // ── MONTHLY ──────────────────────────────────────────────────
 var g_VM = "VWAP Monthly (M)"
 show_vM  = input.bool(true, "Afficher", inline = "vM0", group = g_VM)
-col_vM   = input.color(color.fuchsia, "Ligne", inline = "vM0", group = g_VM)
+col_vM   = input.color(color.fuchsia, "Couleur VWAP", inline = "vM0", group = g_VM)
+lw_vM    = input.int(2, "Épaisseur VWAP", 1, 4, inline = "vM1", group = g_VM)
+st_vM    = input.string("Ligne", "Style", options = ["Ligne", "Escalier", "Cercles"], inline = "vM1", group = g_VM)
 src_vM   = input.source(hlc3, "Source", group = g_VM, display = display.none)
 mode_vM  = input.string("Écart-type", "Calcul des bandes", options = ["Écart-type", "Pourcentage"], group = g_VM, display = display.none)
 on1_M = input.bool(true,  "", inline = "M1", group = g_VM)
@@ -348,7 +354,7 @@ okW = show_vwap and show_vW
 okM = show_vwap and show_vM
 
 // ── Daily ────────────────────────────────────────────────────
-plot(pvD_v, "D VWAP", color = #4CAF50, linewidth = 2, display = okD ? display.all : display.none)
+plot(pvD_v, "D VWAP", color = col_vD, linewidth = lw_vD, style = st_vD == "Escalier" ? plot.style_stepline : st_vD == "Cercles" ? plot.style_circles : plot.style_line, display = okD ? display.all : display.none)
 pD1u = plot(pvD_v + bD * m1_D, "D Bande 1 haut", color = color.green, display = okD and on1_D ? display.all : display.none)
 pD1l = plot(pvD_v - bD * m1_D, "D Bande 1 bas",  color = color.green, display = okD and on1_D ? display.all : display.none)
 fill(pD1u, pD1l, color = color.new(color.green, 85), title = "D Remplissage bande 1", display = okD and on1_D and fill_D ? display.all : display.none)
@@ -360,7 +366,7 @@ plot(pvD_v + bD * m4_D, "D Bande scalp haut", color = color.new(color.aqua, 40),
 plot(pvD_v - bD * m4_D, "D Bande scalp bas",  color = color.new(color.aqua, 40), display = okD and on4_D ? display.all : display.none)
 
 // ── Weekly ───────────────────────────────────────────────────
-plot(vW, "W VWAP", color = #FF9800, linewidth = 2, display = okW ? display.all : display.none)
+plot(vW, "W VWAP", color = col_vW, linewidth = lw_vW, style = st_vW == "Escalier" ? plot.style_stepline : st_vW == "Cercles" ? plot.style_circles : plot.style_line, display = okW ? display.all : display.none)
 pW1u = plot(vW + bW * m1_W, "W Bande 1 haut", color = color.new(color.orange, 60), display = okW and on1_W ? display.all : display.none)
 pW1l = plot(vW - bW * m1_W, "W Bande 1 bas",  color = color.new(color.orange, 60), display = okW and on1_W ? display.all : display.none)
 fill(pW1u, pW1l, color = color.new(color.orange, 85), title = "W Remplissage bande 1", display = okW and on1_W and fill_W ? display.all : display.none)
@@ -370,7 +376,7 @@ plot(vW + bW * m3_W, "W Bande 3 haut", color = color.new(color.orange, 50), disp
 plot(vW - bW * m3_W, "W Bande 3 bas",  color = color.new(color.orange, 50), display = okW and on3_W ? display.all : display.none)
 
 // ── Monthly ──────────────────────────────────────────────────
-plot(vM, "M VWAP", color = #E040FB, linewidth = 2, display = okM ? display.all : display.none)
+plot(vM, "M VWAP", color = col_vM, linewidth = lw_vM, style = st_vM == "Escalier" ? plot.style_stepline : st_vM == "Cercles" ? plot.style_circles : plot.style_line, display = okM ? display.all : display.none)
 pM1u = plot(vM + bM * m1_M, "M Bande 1 haut", color = color.new(color.fuchsia, 60), display = okM and on1_M ? display.all : display.none)
 pM1l = plot(vM - bM * m1_M, "M Bande 1 bas",  color = color.new(color.fuchsia, 60), display = okM and on1_M ? display.all : display.none)
 fill(pM1u, pM1l, color = color.new(color.fuchsia, 85), title = "M Remplissage bande 1", display = okM and on1_M and fill_M ? display.all : display.none)
