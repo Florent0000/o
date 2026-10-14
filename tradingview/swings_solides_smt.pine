@@ -1,24 +1,27 @@
 //@version=6
 // =====================================================================================================
-// SWINGS SOLIDES + DIVERGENCE SMT EN DIRECT (pensé pour WTI / Brent, marche sur n'importe quelle paire)
+// SWINGS SOLIDES + SMT EN DIRECT + FILTRES (pensé pour WTI / Brent, marche sur n'importe quelle paire)
 //
-// 1) SWINGS SOLIDES : un sommet (ou un creux) n'est validé que quand le prix en est reparti d'au moins
-//    « Taille mini × ATR ». Les petites oscillations sont ignorées. Repères SH / SL, bougies colorées.
-//    Ces repères apparaissent APRÈS coup (il faut attendre le retour du prix) : ils servent de NIVEAUX.
+// 1) SWINGS SOLIDES : sommet / creux validé quand le prix en est reparti d'au moins « Taille × ATR ».
+//    Repères SH / SL (après coup) et lignes de niveau : ce sont les niveaux où un SMT peut se produire.
 //
-// 2) SMT EN DIRECT : le signal apparaît À LA CLÔTURE DE LA BOUGIE où la divergence se produit, sans
-//    attendre la suite. Donc il montre aussi celles qui échouent.
-//      SMT ▼ : ce marché dépasse son dernier sommet solide et la référence NON (ou l'inverse)
-//      SMT ▲ : ce marché casse son dernier creux solide et la référence NON (ou l'inverse)
-//    Un seul signal par niveau.
+// 2) SMT EN DIRECT (signal brut, point gris) : à la clôture de la bougie où ce marché casse son dernier
+//    niveau solide et la référence NON (ou l'inverse). Un seul signal par niveau.
 //
-// 3) BILAN HONNÊTE : chaque signal est suivi comme un trade
-//      entrée = clôture de la bougie du signal
-//      stop   = au-delà de l'extrême (plus haut du balayage ou niveau non cassé) + marge
-//      objectif = « Objectif en R » fois le risque
-//    ✓ si l'objectif est touché avant le stop, ✗ sinon (si les deux dans la même bougie : ✗).
-//    Le tableau en haut à droite compte TOUS les signaux, gagnants et perdants.
-//    Avec un objectif de 2 R, il faut gagner plus de 33 % des signaux pour être rentable.
+// 3) FILTRES (chacun activable) — pourquoi ils devraient aider :
+//    a) CONFIRMATION : on n'entre pas sur le balayage, on attend qu'une bougie clôture sous le bas de
+//       la bougie du signal (au-dessus du haut pour un achat). Évite d'entrer contre une tendance qui
+//       continue : c'est la 1re cause de perte d'un SMT. Si rien dans N bougies : signal abandonné.
+//    b) RSI EXTRÊME (ton RSI Bars, formule PAHLAWAN) : vente seulement si le RSI était en zone haute
+//       au moment du balayage (achat : zone basse). Un SMT sur un marché déjà essoufflé.
+//    c) ÉCART MINI : la référence doit rester nettement en dessous de son niveau (pas d'1 tick).
+//    d) HORAIRES : pétrole liquide (Londres + New York), pas la nuit asiatique.
+//    e) DURÉE MAX : un trade qui ne va nulle part est clôturé, au lieu de traîner jusqu'au stop.
+//
+// 4) BILAN HONNÊTE : TOUS les signaux sont suivis (brut ET filtré), gagnants et perdants, et coupés
+//    en deux moitiés de l'historique. Un filtre n'est utile que s'il améliore le « R moyen » sur les
+//    DEUX moitiés. Le % de réussite seul ne veut rien dire (il monte si on baisse l'objectif).
+//    R moyen > 0 = rentable (avant frais). Avec 2 R, il faut plus de 33 % de réussite.
 // =====================================================================================================
 indicator("Swings solides + SMT", shorttitle = "Swings SMT", overlay = true,
      max_lines_count = 500, max_labels_count = 500)
@@ -27,36 +30,104 @@ string G1 = "Swings"
 string refSym   = input.symbol("TVC:UKOIL", "Marché de référence (pour la divergence)", group = G1,
      tooltip = "Sur un graphique WTI (TVC:USOIL, MCL1!, CL1!) : TVC:UKOIL ou NYMEX:BZ1!. Sur un graphique Brent : TVC:USOIL.")
 int    atrLen   = input.int(14, "ATR (période)", minval = 1, group = G1)
-float  mult     = input.float(3.0, "Taille mini d'un swing (× ATR)", minval = 0.5, step = 0.5, group = G1,
-     tooltip = "Plus grand = moins de niveaux, mais plus solides.")
+float  mult     = input.float(3.0, "Taille mini d'un swing (× ATR)", minval = 0.5, step = 0.5, group = G1)
 
-string G2 = "Signal SMT et bilan"
+string G2 = "Trade"
 float  rr       = input.float(2.0, "Objectif (en R)", minval = 0.5, step = 0.5, group = G2)
 float  bufAtr   = input.float(0.1, "Marge du stop (× ATR)", minval = 0.0, step = 0.05, group = G2)
+int    maxBars  = input.int(60, "Durée max d'un trade (bougies, 0 = illimité)", minval = 0, group = G2)
 
-string G3 = "Affichage"
-bool   colBars  = input.bool(false, "Colorer les bougies selon le swing en cours", group = G3,
-     tooltip = "Laisser décoché si tu utilises déjà RSI Bars pour colorer les bougies.")
-bool   showZz   = input.bool(true, "Tracer les lignes entre sommets et creux", group = G3)
-bool   showPiv  = input.bool(true, "Afficher SH / SL", group = G3)
-bool   showTab  = input.bool(true, "Afficher le bilan", group = G3)
-color  colUp    = input.color(#26C6DA, "Couleur swing haussier", group = G3)
-color  colDn    = input.color(#F06292, "Couleur swing baissier", group = G3)
-color  colSmt   = input.color(#FFA726, "Couleur SMT en cours", group = G3)
+string G3 = "Filtres (signaux filtrés)"
+bool   useConf  = input.bool(true, "a) Attendre la confirmation", group = G3)
+int    confBars = input.int(10, "   Bougies max pour confirmer", minval = 1, group = G3)
+bool   useRsi   = input.bool(true, "b) RSI en zone extrême au balayage", group = G3)
+int    rsiLen   = input.int(24, "   RSI PAHLAWAN : longueur", minval = 2, group = G3)
+float  rsiOb    = input.float(62.5, "   Zone haute (vente)", group = G3)
+float  rsiOs    = input.float(37.5, "   Zone basse (achat)", group = G3)
+float  gapMin   = input.float(0.2, "c) Écart mini de la divergence (× ATR, 0 = off)", minval = 0.0, step = 0.05, group = G3)
+bool   useSess  = input.bool(true, "d) Seulement pendant ces horaires (New York)", group = G3)
+string sess     = input.session("0300-1430", "   Horaires", group = G3, tooltip = "Pétrole : 03h00-14h30 New York = 09h00-20h30 Paris (Londres + New York).")
 
-// ------------------------------------------------------------------------------ données de référence
-[rH, rL] = request.security(refSym, timeframe.period, [high, low])
+string G4 = "Affichage"
+bool   colBars  = input.bool(false, "Colorer les bougies selon le swing en cours", group = G4)
+bool   showZz   = input.bool(true, "Tracer les lignes entre sommets et creux", group = G4)
+bool   showPiv  = input.bool(true, "Afficher SH / SL", group = G4)
+bool   showRaw  = input.bool(true, "Afficher les SMT bruts (points gris)", group = G4)
+bool   showTab  = input.bool(true, "Afficher le bilan", group = G4)
+color  colUp    = input.color(#26C6DA, "Couleur swing haussier", group = G4)
+color  colDn    = input.color(#F06292, "Couleur swing baissier", group = G4)
+color  colSmt   = input.color(#FFA726, "Couleur trade en cours", group = G4)
+
+// ------------------------------------------------------------------------------------- données
+[rH, rL, rAtr] = request.security(refSym, timeframe.period, [high, low, ta.atr(atrLen)])
 
 fmax(float a, float b) =>
     na(a) ? b : na(b) ? a : math.max(a, b)
 fmin(float a, float b) =>
     na(a) ? b : na(b) ? a : math.min(a, b)
 
+// RSI de PAHLAWAN - RSI Bars (MotiveWave) : moyennes EMA alpha 2/(n+1)
+rsiEma(float s, int n) =>
+    float a  = 2.0 / (n + 1)
+    float ch = nz(s - s[1])
+    var float mg = 0.0
+    var float mp = 0.0
+    mg := mg + a * (math.max(ch, 0.0) - mg)
+    mp := mp + a * (math.max(-ch, 0.0) - mp)
+    mp == 0 ? (mg == 0 ? 50.0 : 100.0) : 100.0 - 100.0 / (1.0 + mg / mp)
+
 float atr = ta.atr(atrLen)
 float thr = mult * atr
 float buf = bufAtr * nz(atr)
+float rsi = rsiEma(close, rsiLen)
+float rsiHi3 = ta.highest(rsi, 3)
+float rsiLo3 = ta.lowest(rsi, 3)
+bool  inSess = not na(time(timeframe.period, sess, "America/New_York"))
+int   per = bar_index < last_bar_index / 2 ? 0 : 1   // 1re ou 2e moitié de l'historique
 
-// ------------------------------------------------------------------------------------------- état
+// ------------------------------------------------------------------------------------ types
+type Trade
+    int   dir
+    float entry
+    float stop
+    float tgt
+    float risk
+    int   bar0
+    int   grp     // 0 = brut, 1 = filtré
+    int   per
+    label lab
+
+type Pend
+    int   dir
+    float trig    // clôture sous ce prix (vente) / au-dessus (achat) pour entrer
+    float ext     // extrême depuis le signal : sert au stop
+    int   bar0
+    int   per
+
+var array<Trade> trades = array.new<Trade>()
+var array<Pend>  pends  = array.new<Pend>()
+var array<float> sR = array.new<float>(4, 0.0)
+var array<int>   sN = array.new<int>(4, 0)
+var array<int>   sW = array.new<int>(4, 0)
+
+rec(int grp, int p, float r) =>
+    int k = grp * 2 + p
+    array.set(sR, k, array.get(sR, k) + r)
+    array.set(sN, k, array.get(sN, k) + 1)
+    if r > 0
+        array.set(sW, k, array.get(sW, k) + 1)
+
+openTrade(int d, float entry, float stop, int grp, int p) =>
+    float rk = d < 0 ? stop - entry : entry - stop
+    if rk > 0
+        label lb = na
+        if grp == 1
+            lb := label.new(bar_index, d < 0 ? high : low, d < 0 ? "SMT ▼" : "SMT ▲",
+                 style = d < 0 ? label.style_label_down : label.style_label_up, color = colSmt,
+                 textcolor = color.black, size = size.normal)
+        array.push(trades, Trade.new(d, entry, stop, entry + (d < 0 ? -rr : rr) * rk, rk, bar_index, grp, p, lb))
+
+// ------------------------------------------------------------------------------------ état swings
 var int   dir      = 0
 var float ext      = na
 var int   extBar   = na
@@ -68,7 +139,6 @@ var float after    = na
 var int   afterBar = na
 var float refAfter = na
 
-// derniers niveaux solides (ce marché et la référence)
 var float prevSH    = na
 var float prevRefSH = na
 var float prevSL    = na
@@ -76,7 +146,6 @@ var float prevRefSL = na
 var int   pivBar    = na
 var float pivPx     = na
 
-// pour chaque niveau : qui l'a déjà cassé, et le signal a-t-il déjà été donné
 var bool shC = false
 var bool shR = false
 var bool shDone = false
@@ -84,79 +153,89 @@ var bool slC = false
 var bool slR = false
 var bool slDone = false
 
-// signaux en cours de suivi
-var array<int>   tDir  = array.new<int>()
-var array<float> tStop = array.new<float>()
-var array<float> tTgt  = array.new<float>()
-var array<label> tLab  = array.new<label>()
-var int   nWin  = 0
-var int   nLoss = 0
+// ------------------------------------------------- 1) résultat des trades ouverts (sur cette bougie)
+int nT = array.size(trades)
+if nT > 0
+    for i = nT - 1 to 0
+        Trade t = array.get(trades, i)
+        bool stopT = t.dir < 0 ? high >= t.stop : low <= t.stop
+        bool tgtT  = t.dir < 0 ? low <= t.tgt : high >= t.tgt
+        bool timeT = maxBars > 0 and bar_index - t.bar0 >= maxBars
+        if stopT or tgtT or timeT
+            float r = stopT ? -1.0 : tgtT ? rr : t.dir * (close - t.entry) / t.risk
+            rec(t.grp, t.per, r)
+            if not na(t.lab)
+                string fl = t.dir < 0 ? "SMT ▼" : "SMT ▲"
+                label.set_text(t.lab, fl + (stopT ? " ✗" : tgtT ? " ✓" : " ⏱ " + str.tostring(r, "+0.0;-0.0") + "R"))
+                label.set_color(t.lab, stopT ? color.new(color.red, 10) : tgtT ? color.new(color.green, 10) : color.new(color.gray, 10))
+                label.set_textcolor(t.lab, color.white)
+            array.remove(trades, i)
 
-// --------------------------------------------- 1) résultat des signaux précédents (sur cette bougie)
-int nOpen = array.size(tDir)
-if nOpen > 0
-    for i = nOpen - 1 to 0
-        int   d  = array.get(tDir, i)
-        float st = array.get(tStop, i)
-        float tg = array.get(tTgt, i)
-        bool  stopTouche = d < 0 ? high >= st : low <= st
-        bool  tgtTouche  = d < 0 ? low <= tg : high >= tg
-        if stopTouche or tgtTouche
-            label lb = array.get(tLab, i)
-            string fl = d < 0 ? "SMT ▼" : "SMT ▲"
-            if stopTouche
-                nLoss += 1
-                label.set_text(lb, fl + " ✗")
-                label.set_color(lb, color.new(color.red, 10))
-                label.set_textcolor(lb, color.white)
-            else
-                nWin += 1
-                label.set_text(lb, fl + " ✓")
-                label.set_color(lb, color.new(color.green, 10))
-                label.set_textcolor(lb, color.white)
-            array.remove(tDir, i)
-            array.remove(tStop, i)
-            array.remove(tTgt, i)
-            array.remove(tLab, i)
+// ------------------------------------------------ 2) signaux en attente de confirmation
+int nP = array.size(pends)
+if nP > 0
+    for i = nP - 1 to 0
+        Pend pd = array.get(pends, i)
+        pd.ext := pd.dir < 0 ? math.max(pd.ext, high) : math.min(pd.ext, low)
+        bool ok = pd.dir < 0 ? close < pd.trig : close > pd.trig
+        if ok
+            openTrade(pd.dir, close, pd.ext + (pd.dir < 0 ? buf : -buf), 1, pd.per)
+            array.remove(pends, i)
+        else if bar_index - pd.bar0 >= confBars
+            array.remove(pends, i)
 
-// ------------------------------------- 2) divergence EN DIRECT contre les derniers niveaux solides
+// ------------------------------------------------ 3) SMT en direct contre les derniers niveaux solides
 bool sigDn = false
 bool sigUp = false
+float gapDn = na
+float gapUp = na
 if not na(prevSH) and not na(prevRefSH) and not na(rH) and not shDone
     bool cB = high > prevSH
     bool rB = rH > prevRefSH
-    if (cB and not rB and not shR) or (rB and not cB and not shC)
+    if cB and not rB and not shR
         sigDn := true
+        gapDn := (prevRefSH - rH) / rAtr
+    else if rB and not cB and not shC
+        sigDn := true
+        gapDn := (prevSH - high) / atr
+    if sigDn
         shDone := true
     shC := shC or cB
     shR := shR or rB
 if not na(prevSL) and not na(prevRefSL) and not na(rL) and not slDone
     bool cB = low < prevSL
     bool rB = rL < prevRefSL
-    if (cB and not rB and not slR) or (rB and not cB and not slC)
+    if cB and not rB and not slR
         sigUp := true
+        gapUp := (rL - prevRefSL) / rAtr
+    else if rB and not cB and not slC
+        sigUp := true
+        gapUp := (low - prevSL) / atr
+    if sigUp
         slDone := true
     slC := slC or cB
     slR := slR or rB
 
 if sigDn
-    float st = math.max(high, prevSH) + buf
-    float rk = st - close
-    array.push(tDir, -1)
-    array.push(tStop, st)
-    array.push(tTgt, close - rr * rk)
-    array.push(tLab, label.new(bar_index, high, "SMT ▼", style = label.style_label_down, color = colSmt,
-         textcolor = color.black, size = size.normal))
+    float st = math.max(high, prevSH)
+    openTrade(-1, close, st + buf, 0, per)
+    bool pass = (not useRsi or rsiHi3 >= rsiOb) and (gapMin <= 0 or nz(gapDn) >= gapMin) and (not useSess or inSess)
+    if pass
+        if useConf
+            array.push(pends, Pend.new(-1, low, st, bar_index, per))
+        else
+            openTrade(-1, close, st + buf, 1, per)
 if sigUp
-    float st = math.min(low, prevSL) - buf
-    float rk = close - st
-    array.push(tDir, 1)
-    array.push(tStop, st)
-    array.push(tTgt, close + rr * rk)
-    array.push(tLab, label.new(bar_index, low, "SMT ▲", style = label.style_label_up, color = colSmt,
-         textcolor = color.black, size = size.normal))
+    float st = math.min(low, prevSL)
+    openTrade(1, close, st - buf, 0, per)
+    bool pass = (not useRsi or rsiLo3 <= rsiOs) and (gapMin <= 0 or nz(gapUp) >= gapMin) and (not useSess or inSess)
+    if pass
+        if useConf
+            array.push(pends, Pend.new(1, high, st, bar_index, per))
+        else
+            openTrade(1, close, st - buf, 1, per)
 
-// ------------------------------------------------------------- 3) swings solides (niveaux, après coup)
+// ------------------------------------------------------------- 4) swings solides (niveaux, après coup)
 if dir == 0 and not na(thr)
     dir      := 1
     ext      := high
@@ -265,28 +344,40 @@ else if dir == -1
 
 // ---------------------------------------------------------------------------------------- affichage
 barcolor(colBars ? (dir == 1 ? colUp : dir == -1 ? colDn : na) : na)
-
-// niveaux solides actuels : c'est là que le prochain SMT peut se produire
 plot(prevSH, "Dernier sommet solide", color = color.new(colDn, 50), style = plot.style_stepline)
 plot(prevSL, "Dernier creux solide", color = color.new(colUp, 50), style = plot.style_stepline)
+plotshape(showRaw and sigDn, "SMT brut ▼", shape.circle, location.abovebar, color.new(color.gray, 20), size = size.tiny)
+plotshape(showRaw and sigUp, "SMT brut ▲", shape.circle, location.belowbar, color.new(color.gray, 20), size = size.tiny)
 
-var table tb = table.new(position.top_right, 2, 5, bgcolor = color.new(color.black, 30), border_width = 1)
+cellTxt(int k1, int k2) =>
+    int   n = array.get(sN, k1) + (k2 >= 0 ? array.get(sN, k2) : 0)
+    int   w = array.get(sW, k1) + (k2 >= 0 ? array.get(sW, k2) : 0)
+    float r = array.get(sR, k1) + (k2 >= 0 ? array.get(sR, k2) : 0.0)
+    n == 0 ? "-" : str.tostring(n) + " | " + str.tostring(100.0 * w / n, "#") + " % | " + str.tostring(r / n, "+0.00;-0.00") + " R"
+
+cellCol(int k1, int k2) =>
+    int   n = array.get(sN, k1) + (k2 >= 0 ? array.get(sN, k2) : 0)
+    float r = array.get(sR, k1) + (k2 >= 0 ? array.get(sR, k2) : 0.0)
+    n == 0 ? color.white : r > 0 ? color.lime : color.red
+
+var table tb = table.new(position.top_right, 4, 4, bgcolor = color.new(color.black, 25), border_width = 1)
 if showTab and barstate.islast
-    int   nTot = nWin + nLoss
-    float wr   = nTot > 0 ? 100.0 * nWin / nTot : na
-    float espR = nTot > 0 ? (nWin * rr - nLoss) / nTot : na
-    table.cell(tb, 0, 0, "SMT (tous)", text_color = color.white)
-    table.cell(tb, 1, 0, str.tostring(nTot) + " terminés, " + str.tostring(array.size(tDir)) + " en cours", text_color = color.white)
-    table.cell(tb, 0, 1, "Gagnés ✓", text_color = color.white)
-    table.cell(tb, 1, 1, str.tostring(nWin), text_color = color.lime)
-    table.cell(tb, 0, 2, "Perdus ✗", text_color = color.white)
-    table.cell(tb, 1, 2, str.tostring(nLoss), text_color = color.red)
-    table.cell(tb, 0, 3, "Réussite", text_color = color.white)
-    table.cell(tb, 1, 3, na(wr) ? "-" : str.tostring(wr, "#.#") + " % (seuil " + str.tostring(100.0 / (1 + rr), "#") + " %)", text_color = color.white)
-    table.cell(tb, 0, 4, "Gain moyen", text_color = color.white)
-    table.cell(tb, 1, 4, na(espR) ? "-" : str.tostring(espR, "+#.##;-#.##") + " R par signal", text_color = na(espR) ? color.white : espR > 0 ? color.lime : color.red)
+    table.cell(tb, 0, 0, "trades | réussite | R moyen", text_color = color.gray, text_size = size.small)
+    table.cell(tb, 1, 0, "1re moitié", text_color = color.white, text_size = size.small)
+    table.cell(tb, 2, 0, "2e moitié", text_color = color.white, text_size = size.small)
+    table.cell(tb, 3, 0, "Total", text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 1, "Tous les SMT (brut)", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 1, cellTxt(0, -1), text_color = cellCol(0, -1), text_size = size.small)
+    table.cell(tb, 2, 1, cellTxt(1, -1), text_color = cellCol(1, -1), text_size = size.small)
+    table.cell(tb, 3, 1, cellTxt(0, 1), text_color = cellCol(0, 1), text_size = size.small)
+    table.cell(tb, 0, 2, "SMT filtrés", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 2, cellTxt(2, -1), text_color = cellCol(2, -1), text_size = size.small)
+    table.cell(tb, 2, 2, cellTxt(3, -1), text_color = cellCol(3, -1), text_size = size.small)
+    table.cell(tb, 3, 2, cellTxt(2, 3), text_color = cellCol(2, 3), text_size = size.small)
+    table.cell(tb, 0, 3, "Objectif " + str.tostring(rr) + " R : rentable si réussite > " + str.tostring(100.0 / (1 + rr), "#") + " % (hors durée max)", text_color = color.gray, text_size = size.tiny)
+    table.merge_cells(tb, 0, 3, 3, 3)
 
 if sigDn
-    alert("SMT ▼ en direct : " + syminfo.ticker + " / " + refSym + " (sommet non confirmé)", alert.freq_once_per_bar_close)
+    alert("SMT ▼ brut : " + syminfo.ticker + " / " + refSym, alert.freq_once_per_bar_close)
 if sigUp
-    alert("SMT ▲ en direct : " + syminfo.ticker + " / " + refSym + " (creux non confirmé)", alert.freq_once_per_bar_close)
+    alert("SMT ▲ brut : " + syminfo.ticker + " / " + refSym, alert.freq_once_per_bar_close)
