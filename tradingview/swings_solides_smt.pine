@@ -1,0 +1,198 @@
+//@version=6
+// =====================================================================================================
+// SWINGS SOLIDES + DIVERGENCE SMT (pensé pour WTI / Brent, marche sur n'importe quelle paire)
+//
+// UN SWING SOLIDE : le prix doit repartir d'au moins « Taille mini × ATR » depuis son extrême pour que
+// le sommet (ou le creux) soit validé. Les petites oscillations plus petites que ça sont ignorées.
+//   - Bougies cyan  = on est dans un swing haussier validé
+//   - Bougies roses = on est dans un swing baissier validé
+//   - SH / SL       = sommet / creux de swing, posé sur la vraie bougie extrême
+//   - SMT           = divergence : ce marché fait un plus haut (ou plus bas) que le marché de
+//                     référence ne confirme pas, ou l'inverse
+//
+// AUCUN REPAINT : un sommet n'est validé qu'une fois que le prix est reparti de la taille mini. Le
+// repère SH/SL apparaît donc à ce moment-là (quelques bougies après le vrai sommet), puis ne bouge plus.
+//
+// RÉGLAGE DE LA TAILLE (pétrole en 1 min) : 3 = swings intraday ; 5 = gros swings ; 2 = plus nerveux.
+// =====================================================================================================
+indicator("Swings solides + SMT", shorttitle = "Swings SMT", overlay = true,
+     max_lines_count = 500, max_labels_count = 500)
+
+string refSym   = input.symbol("TVC:UKOIL", "Marché de référence (pour la divergence)",
+     tooltip = "Sur un graphique WTI (TVC:USOIL, MCL1!, CL1!) : TVC:UKOIL ou NYMEX:BZ1!. Sur un graphique Brent : TVC:USOIL.")
+int    atrLen   = input.int(14, "ATR (période)", minval = 1)
+float  mult     = input.float(3.0, "Taille mini d'un swing (× ATR)", minval = 0.5, step = 0.5,
+     tooltip = "Plus grand = moins de swings, mais plus solides.")
+bool   colBars  = input.bool(true, "Colorer les bougies selon le swing en cours")
+bool   showZz   = input.bool(true, "Tracer les lignes entre sommets et creux")
+bool   showSmt  = input.bool(true, "Afficher les divergences SMT")
+color  colUp    = input.color(#26C6DA, "Couleur swing haussier")
+color  colDn    = input.color(#F06292, "Couleur swing baissier")
+color  colSmt   = input.color(#FFA726, "Couleur SMT")
+
+// ------------------------------------------------------------------------------ données de référence
+[rH, rL] = request.security(refSym, timeframe.period, [high, low])
+
+fmax(float a, float b) =>
+    na(a) ? b : na(b) ? a : math.max(a, b)
+fmin(float a, float b) =>
+    na(a) ? b : na(b) ? a : math.min(a, b)
+
+float thr = mult * ta.atr(atrLen)
+
+// ------------------------------------------------------------------------------------------- état
+// dir = 1 : swing haussier en cours (on suit le plus haut) ; -1 : swing baissier (on suit le plus bas)
+var int   dir      = 0
+var float ext      = na   // extrême du swing en cours (plus haut si dir = 1, plus bas si dir = -1)
+var int   extBar   = na
+var float refExt   = na   // extrême du marché de référence sur ce swing
+var float cand     = na   // extrême opposé depuis ext (futur point de départ du swing suivant)
+var int   candBar  = na
+var float refCand  = na
+var float after    = na   // extrême dans le sens du swing depuis cand
+var int   afterBar = na
+var float refAfter = na
+
+var float prevSH    = na
+var float prevRefSH = na
+var float prevSL    = na
+var float prevRefSL = na
+var int   pivBar    = na
+var float pivPx     = na
+
+bool newSH = false
+bool newSL = false
+bool smtSH = false
+bool smtSL = false
+
+if dir == 0 and not na(thr)
+    dir      := 1
+    ext      := high
+    extBar   := bar_index
+    refExt   := rH
+    cand     := low
+    candBar  := bar_index
+    refCand  := rL
+    after    := high
+    afterBar := bar_index
+    refAfter := rH
+    pivBar   := bar_index
+    pivPx    := low
+else if dir == 1
+    if high >= ext
+        ext      := high
+        extBar   := bar_index
+        cand     := low
+        candBar  := bar_index
+        refCand  := rL
+        after    := high
+        afterBar := bar_index
+        refAfter := rH
+    else
+        if low < cand
+            cand     := low
+            candBar  := bar_index
+            after    := high
+            afterBar := bar_index
+            refAfter := rH
+        else if high > after
+            after    := high
+            afterBar := bar_index
+        refAfter := fmax(refAfter, rH)
+        refCand  := fmin(refCand, rL)
+    refExt := fmax(refExt, rH)
+    if close <= ext - thr
+        // sommet de swing validé
+        newSH := true
+        smtSH := not na(prevSH) and not na(refExt) and not na(prevRefSH) and
+             ((ext > prevSH and refExt <= prevRefSH) or (ext <= prevSH and refExt > prevRefSH))
+        if showZz
+            line.new(pivBar, pivPx, extBar, ext, color = color.new(colUp, 30), width = 2)
+        if smtSH and showSmt
+            label.new(extBar, ext, "SMT ▼", style = label.style_label_down, color = colSmt,
+                 textcolor = color.black, size = size.normal)
+        else
+            label.new(extBar, ext, "SH", style = label.style_label_down, color = color.new(colDn, 20),
+                 textcolor = color.white, size = size.tiny)
+        prevSH    := ext
+        prevRefSH := refExt
+        pivBar    := extBar
+        pivPx     := ext
+        // départ du swing baissier
+        dir      := -1
+        ext      := cand
+        extBar   := candBar
+        refExt   := refCand
+        cand     := after
+        candBar  := afterBar
+        refCand  := refAfter
+        after    := low
+        afterBar := bar_index
+        refAfter := rL
+else if dir == -1
+    if low <= ext
+        ext      := low
+        extBar   := bar_index
+        cand     := high
+        candBar  := bar_index
+        refCand  := rH
+        after    := low
+        afterBar := bar_index
+        refAfter := rL
+    else
+        if high > cand
+            cand     := high
+            candBar  := bar_index
+            after    := low
+            afterBar := bar_index
+            refAfter := rL
+        else if low < after
+            after    := low
+            afterBar := bar_index
+        refAfter := fmin(refAfter, rL)
+        refCand  := fmax(refCand, rH)
+    refExt := fmin(refExt, rL)
+    if close >= ext + thr
+        // creux de swing validé
+        newSL := true
+        smtSL := not na(prevSL) and not na(refExt) and not na(prevRefSL) and
+             ((ext < prevSL and refExt >= prevRefSL) or (ext >= prevSL and refExt < prevRefSL))
+        if showZz
+            line.new(pivBar, pivPx, extBar, ext, color = color.new(colDn, 30), width = 2)
+        if smtSL and showSmt
+            label.new(extBar, ext, "SMT ▲", style = label.style_label_up, color = colSmt,
+                 textcolor = color.black, size = size.normal)
+        else
+            label.new(extBar, ext, "SL", style = label.style_label_up, color = color.new(colUp, 20),
+                 textcolor = color.black, size = size.tiny)
+        prevSL    := ext
+        prevRefSL := refExt
+        pivBar    := extBar
+        pivPx     := ext
+        // départ du swing haussier
+        dir      := 1
+        ext      := cand
+        extBar   := candBar
+        refExt   := refCand
+        cand     := after
+        candBar  := afterBar
+        refCand  := refAfter
+        after    := high
+        afterBar := bar_index
+        refAfter := rH
+
+// ---------------------------------------------------------------------------------------- affichage
+barcolor(colBars ? (dir == 1 ? colUp : dir == -1 ? colDn : na) : na)
+
+// ligne pointillée du swing en cours, du dernier pivot validé jusqu'à l'extrême actuel
+var line enCours = na
+if showZz and barstate.islast and not na(pivBar)
+    line.delete(enCours)
+    enCours := line.new(pivBar, pivPx, extBar, ext, color = color.gray, style = line.style_dashed)
+
+if newSH
+    alert(smtSH ? "SMT baissier : sommet non confirmé par " + refSym : "Sommet de swing validé",
+         alert.freq_once_per_bar_close)
+if newSL
+    alert(smtSL ? "SMT haussier : creux non confirmé par " + refSym : "Creux de swing validé",
+         alert.freq_once_per_bar_close)
