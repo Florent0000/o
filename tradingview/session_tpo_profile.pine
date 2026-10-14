@@ -1,0 +1,405 @@
+//@version=6
+indicator("Session TPO Profile (ORIGINAL)", overlay=true, max_bars_back=5000, max_boxes_count=1000, max_lines_count=500)
+
+// ========== SESSION ET TIMEZONE ==========
+gmt_tz = input.string('Europe/Paris', "Timezone",
+     options=['America/New_York','GMT-12','GMT-11','GMT-10','GMT-9','GMT-8','GMT-7','GMT-6','GMT-5','GMT-4','GMT-3','GMT-2','GMT-1','GMT+0','GMT+1','GMT+2','GMT+3','GMT+4','GMT+5','GMT+6','GMT+7','GMT+8','GMT+9','GMT+10','GMT+11','GMT+12','GMT+13','GMT+14','Europe/Paris','Europe/London','Asia/Tokyo','Asia/Shanghai'],
+     tooltip="Fuseau horaire pour la session",
+     group="Session configuration")
+auto_dst = input.bool(true, "Changement d'heure automatique (calé sur New York)",
+     tooltip="Avec le fuseau Europe/Paris : saisis tes horaires en heure de Paris habituelle (Paris = New York + 6 h). Le script les cale sur New York, donc ils se décalent tout seuls d'1 h pendant les semaines où la France et les États-Unis ne changent pas d'heure en même temps (fin mars, fin octobre).",
+     group="Session configuration")
+
+// ===== TPO 1 =====
+session   = input.session("1530-0200", title="[TPO 1] Session calculation", tooltip="Format 24h, heure de Paris. Or : 1530-0200. Pétrole : 1500-0200.", group="TPO 1 — Session")
+tick_size = input.int(25, "[TPO 1] Ticks number per tpo", group="TPO 1 — Global Options") * syminfo.mintick
+round_values        = input.bool(true,  "[TPO 1] Round TPO levels on Tick number", group="TPO 1 — Global Options")
+letters_size        = input.string("Small", options=["Normal", "Small", "Tiny"], title="[TPO 1] TPO letters size", group="TPO 1 — Global Options")
+print_as_bars       = input.bool(false, "[TPO 1] Display TPO as bars", group="TPO 1 — Global Options")
+extend_levels       = input.bool(true,  "[TPO 1] Extend yesterday's levels", group="TPO 1 — Global Options")
+show_va_background  = input.bool(true,  "[TPO 1] Show Market Profile calculation area background", group="TPO 1 — Global Options")
+va_bg_color         = input.color(#2962ff10, "[TPO 1] Value area background color", group="TPO 1 — Global Options")
+show_histogram      = input.bool(true,  "[TPO 1] Show TPO's", group="TPO 1 — Global Options")
+tpo_va_color        = input.color(color.white, "[TPO 1] TPO Color (in VA)", group="TPO 1 — Global Options")
+tpo_nova_color      = input.color(color.gray, "[TPO 1] TPO Color (out of VA)", group="TPO 1 — Global Options")
+limits_color        = input.color(color.black, "[TPO 1] High and Low colors", group="TPO 1 — Highs & Lows")
+show_high_low       = input.bool(false, "[TPO 1] Show high/low levels", group="TPO 1 — Highs & Lows")
+poc_col             = input.color(color.white, "[TPO 1] POC color", group="TPO 1 — POC Options")
+show_poc            = input.bool(true,  "[TPO 1] Show POC as line", group="TPO 1 — POC Options")
+show_initial_balance= input.bool(true,  "[TPO 1] Show Initial Balance", group="TPO 1 — IB")
+ib_color            = input.color(#38f40e, "[TPO 1] IB Color", group="TPO 1 — IB")
+va_line_color       = input.color(color.white, "[TPO 1] Value area lines color", group="TPO 1 — Value area")
+show_va_lines       = input.bool(true,  "[TPO 1] Show value areas as lines", group="TPO 1 — Value area")
+va_percent          = input.int(68, "[TPO 1] Value area percent", group="TPO 1 — Value area") / 100
+show_singleprints   = input.bool(true,  "[TPO 1] Highlight Single prints", group="TPO 1 — Single prints")
+sp_col              = input.color(#ec407a, "[TPO 1] Single prints color", group="TPO 1 — Single prints")
+extend_sp           = input.bool(false, "[TPO 1] Extend single prints", group="TPO 1 — Single prints")
+sp_ext_trans        = input.int(80, "[TPO 1] Extended single prints transparency", group="TPO 1 — Single prints", minval=0, maxval=100)
+open_color          = input.color(color.yellow, "[TPO 1] Opening price color", group="TPO 1 — Open/Close")
+close_color         = input.color(#ff0000, "[TPO 1] Closing price color", group="TPO 1 — Open/Close")
+tpo_spacing         = input.int(0, "[TPO 1] TPO Spacing", group="TPO 1 — Global Options")
+
+// ===== TPO 2 =====
+session2             = input.session("0200-1530", title="[TPO 2] Session calculation", tooltip="Format 24h, heure de Paris. Or : 0200-1530. Pétrole : 0200-1500.", group="TPO 2 — Session")
+tick_size2_raw       = input.int(25, "[TPO 2] Ticks number per tpo", group="TPO 2 — Global Options")
+round_values2        = input.bool(true,  "[TPO 2] Round TPO levels on Tick number", group="TPO 2 — Global Options")
+letters_size2        = input.string("Small", options=["Normal", "Small", "Tiny"], title="[TPO 2] TPO letters size", group="TPO 2 — Global Options")
+print_as_bars2       = input.bool(false, "[TPO 2] Display TPO as bars", group="TPO 2 — Global Options")
+extend_levels2       = input.bool(true,  "[TPO 2] Extend yesterday's levels", group="TPO 2 — Global Options")
+show_va_background2  = input.bool(true,  "[TPO 2] Show Market Profile calculation area background", group="TPO 2 — Global Options")
+va_bg_color2         = input.color(#ff6d0010, "[TPO 2] Value area background color", group="TPO 2 — Global Options")
+show_histogram2      = input.bool(true,  "[TPO 2] Show TPO's", group="TPO 2 — Global Options")
+tpo_va_color2        = input.color(color.white, "[TPO 2] TPO Color (in VA)", group="TPO 2 — Global Options")
+tpo_nova_color2      = input.color(color.gray, "[TPO 2] TPO Color (out of VA)", group="TPO 2 — Global Options")
+limits_color2        = input.color(color.black, "[TPO 2] High and Low colors", group="TPO 2 — Highs & Lows")
+show_high_low2       = input.bool(false, "[TPO 2] Show high/low levels", group="TPO 2 — Highs & Lows")
+poc_col2             = input.color(color.white, "[TPO 2] POC color", group="TPO 2 — POC Options")
+show_poc2            = input.bool(true,  "[TPO 2] Show POC as line", group="TPO 2 — POC Options")
+show_initial_balance2= input.bool(true,  "[TPO 2] Show Initial Balance", group="TPO 2 — IB")
+ib_color2            = input.color(#ff6d00, "[TPO 2] IB Color", group="TPO 2 — IB")
+va_line_color2       = input.color(color.white, "[TPO 2] Value area lines color", group="TPO 2 — Value area")
+show_va_lines2       = input.bool(true,  "[TPO 2] Show value areas as lines", group="TPO 2 — Value area")
+va_percent2          = input.int(68, "[TPO 2] Value area percent", group="TPO 2 — Value area") / 100
+show_singleprints2   = input.bool(true,  "[TPO 2] Highlight Single prints", group="TPO 2 — Single prints")
+sp_col2              = input.color(#ec407a, "[TPO 2] Single prints color", group="TPO 2 — Single prints")
+extend_sp2           = input.bool(false, "[TPO 2] Extend single prints", group="TPO 2 — Single prints")
+sp_ext_trans2        = input.int(80, "[TPO 2] Extended single prints transparency", group="TPO 2 — Single prints", minval=0, maxval=100)
+open_color2          = input.color(color.yellow, "[TPO 2] Opening price color", group="TPO 2 — Open/Close")
+close_color2         = input.color(#ff0000, "[TPO 2] Closing price color", group="TPO 2 — Open/Close")
+tpo_spacing2         = input.int(0, "[TPO 2] TPO Spacing", group="TPO 2 — Global Options")
+
+letters = input.string("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$€£{}[]()*+-/=%&?!", "TPO letters")
+
+letters_size_value  = letters_size  == "Small" ? size.small : letters_size  == "Normal" ? size.normal : size.tiny
+letters_size_value2 = letters_size2 == "Small" ? size.small : letters_size2 == "Normal" ? size.normal : size.tiny
+
+// ========== HELPERS ==========
+spaces_string(n) =>
+    r = ""
+    if n > 0
+        for i = 0 to n
+            r += " "
+    r
+
+find_h(x) =>
+    h = high
+    for i = 0 to x
+        if high[i] > h
+            h := high[i]
+    h
+
+find_l(x) =>
+    l = low
+    for i = 0 to x
+        if low[i] < l
+            l := low[i]
+    l
+
+// ========== CHANGEMENT D'HEURE AUTOMATIQUE ==========
+// "HHMM" + delta minutes -> "HHMM" (sur 24 h)
+f_hhmm(string s, int delta) =>
+    int m = int(str.tonumber(str.substring(s, 0, 2))) * 60 + int(str.tonumber(str.substring(s, 2, 4)))
+    m := ((m + delta) % 1440 + 1440) % 1440
+    str.tostring(math.floor(m / 60), "00") + str.tostring(m % 60, "00")
+
+// "HHMM-HHMM[:jours]" décalé de delta minutes
+f_shift_session(string s, int delta) =>
+    string suffix = str.length(s) > 9 ? str.substring(s, 9) : ""
+    f_hhmm(str.substring(s, 0, 4), delta) + "-" + f_hhmm(str.substring(s, 5, 9), delta) + suffix
+
+// Heure de Paris habituelle = New York + 6 h. Calée sur New York, la session suit tout seule les
+// semaines de décalage entre les changements d'heure français et américains.
+use_ny  = auto_dst and gmt_tz == 'Europe/Paris'
+tz_eff  = use_ny ? 'America/New_York' : gmt_tz
+sess_a  = use_ny ? f_shift_session(session,  -360) : session
+sess_b  = use_ny ? f_shift_session(session2, -360) : session2
+
+// ========== SESSION DETECTION ==========
+inSession(sess) => not na(time("", sess, tz_eff))
+
+sess  = inSession(sess_a)
+sess2 = inSession(sess_b)
+
+session_over  = sess[1]  and not sess
+session_start = sess     and not sess[1]
+
+session_over2  = sess2[1] and not sess2
+session_start2 = sess2    and not sess2[1]
+
+// ========== TPO 1 STATE ==========
+var line topline  = na
+var line botline  = na
+var line vah_line = na
+var line val_line = na
+var line poc      = na
+var poc_price     = 0.0
+var bars_score    = array.new<int>()
+var profile_bars  = array.new<box>()
+var vah_offset    = 0
+var val_offset    = 0
+var session_candles_count = 0
+var poc_position  = 0
+var total_tpo     = 0
+var open_price    = open
+
+// ========== TPO 2 STATE ==========
+var line topline2  = na
+var line botline2  = na
+var line vah_line2 = na
+var line val_line2 = na
+var line poc2      = na
+var poc_price2     = 0.0
+var bars_score2    = array.new<int>()
+var profile_bars2  = array.new<box>()
+var vah_offset2    = 0
+var val_offset2    = 0
+var session_candles_count2 = 0
+var poc_position2  = 0
+var total_tpo2     = 0
+var open_price2    = open
+
+// ========== COUNT TPO HELPERS ==========
+count_tpo(x, y) =>
+    r = 0
+    for i = x to y
+        r += array.get(bars_score, i)
+    r
+
+count_tpo2(x, y) =>
+    r = 0
+    for i = x to y
+        r += array.get(bars_score2, i)
+    r
+
+// ===============================================================
+// ==================== TPO 1 LOGIC ==============================
+// ===============================================================
+
+if session_start
+    session_candles_count := 0
+    open_price := open
+    array.clear(bars_score)
+    array.clear(profile_bars)
+
+if session_over
+    ext = extend_levels ? extend.right : extend.none
+    if extend_levels
+        line.set_extend(vah_line, extend.none)
+        line.set_extend(val_line, extend.none)
+        line.set_extend(poc,      extend.none)
+        line.set_extend(topline,  extend.none)
+        line.set_extend(botline,  extend.none)
+
+    max_score = 0
+    total_tpo := 0
+    h = find_h(session_candles_count)
+    highest = h
+    l = find_l(session_candles_count)
+
+    bars_nb = int((h - l) / tick_size)
+    if bars_nb > 1000
+        bars_nb := 1000
+        tick_size := (h - l) / 1000
+
+    if round_values
+        h := h + tick_size - (h % tick_size)
+        l := l - (l % tick_size)
+    box_width = (h - l) / bars_nb
+
+    if show_poc
+        poc := line.new(bar_index - session_candles_count, 0.0, bar_index, 0.0, color=poc_col, width=2, extend=ext)
+    if show_high_low
+        topline := line.new(bar_index - session_candles_count, h, bar_index, h, color=limits_color, extend=ext)
+        botline := line.new(bar_index - session_candles_count, l, bar_index, l, color=limits_color, extend=ext)
+
+    for i = 0 to bars_nb - 1
+        tpo_letters = ""
+        score = 0
+        for x = 0 to session_candles_count
+            in_bar = (high[x] <= h and high[x] >= h - box_width) or (low[x] <= h and low[x] >= h - box_width) or (high[x] > h and low[x] < h - box_width)
+            if in_bar
+                score += 1
+                if x <= session_candles_count and session_candles_count <= str.length(letters) - 1
+                    tpo_letters := str.substring(letters, session_candles_count - x, session_candles_count - (x - 1)) + spaces_string(tpo_spacing) + tpo_letters
+
+        if score >= max_score
+            max_score := score
+            poc_price := h - (box_width / 2)
+            poc_position := i
+
+        line.set_y1(poc, poc_price)
+        line.set_y2(poc, poc_price)
+        if print_as_bars
+            tpo_letters := ""
+        array.insert(profile_bars, i, box.new(bar_index - session_candles_count, h, bar_index - (session_candles_count - score), h - box_width, text=tpo_letters, text_size=letters_size_value, text_color=tpo_va_color, text_halign=text.align_left, bgcolor=#00000000, border_color=#00000000))
+        array.insert(bars_score, i, score)
+        h -= box_width
+        total_tpo += score
+
+    vah_offset := poc_position > 0 ? poc_position - 1 : poc_position
+    val_offset := poc_position < bars_nb - 1 ? poc_position + 1 : poc_position
+
+    for i = 0 to bars_nb - 1
+        d = vah_offset == 0 ? "l" : val_offset == bars_nb - 1 ? "h" : array.get(bars_score, vah_offset) >= array.get(bars_score, val_offset) ? "h" : "l"
+        if d == "h"
+            vah_offset := vah_offset > 0 ? vah_offset - 1 : vah_offset
+        else
+            val_offset := val_offset < bars_nb - 1 ? val_offset + 1 : val_offset
+        if (total_tpo > 0 ? count_tpo(vah_offset, val_offset) / total_tpo : 0.0) >= va_percent
+            break
+
+    vah_price = box.get_top(array.get(profile_bars, vah_offset)) - (box_width / 2)
+    val_price = box.get_bottom(array.get(profile_bars, val_offset)) + (box_width / 2)
+
+    for i = 0 to bars_nb - 1
+        text_col = i > vah_offset and i < val_offset ? tpo_va_color : tpo_nova_color
+        text_col := val_offset == i or vah_offset == i ? va_line_color : poc_position == i ? poc_col : (array.get(bars_score, i) == 1 and show_singleprints) ? sp_col : text_col
+        if not show_histogram
+            text_col := #00000000
+        if print_as_bars
+            if not extend_sp
+                box.set_border_color(array.get(profile_bars, i), text_col)
+            box.set_bgcolor(array.get(profile_bars, i), text_col)
+        if extend_sp and (array.get(bars_score, i) == 1 and show_singleprints)
+            box.set_right(array.get(profile_bars, i), bar_index)
+            box.set_bgcolor(array.get(profile_bars, i), color.new(sp_col, transp=sp_ext_trans))
+        box.set_text_color(array.get(profile_bars, i), text_col)
+
+    if show_va_lines
+        vah_line := line.new(bar_index - session_candles_count, vah_price, bar_index, vah_price, color=va_line_color, extend=ext)
+        val_line := line.new(bar_index - session_candles_count, val_price, bar_index, val_price, color=va_line_color, extend=ext)
+
+    label.new(bar_index - session_candles_count - 1, open_price, text="🢒", style=label.style_none, textcolor=open_color)
+    label.new(bar_index - session_candles_count - 1, close, text="x", style=label.style_none, textcolor=close_color)
+    line.new(bar_index - session_candles_count - 1, open_price, bar_index - session_candles_count, open_price, color=open_color, width=3)
+    line.new(bar_index - session_candles_count - 1, close, bar_index - session_candles_count, close, color=close_color, width=3)
+
+    if show_initial_balance and session_candles_count >= 1
+        ibh = high[session_candles_count] > high[session_candles_count - 1] ? high[session_candles_count] : high[session_candles_count - 1]
+        ibl = low[session_candles_count]  < low[session_candles_count - 1]  ? low[session_candles_count]  : low[session_candles_count - 1]
+        line.new(bar_index - session_candles_count, ibh, bar_index - session_candles_count, ibl, color=ib_color, width=2)
+
+    if show_va_background
+        box.new(bar_index - session_candles_count, vah_price, bar_index, val_price, bgcolor=va_bg_color, border_color=#00000000)
+
+    label.new(bar_index - (session_candles_count / 2), highest, text=str.tostring(total_tpo) + " TPO\n", style=label.style_none, textcolor=tpo_va_color, size=size.small)
+
+session_candles_count += 1
+
+
+// ===============================================================
+// ==================== TPO 2 LOGIC ==============================
+// ===============================================================
+
+tick_size2 = tick_size2_raw * syminfo.mintick
+
+if session_start2
+    session_candles_count2 := 0
+    open_price2 := open
+    array.clear(bars_score2)
+    array.clear(profile_bars2)
+
+if session_over2
+    ext2 = extend_levels2 ? extend.right : extend.none
+    if extend_levels2
+        line.set_extend(vah_line2, extend.none)
+        line.set_extend(val_line2, extend.none)
+        line.set_extend(poc2,      extend.none)
+        line.set_extend(topline2,  extend.none)
+        line.set_extend(botline2,  extend.none)
+
+    max_score2 = 0
+    total_tpo2 := 0
+    h2 = find_h(session_candles_count2)
+    highest2 = h2
+    l2 = find_l(session_candles_count2)
+
+    bars_nb2 = int((h2 - l2) / tick_size2)
+    if bars_nb2 > 1000
+        bars_nb2 := 1000
+        tick_size2 := (h2 - l2) / 1000
+
+    if round_values2
+        h2 := h2 + tick_size2 - (h2 % tick_size2)
+        l2 := l2 - (l2 % tick_size2)
+    box_width2 = (h2 - l2) / bars_nb2
+
+    if show_poc2
+        poc2 := line.new(bar_index - session_candles_count2, 0.0, bar_index, 0.0, color=poc_col2, width=2, extend=ext2)
+    if show_high_low2
+        topline2 := line.new(bar_index - session_candles_count2, h2, bar_index, h2, color=limits_color2, extend=ext2)
+        botline2 := line.new(bar_index - session_candles_count2, l2, bar_index, l2, color=limits_color2, extend=ext2)
+
+    for i = 0 to bars_nb2 - 1
+        tpo_letters2 = ""
+        score2 = 0
+        for x = 0 to session_candles_count2
+            in_bar2 = (high[x] <= h2 and high[x] >= h2 - box_width2) or (low[x] <= h2 and low[x] >= h2 - box_width2) or (high[x] > h2 and low[x] < h2 - box_width2)
+            if in_bar2
+                score2 += 1
+                if x <= session_candles_count2 and session_candles_count2 <= str.length(letters) - 1
+                    tpo_letters2 := str.substring(letters, session_candles_count2 - x, session_candles_count2 - (x - 1)) + spaces_string(tpo_spacing2) + tpo_letters2
+
+        if score2 >= max_score2
+            max_score2 := score2
+            poc_price2 := h2 - (box_width2 / 2)
+            poc_position2 := i
+
+        line.set_y1(poc2, poc_price2)
+        line.set_y2(poc2, poc_price2)
+        if print_as_bars2
+            tpo_letters2 := ""
+        array.insert(profile_bars2, i, box.new(bar_index - session_candles_count2, h2, bar_index - (session_candles_count2 - score2), h2 - box_width2, text=tpo_letters2, text_size=letters_size_value2, text_color=tpo_va_color2, text_halign=text.align_left, bgcolor=#00000000, border_color=#00000000))
+        array.insert(bars_score2, i, score2)
+        h2 -= box_width2
+        total_tpo2 += score2
+
+    vah_offset2 := poc_position2 > 0 ? poc_position2 - 1 : poc_position2
+    val_offset2 := poc_position2 < bars_nb2 - 1 ? poc_position2 + 1 : poc_position2
+
+    for i = 0 to bars_nb2 - 1
+        d2 = vah_offset2 == 0 ? "l" : val_offset2 == bars_nb2 - 1 ? "h" : array.get(bars_score2, vah_offset2) >= array.get(bars_score2, val_offset2) ? "h" : "l"
+        if d2 == "h"
+            vah_offset2 := vah_offset2 > 0 ? vah_offset2 - 1 : vah_offset2
+        else
+            val_offset2 := val_offset2 < bars_nb2 - 1 ? val_offset2 + 1 : val_offset2
+        if (total_tpo2 > 0 ? count_tpo2(vah_offset2, val_offset2) / total_tpo2 : 0.0) >= va_percent2
+            break
+
+    vah_price2 = box.get_top(array.get(profile_bars2, vah_offset2)) - (box_width2 / 2)
+    val_price2 = box.get_bottom(array.get(profile_bars2, val_offset2)) + (box_width2 / 2)
+
+    for i = 0 to bars_nb2 - 1
+        text_col2 = i > vah_offset2 and i < val_offset2 ? tpo_va_color2 : tpo_nova_color2
+        text_col2 := val_offset2 == i or vah_offset2 == i ? va_line_color2 : poc_position2 == i ? poc_col2 : (array.get(bars_score2, i) == 1 and show_singleprints2) ? sp_col2 : text_col2
+        if not show_histogram2
+            text_col2 := #00000000
+        if print_as_bars2
+            if not extend_sp2
+                box.set_border_color(array.get(profile_bars2, i), text_col2)
+            box.set_bgcolor(array.get(profile_bars2, i), text_col2)
+        if extend_sp2 and (array.get(bars_score2, i) == 1 and show_singleprints2)
+            box.set_right(array.get(profile_bars2, i), bar_index)
+            box.set_bgcolor(array.get(profile_bars2, i), color.new(sp_col2, transp=sp_ext_trans2))
+        box.set_text_color(array.get(profile_bars2, i), text_col2)
+
+    if show_va_lines2
+        vah_line2 := line.new(bar_index - session_candles_count2, vah_price2, bar_index, vah_price2, color=va_line_color2, extend=ext2)
+        val_line2 := line.new(bar_index - session_candles_count2, val_price2, bar_index, val_price2, color=va_line_color2, extend=ext2)
+
+    label.new(bar_index - session_candles_count2 - 1, open_price2, text="🢒", style=label.style_none, textcolor=open_color2)
+    label.new(bar_index - session_candles_count2 - 1, close, text="x", style=label.style_none, textcolor=close_color2)
+    line.new(bar_index - session_candles_count2 - 1, open_price2, bar_index - session_candles_count2, open_price2, color=open_color2, width=3)
+    line.new(bar_index - session_candles_count2 - 1, close, bar_index - session_candles_count2, close, color=close_color2, width=3)
+
+    if show_initial_balance2 and session_candles_count2 >= 1
+        ibh2 = high[session_candles_count2] > high[session_candles_count2 - 1] ? high[session_candles_count2] : high[session_candles_count2 - 1]
+        ibl2 = low[session_candles_count2]  < low[session_candles_count2 - 1]  ? low[session_candles_count2]  : low[session_candles_count2 - 1]
+        line.new(bar_index - session_candles_count2, ibh2, bar_index - session_candles_count2, ibl2, color=ib_color2, width=2)
+
+    if show_va_background2
+        box.new(bar_index - session_candles_count2, vah_price2, bar_index, val_price2, bgcolor=va_bg_color2, border_color=#00000000)
+
+    label.new(bar_index - (session_candles_count2 / 2), highest2, text=str.tostring(total_tpo2) + " TPO\n", style=label.style_none, textcolor=tpo_va_color2, size=size.small)
+
+session_candles_count2 += 1
