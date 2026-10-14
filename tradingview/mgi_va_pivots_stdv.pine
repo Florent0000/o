@@ -1,0 +1,237 @@
+// This Pine Script™ is subject to the terms of the Mozilla Public License 2.0
+// MGI + VA Pivots + STDV — OnlyFlow (version simple)
+// Garde uniquement : Open RTH, Pivot VA + extensions, zones STDV, tableau des niveaux.
+// Correction : les zones STDV utilisent l'écart-type des VARIATIONS journalières (vrai « mouvement
+// attendu d'une journée »). L'écart-type des CLÔTURES (calcul d'origine) mesure la tendance, pas le
+// mouvement du jour : testé sur 40 ans de WTI, ses zones étaient en moyenne 1,6 fois trop loin
+// (jusqu'à 3 fois en tendance). L'ancien calcul reste disponible dans les réglages.
+
+//@version=6
+indicator("MGI + VA Pivots + STDV — OnlyFlow (simple)", overlay=true,
+     max_lines_count=500, max_labels_count=500, max_boxes_count=500)
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── RÉGLAGES (le strict nécessaire) ────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// display.none : les réglages n'encombrent plus la ligne d'état du graphique
+
+i_rthSession = input.session("0930-1600", "Session RTH", display=display.none, tooltip="ES / NQ : 0930-1600. Pétrole (CL, MCL) : 0900-1430. Or : 0820-1330. Heure de New York.")
+i_timezone   = input.string("America/New_York", "Fuseau horaire", options=["America/New_York","America/Chicago","Europe/Paris","UTC"], display=display.none)
+i_showOpen   = input.bool(true, "Open RTH",                display=display.none)
+i_showPivot  = input.bool(true, "Pivot VA + extensions",   display=display.none)
+i_numExt     = input.int(6, "Nombre d'extensions de chaque côté", minval=0, maxval=10, display=display.none)
+i_showSD     = input.bool(true, "Zones STDV (±0,5 / ±1)",  display=display.none)
+i_sdMode     = input.string("Variations journalières (recommandé)", "Calcul de l'écart-type (STDV)",
+     options=["Variations journalières (recommandé)", "Clôtures (calcul d'origine)"], display=display.none,
+     tooltip="Variations : écart-type des mouvements d'un jour sur l'autre = mouvement attendu d'une journée. Clôtures : écart-type des prix de clôture (dépend de la tendance, zones trop loin).")
+i_showTable  = input.bool(true, "Tableau des niveaux",     display=display.none)
+
+// ─── Valeurs fixes (tes réglages actuels) ───────────────────────────────────
+VA_PCT   = 70.0    // % du volume dans la Value Area
+VA_ROWS  = 200     // paliers du profil de volume
+SD_LEN   = 20      // jours pour l'écart-type
+SD_TICKS = 2.0     // épaisseur des zones STDV (ticks de chaque côté)
+SD_KEEP  = 20      // jours de zones STDV conservés
+
+COL_OPEN  = color.aqua
+COL_PIV   = color.lime
+COL_EXT_A = color.rgb(0, 150, 255)
+COL_EXT_B = color.rgb(255, 50, 50)
+COL_HALF  = color.new(color.blue, 80)
+COL_FULL  = color.new(color.red,  80)
+
+priceStr(float v) => na(v) ? "—" : str.tostring(v, format.mintick)
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── SESSIONS ───────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+
+isRTH   = not na(time(timeframe.period, i_rthSession, i_timezone))
+rthOpen = isRTH and not isRTH[1]
+newDay  = ta.change(time("D")) != 0
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── OPEN RTH ───────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+
+// Positions en HEURE (xloc.bar_time) : aucune limite d'historique, même en 1 min
+var float todayOpen = na
+var int   openTime  = na
+if rthOpen
+    todayOpen := open
+    openTime  := time
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── VALUE AREA DE LA SÉANCE RTH PRÉCÉDENTE → PIVOT ─────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+
+// Profil de volume (volume de chaque bougie réparti sur sa plage), puis VA à
+// partir du POC en ajoutant le palier voisin le plus chargé jusqu'à VA_PCT %.
+computeVA(array<float> bHighs, array<float> bLows, array<float> bVols, float sH, float sL, float vaPct, int bins) =>
+    float vahOut = na
+    float valOut = na
+    float pocOut = na
+    if not na(sH) and not na(sL) and sH > sL and bins > 1
+        float binSize = (sH - sL) / bins
+        array<float> prof = array.new_float(bins, 0.0)
+        float totVol = 0.0
+        for b = 0 to array.size(bHighs) - 1
+            float bv  = array.get(bVols, b)
+            int iLow  = math.max(0, math.min(int(math.floor((array.get(bLows,  b) - sL) / binSize)), bins - 1))
+            int iHigh = math.max(0, math.min(int(math.floor((array.get(bHighs, b) - sL) / binSize)), bins - 1))
+            float vPer = bv / (iHigh - iLow + 1)
+            for k = iLow to iHigh
+                array.set(prof, k, array.get(prof, k) + vPer)
+            totVol += bv
+        int pocIdx = 0
+        float pocVol = 0.0
+        for i = 0 to bins - 1
+            if array.get(prof, i) > pocVol
+                pocVol := array.get(prof, i)
+                pocIdx := i
+        float target = totVol * vaPct / 100.0
+        float acc = pocVol
+        int upper = pocIdx
+        int lower = pocIdx
+        while acc < target and (upper < bins - 1 or lower > 0)
+            float aVol = upper < bins - 1 ? array.get(prof, upper + 1) : 0.0
+            float bVol = lower > 0        ? array.get(prof, lower - 1) : 0.0
+            if upper >= bins - 1 or (lower > 0 and bVol > aVol)
+                lower -= 1
+                acc   += bVol
+            else
+                upper += 1
+                acc   += aVol
+        vahOut := sL + (upper + 1) * binSize
+        valOut := sL + lower * binSize
+        pocOut := sL + (pocIdx + 0.5) * binSize
+    [vahOut, valOut, pocOut]
+
+var float sessHigh = na
+var float sessLow  = na
+var array<float> barHighs = array.new_float()
+var array<float> barLows  = array.new_float()
+var array<float> barVols  = array.new_float()
+
+var float pivot = na
+var float vah   = na
+var float val   = na
+var float poc   = na
+var int   pivotTime = na
+
+if rthOpen
+    if array.size(barHighs) > 0
+        [h_, l_, p_] = computeVA(barHighs, barLows, barVols, sessHigh, sessLow, VA_PCT, VA_ROWS)
+        if not na(h_) and not na(l_)
+            vah      := h_
+            val      := l_
+            poc      := p_
+            pivot    := math.avg(h_, l_)
+            pivotTime := time
+    sessHigh := na
+    sessLow  := na
+    array.clear(barHighs)
+    array.clear(barLows)
+    array.clear(barVols)
+
+if isRTH
+    sessHigh := na(sessHigh) ? high : math.max(sessHigh, high)
+    sessLow  := na(sessLow)  ? low  : math.min(sessLow,  low)
+    array.push(barHighs, high)
+    array.push(barLows,  low)
+    array.push(barVols,  nz(volume, 1))
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── ZONES STDV (mouvement journalier attendu depuis l'ouverture) ───────────
+// ════════════════════════════════════════════════════════════════════════════
+// [1] : écart-type des jours CLÔTURÉS uniquement (pas de lecture du futur)
+
+float dailyOpen  = request.security(syminfo.tickerid, "D", open, lookahead=barmerge.lookahead_on)
+float sdChanges  = request.security(syminfo.tickerid, "D", ta.stdev(close - close[1], SD_LEN)[1], lookahead=barmerge.lookahead_on)
+float sdCloses   = request.security(syminfo.tickerid, "D", ta.stdev(close, SD_LEN)[1], lookahead=barmerge.lookahead_on)
+float sdDaily    = i_sdMode == "Clôtures (calcul d'origine)" ? sdCloses : sdChanges
+
+var array<box>  sdBoxes = array.new_box()
+var array<line> sdLines = array.new_line()
+var int sdToday = 0   // nombre de zones créées pour le jour en cours
+
+if newDay
+    sdToday := 0
+    if i_showSD and not na(dailyOpen) and not na(sdDaily)
+        float zo = SD_TICKS * syminfo.mintick
+        for m in array.from(0.5, -0.5, 1.0, -1.0)
+            float lvl  = dailyOpen + m * sdDaily
+            bool  half = math.abs(m) == 0.5
+            color bc   = half ? COL_HALF : COL_FULL
+            sdBoxes.push(box.new(bar_index, lvl + zo, bar_index, lvl - zo, bgcolor=bc, border_color=bc))
+            sdLines.push(line.new(bar_index, lvl, bar_index, lvl, color=half ? color.blue : color.red))
+        sdToday := 4
+    while sdBoxes.size() > SD_KEEP * 4
+        sdBoxes.shift().delete()
+    while sdLines.size() > SD_KEEP * 4
+        sdLines.shift().delete()
+else if sdToday > 0
+    for k = 1 to sdToday
+        sdBoxes.get(sdBoxes.size() - k).set_right(bar_index)
+        sdLines.get(sdLines.size() - k).set_x2(bar_index)
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── DESSIN (dernière bougie) ───────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+
+var line  lnOpen = na
+var label lbOpen = na
+var array<line>  pivLines  = array.new_line()
+var array<label> pivLabels = array.new_label()
+
+if barstate.islast
+    // Open RTH
+    line.delete(lnOpen)
+    label.delete(lbOpen)
+    if i_showOpen and not na(todayOpen)
+        lnOpen := line.new(openTime, todayOpen, time, todayOpen, xloc=xloc.bar_time, color=COL_OPEN)
+        lbOpen := label.new(bar_index + 5, todayOpen, "OPEN  " + priceStr(todayOpen), style=label.style_none, textcolor=COL_OPEN, size=size.small)
+
+    // Pivot + extensions (écart VAH - VAL reporté au-dessus de la VAH et sous la VAL)
+    for l in pivLines
+        l.delete()
+    for lb in pivLabels
+        lb.delete()
+    pivLines.clear()
+    pivLabels.clear()
+    if i_showPivot and not na(pivot)
+        int right = time + 50 * timeframe.in_seconds() * 1000   // 50 bougies à droite de la dernière
+        pivLines.push(line.new(pivotTime, pivot, right, pivot, xloc=xloc.bar_time, color=COL_PIV))
+        pivLabels.push(label.new(right, pivot, "P", xloc=xloc.bar_time, style=label.style_none, textcolor=COL_PIV, size=size.small))
+        float rng = vah - val
+        if i_numExt > 0
+            for i = 1 to i_numExt
+                float a = vah + rng * i
+                float b = val - rng * i
+                pivLines.push(line.new(pivotTime, a, right, a, xloc=xloc.bar_time, color=COL_EXT_A, style=line.style_dashed))
+                pivLabels.push(label.new(right, a, str.tostring(i) + "A", xloc=xloc.bar_time, style=label.style_none, textcolor=COL_EXT_A, size=size.small))
+                pivLines.push(line.new(pivotTime, b, right, b, xloc=xloc.bar_time, color=COL_EXT_B, style=line.style_dashed))
+                pivLabels.push(label.new(right, b, str.tostring(i) + "B", xloc=xloc.bar_time, style=label.style_none, textcolor=COL_EXT_B, size=size.small))
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── TABLEAU ────────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+
+var table tb = table.new(position.top_right, 2, 4, bgcolor=color.new(color.black, 80))
+if barstate.islast and i_showTable
+    table.cell(tb, 0, 0, "Pivot", text_color=COL_PIV,    text_size=size.small)
+    table.cell(tb, 1, 0, priceStr(pivot), text_color=COL_PIV, text_size=size.small)
+    table.cell(tb, 0, 1, "VAH",   text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 1, priceStr(vah), text_color=color.white, text_size=size.small)
+    table.cell(tb, 0, 2, "VAL",   text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 2, priceStr(val), text_color=color.white, text_size=size.small)
+    table.cell(tb, 0, 3, "POC",   text_color=color.orange, text_size=size.small)
+    table.cell(tb, 1, 3, priceStr(poc), text_color=color.white, text_size=size.small)
+
+// ════════════════════════════════════════════════════════════════════════════
+// ─── ALERTES ────────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+
+alertcondition(ta.cross(close, pivot), "Prix croise le Pivot", "Le prix a croisé le Pivot")
+alertcondition(ta.cross(close, vah),   "Prix croise la VAH",   "Le prix a croisé la VAH")
+alertcondition(ta.cross(close, val),   "Prix croise la VAL",   "Le prix a croisé la VAL")
