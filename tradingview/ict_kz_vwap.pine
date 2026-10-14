@@ -6,12 +6,8 @@
 //   - périodes précédentes = niveaux « VWAP précédent » à leur vraie place, effacés proprement
 //     (avant : lignes infinies recréées à chaque tick)
 //   - moins de bandes affichées par défaut (1 et 2), les autres activables
-//   - bandes en couleurs fixes (TradingView compte double une couleur réglable : limite de 64 dépassée).
-//     Couleur d'une BANDE : onglet « Style ». Ligne VWAP centrale : onglet « Paramètres ».
-//   - Weekly / Monthly calculés sur des bougies 30 min / 4 h : en 1 min, l'historique ne remonte pas assez
-//     loin et le VWAP démarrait en plein milieu de la semaine ou du mois (valeur fausse).
-//   - la 1re période coupée au début du graphique n'est plus affichée (valeur fausse).
-//   - textes et lignes ICT en gris par défaut (noir = invisible sur fond sombre).
+//   - couleurs des courbes VWAP fixes (TradingView compte double une couleur réglable : limite de 64 dépassée).
+//     Pour changer la couleur d'une BANDE : onglet « Style ». La ligne VWAP centrale se règle dans l'onglet « Paramètres ».
 
 //@version=6
 indicator("ICT KZ+VWAP + Absorption [TFO]", "ICT KZ+VWAP+ABS [TFO]", true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 500)
@@ -81,7 +77,6 @@ col_vW   = input.color(color.orange, "Couleur VWAP", inline = "vW0", group = g_V
 lw_vW    = input.int(2, "Épaisseur VWAP", 1, 4, inline = "vW1", group = g_VW)
 st_vW    = input.string("Ligne", "Style", options = ["Ligne", "Escalier", "Cercles"], inline = "vW1", group = g_VW)
 src_vW   = input.source(hlc3, "Source", group = g_VW, display = display.none)
-tf_cW    = input.timeframe("30", "Calculé sur des bougies de", group = g_VW, tooltip = "Pour avoir toute la semaine même en 1 min. Mise à jour à chaque clôture de ces bougies.")
 mode_vW  = input.string("Écart-type", "Calcul des bandes", options = ["Écart-type", "Pourcentage"], group = g_VW, display = display.none)
 on1_W = input.bool(true,  "", inline = "W1", group = g_VW)
 m1_W  = input.float(1.0, "Bande", step = 0.25, minval = 0, inline = "W1", group = g_VW, display = display.none)
@@ -100,7 +95,6 @@ col_vM   = input.color(color.fuchsia, "Couleur VWAP", inline = "vM0", group = g_
 lw_vM    = input.int(2, "Épaisseur VWAP", 1, 4, inline = "vM1", group = g_VM)
 st_vM    = input.string("Ligne", "Style", options = ["Ligne", "Escalier", "Cercles"], inline = "vM1", group = g_VM)
 src_vM   = input.source(hlc3, "Source", group = g_VM, display = display.none)
-tf_cM    = input.timeframe("240", "Calculé sur des bougies de", group = g_VM, tooltip = "Pour avoir tout le mois même en 1 min. Mise à jour à chaque clôture de ces bougies.")
 mode_vM  = input.string("Écart-type", "Calcul des bandes", options = ["Écart-type", "Pourcentage"], group = g_VM, display = display.none)
 on1_M = input.bool(true,  "", inline = "M1", group = g_VM)
 m1_M  = input.float(1.0, "Bande", step = 0.25, minval = 0, inline = "M1", group = g_VM, display = display.none)
@@ -123,7 +117,7 @@ max_days        = input.int(3, "Session Drawing Limit", 1, tooltip = "Only this 
 tf_limit        = input.timeframe("30", "Timeframe Limit", tooltip = "Drawings will not appear on timeframes greater than or equal to this", group = g_SETTINGS)
 gmt_tz          = input.string('America/New_York', "Timezone", options = ['America/New_York','GMT-12','GMT-11','GMT-10','GMT-9','GMT-8','GMT-7','GMT-6','GMT-5','GMT-4','GMT-3','GMT-2','GMT-1','GMT+0','GMT+1','GMT+2','GMT+3','GMT+4','GMT+5','GMT+6','GMT+7','GMT+8','GMT+9','GMT+10','GMT+11','GMT+12','GMT+13','GMT+14'], tooltip = "Note GMT is not adjusted to reflect Daylight Saving Time changes", group = g_SETTINGS)
 lbl_size        = get_size(input.string('Normal', "Label Size", options = ['Auto', 'Tiny', 'Small', 'Normal', 'Large', 'Huge'], tooltip = "The size of all labels", group = g_SETTINGS))
-txt_color       = input.color(color.gray, "Text Color", tooltip = "The color of all label and table text", group = g_SETTINGS)
+txt_color       = input.color(color.black, "Text Color", tooltip = "The color of all label and table text", group = g_SETTINGS)
 use_cutoff      = input.bool(false, "Drawing Cutoff Time", inline = "CO", tooltip = "When enabled, all pivots and open price lines will stop extending at this time", group = g_SETTINGS)
 cutoff          = input.session("1800-1801", "", inline = "CO", group = g_SETTINGS)
 
@@ -228,42 +222,42 @@ open_unlimited = input.bool(false, "Unlimited", group = g_OPEN)
 use_h1   = input.bool(false, "", inline = "H1", group = g_OPEN)
 h1_text  = input.string("True Day Open", "", inline = "H1", group = g_OPEN)
 h1       = input.session("0000-0001", "", inline = "H1", group = g_OPEN)
-h1_color = input.color(color.gray, "", inline = "H1", group = g_OPEN)
+h1_color = input.color(color.black, "", inline = "H1", group = g_OPEN)
 
 use_h2   = input.bool(false, "", inline = "H2", group = g_OPEN)
 h2_text  = input.string("06:00", "", inline = "H2", group = g_OPEN)
 h2       = input.session("0600-0601", "", inline = "H2", group = g_OPEN)
-h2_color = input.color(color.gray, "", inline = "H2", group = g_OPEN)
+h2_color = input.color(color.black, "", inline = "H2", group = g_OPEN)
 
 use_h3   = input.bool(false, "", inline = "H3", group = g_OPEN)
 h3_text  = input.string("10:00", "", inline = "H3", group = g_OPEN)
 h3       = input.session("1000-1001", "", inline = "H3", group = g_OPEN)
-h3_color = input.color(color.gray, "", inline = "H3", group = g_OPEN)
+h3_color = input.color(color.black, "", inline = "H3", group = g_OPEN)
 
 use_h4   = input.bool(false, "", inline = "H4", group = g_OPEN)
 h4_text  = input.string("14:00", "", inline = "H4", group = g_OPEN)
 h4       = input.session("1400-1401", "", inline = "H4", group = g_OPEN)
-h4_color = input.color(color.gray, "", inline = "H4", group = g_OPEN)
+h4_color = input.color(color.black, "", inline = "H4", group = g_OPEN)
 
 use_h5   = input.bool(false, "", inline = "H5", group = g_OPEN)
 h5_text  = input.string("00:00", "", inline = "H5", group = g_OPEN)
 h5       = input.session("0000-0001", "", inline = "H5", group = g_OPEN)
-h5_color = input.color(color.gray, "", inline = "H5", group = g_OPEN)
+h5_color = input.color(color.black, "", inline = "H5", group = g_OPEN)
 
 use_h6   = input.bool(false, "", inline = "H6", group = g_OPEN)
 h6_text  = input.string("00:00", "", inline = "H6", group = g_OPEN)
 h6       = input.session("0000-0001", "", inline = "H6", group = g_OPEN)
-h6_color = input.color(color.gray, "", inline = "H6", group = g_OPEN)
+h6_color = input.color(color.black, "", inline = "H6", group = g_OPEN)
 
 use_h7   = input.bool(false, "", inline = "H7", group = g_OPEN)
 h7_text  = input.string("00:00", "", inline = "H7", group = g_OPEN)
 h7       = input.session("0000-0001", "", inline = "H7", group = g_OPEN)
-h7_color = input.color(color.gray, "", inline = "H7", group = g_OPEN)
+h7_color = input.color(color.black, "", inline = "H7", group = g_OPEN)
 
 use_h8   = input.bool(false, "", inline = "H8", group = g_OPEN)
 h8_text  = input.string("00:00", "", inline = "H8", group = g_OPEN)
 h8       = input.session("0000-0001", "", inline = "H8", group = g_OPEN)
-h8_color = input.color(color.gray, "", inline = "H8", group = g_OPEN)
+h8_color = input.color(color.black, "", inline = "H8", group = g_OPEN)
 
 hz_style = get_line_type(input.string('Dotted', "Style", options = ['Solid', 'Dotted', 'Dashed'], inline = "H0", group = g_OPEN))
 hz_width = input.int(1, "", inline = "H0", group = g_OPEN)
@@ -273,19 +267,19 @@ v_unlimited    = input.bool(false, "Unlimited", group = g_VERTICAL)
 
 use_v1   = input.bool(false, "", inline = "V1", group = g_VERTICAL)
 v1       = input.session("0000-0001", "", inline = "V1", group = g_VERTICAL)
-v1_color = input.color(color.gray, "", inline = "V1", group = g_VERTICAL)
+v1_color = input.color(color.black, "", inline = "V1", group = g_VERTICAL)
 
 use_v2   = input.bool(false, "", inline = "V2", group = g_VERTICAL)
 v2       = input.session("0800-0801", "", inline = "V2", group = g_VERTICAL)
-v2_color = input.color(color.gray, "", inline = "V2", group = g_VERTICAL)
+v2_color = input.color(color.black, "", inline = "V2", group = g_VERTICAL)
 
 use_v3   = input.bool(false, "", inline = "V3", group = g_VERTICAL)
 v3       = input.session("1000-1001", "", inline = "V3", group = g_VERTICAL)
-v3_color = input.color(color.gray, "", inline = "V3", group = g_VERTICAL)
+v3_color = input.color(color.black, "", inline = "V3", group = g_VERTICAL)
 
 use_v4   = input.bool(false, "", inline = "V4", group = g_VERTICAL)
 v4       = input.session("1200-1201", "", inline = "V4", group = g_VERTICAL)
-v4_color = input.color(color.gray, "", inline = "V4", group = g_VERTICAL)
+v4_color = input.color(color.black, "", inline = "V4", group = g_VERTICAL)
 
 vl_style = get_line_type(input.string('Dotted', "Style", options = ['Solid', 'Dotted', 'Dashed'], inline = "V0", group = g_VERTICAL))
 vl_width = input.int(1, "", inline = "V0", group = g_VERTICAL)
@@ -317,48 +311,26 @@ newD = timeframe.change("D") or na(src_vD[1])
 newW = timeframe.change("W") or na(src_vW[1])
 newM = timeframe.change("M") or na(src_vM[1])
 
-// VWAP + écart-type pondéré par le volume, remis à zéro à chaque période (même calcul que ta.vwap).
-// « vu » : rien n'est renvoyé tant qu'un vrai début de période n'a pas été vu (la 1re période du
-// graphique est coupée, sa valeur serait fausse).
+// VWAP + écart-type pondéré par le volume, remis à zéro à chaque période (même calcul que ta.vwap)
 f_vwap(float src, bool reset, float wt) =>
     var float sw   = 0.0
     var float spv  = 0.0
     var float spv2 = 0.0
-    var bool  vu   = false
-    bool  prevOk   = not na(src[1])
     if reset
         sw   := 0.0
         spv  := 0.0
         spv2 := 0.0
-        vu   := vu or prevOk
     if not na(src)
         sw   += wt
         spv  += src * wt
         spv2 += src * src * wt
-    float v  = sw > 0 and vu ? spv / sw : na
-    float sd = sw > 0 and vu ? math.sqrt(math.max(0.0, spv2 / sw - v * v)) : na
+    float v  = sw > 0 ? spv / sw : na
+    float sd = sw > 0 ? math.sqrt(math.max(0.0, spv2 / sw - v * v)) : na
     [v, sd]
 
-// même calcul dans le contexte d'une autre unité de temps, valeur de la DERNIÈRE bougie fermée (pas de repaint)
-f_vwap_tf(float src, string anchor) =>
-    bool  rst = timeframe.change(anchor) or na(src[1])
-    float wt  = ta.cum(nz(volume)) == 0 ? 1.0 : nz(volume)
-    [v, sd] = f_vwap(src, rst, wt)
-    [v[1], sd[1]]
-
-[vD, sdD]   = f_vwap(src_vD, newD, w)
-[vWl, sdWl] = f_vwap(src_vW, newW, w)
-[vMl, sdMl] = f_vwap(src_vM, newM, w)
-
-// Weekly / Monthly : sur des bougies plus grandes si le graphique est plus petit (historique complet)
-useW = timeframe.in_seconds() < timeframe.in_seconds(tf_cW)
-useM = timeframe.in_seconds() < timeframe.in_seconds(tf_cM)
-[vWh, sdWh] = request.security(syminfo.tickerid, useW ? tf_cW : timeframe.period, f_vwap_tf(src_vW, "W"), lookahead = barmerge.lookahead_on)
-[vMh, sdMh] = request.security(syminfo.tickerid, useM ? tf_cM : timeframe.period, f_vwap_tf(src_vM, "M"), lookahead = barmerge.lookahead_on)
-vW  = useW ? vWh  : vWl
-sdW = useW ? sdWh : sdWl
-vM  = useM ? vMh  : vMl
-sdM = useM ? sdMh : sdMl
+[vD, sdD] = f_vwap(src_vD, newD, w)
+[vW, sdW] = f_vwap(src_vW, newW, w)
+[vM, sdM] = f_vwap(src_vM, newM, w)
 
 // unité des bandes : écart-type, ou 1 % du VWAP
 f_basis(float v, float sd, string mode) =>
