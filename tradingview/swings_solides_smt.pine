@@ -1,34 +1,48 @@
 //@version=6
 // =====================================================================================================
-// SWINGS SOLIDES + DIVERGENCE SMT (pensé pour WTI / Brent, marche sur n'importe quelle paire)
+// SWINGS SOLIDES + DIVERGENCE SMT EN DIRECT (pensé pour WTI / Brent, marche sur n'importe quelle paire)
 //
-// UN SWING SOLIDE : le prix doit repartir d'au moins « Taille mini × ATR » depuis son extrême pour que
-// le sommet (ou le creux) soit validé. Les petites oscillations plus petites que ça sont ignorées.
-//   - Bougies cyan  = on est dans un swing haussier validé
-//   - Bougies roses = on est dans un swing baissier validé
-//   - SH / SL       = sommet / creux de swing, posé sur la vraie bougie extrême
-//   - SMT           = divergence : ce marché fait un plus haut (ou plus bas) que le marché de
-//                     référence ne confirme pas, ou l'inverse
+// 1) SWINGS SOLIDES : un sommet (ou un creux) n'est validé que quand le prix en est reparti d'au moins
+//    « Taille mini × ATR ». Les petites oscillations sont ignorées. Repères SH / SL, bougies colorées.
+//    Ces repères apparaissent APRÈS coup (il faut attendre le retour du prix) : ils servent de NIVEAUX.
 //
-// AUCUN REPAINT : un sommet n'est validé qu'une fois que le prix est reparti de la taille mini. Le
-// repère SH/SL apparaît donc à ce moment-là (quelques bougies après le vrai sommet), puis ne bouge plus.
+// 2) SMT EN DIRECT : le signal apparaît À LA CLÔTURE DE LA BOUGIE où la divergence se produit, sans
+//    attendre la suite. Donc il montre aussi celles qui échouent.
+//      SMT ▼ : ce marché dépasse son dernier sommet solide et la référence NON (ou l'inverse)
+//      SMT ▲ : ce marché casse son dernier creux solide et la référence NON (ou l'inverse)
+//    Un seul signal par niveau.
 //
-// RÉGLAGE DE LA TAILLE (pétrole en 1 min) : 3 = swings intraday ; 5 = gros swings ; 2 = plus nerveux.
+// 3) BILAN HONNÊTE : chaque signal est suivi comme un trade
+//      entrée = clôture de la bougie du signal
+//      stop   = au-delà de l'extrême (plus haut du balayage ou niveau non cassé) + marge
+//      objectif = « Objectif en R » fois le risque
+//    ✓ si l'objectif est touché avant le stop, ✗ sinon (si les deux dans la même bougie : ✗).
+//    Le tableau en haut à droite compte TOUS les signaux, gagnants et perdants.
+//    Avec un objectif de 2 R, il faut gagner plus de 33 % des signaux pour être rentable.
 // =====================================================================================================
 indicator("Swings solides + SMT", shorttitle = "Swings SMT", overlay = true,
      max_lines_count = 500, max_labels_count = 500)
 
-string refSym   = input.symbol("TVC:UKOIL", "Marché de référence (pour la divergence)",
+string G1 = "Swings"
+string refSym   = input.symbol("TVC:UKOIL", "Marché de référence (pour la divergence)", group = G1,
      tooltip = "Sur un graphique WTI (TVC:USOIL, MCL1!, CL1!) : TVC:UKOIL ou NYMEX:BZ1!. Sur un graphique Brent : TVC:USOIL.")
-int    atrLen   = input.int(14, "ATR (période)", minval = 1)
-float  mult     = input.float(3.0, "Taille mini d'un swing (× ATR)", minval = 0.5, step = 0.5,
-     tooltip = "Plus grand = moins de swings, mais plus solides.")
-bool   colBars  = input.bool(true, "Colorer les bougies selon le swing en cours")
-bool   showZz   = input.bool(true, "Tracer les lignes entre sommets et creux")
-bool   showSmt  = input.bool(true, "Afficher les divergences SMT")
-color  colUp    = input.color(#26C6DA, "Couleur swing haussier")
-color  colDn    = input.color(#F06292, "Couleur swing baissier")
-color  colSmt   = input.color(#FFA726, "Couleur SMT")
+int    atrLen   = input.int(14, "ATR (période)", minval = 1, group = G1)
+float  mult     = input.float(3.0, "Taille mini d'un swing (× ATR)", minval = 0.5, step = 0.5, group = G1,
+     tooltip = "Plus grand = moins de niveaux, mais plus solides.")
+
+string G2 = "Signal SMT et bilan"
+float  rr       = input.float(2.0, "Objectif (en R)", minval = 0.5, step = 0.5, group = G2)
+float  bufAtr   = input.float(0.1, "Marge du stop (× ATR)", minval = 0.0, step = 0.05, group = G2)
+
+string G3 = "Affichage"
+bool   colBars  = input.bool(false, "Colorer les bougies selon le swing en cours", group = G3,
+     tooltip = "Laisser décoché si tu utilises déjà RSI Bars pour colorer les bougies.")
+bool   showZz   = input.bool(true, "Tracer les lignes entre sommets et creux", group = G3)
+bool   showPiv  = input.bool(true, "Afficher SH / SL", group = G3)
+bool   showTab  = input.bool(true, "Afficher le bilan", group = G3)
+color  colUp    = input.color(#26C6DA, "Couleur swing haussier", group = G3)
+color  colDn    = input.color(#F06292, "Couleur swing baissier", group = G3)
+color  colSmt   = input.color(#FFA726, "Couleur SMT en cours", group = G3)
 
 // ------------------------------------------------------------------------------ données de référence
 [rH, rL] = request.security(refSym, timeframe.period, [high, low])
@@ -38,21 +52,23 @@ fmax(float a, float b) =>
 fmin(float a, float b) =>
     na(a) ? b : na(b) ? a : math.min(a, b)
 
-float thr = mult * ta.atr(atrLen)
+float atr = ta.atr(atrLen)
+float thr = mult * atr
+float buf = bufAtr * nz(atr)
 
 // ------------------------------------------------------------------------------------------- état
-// dir = 1 : swing haussier en cours (on suit le plus haut) ; -1 : swing baissier (on suit le plus bas)
 var int   dir      = 0
-var float ext      = na   // extrême du swing en cours (plus haut si dir = 1, plus bas si dir = -1)
+var float ext      = na
 var int   extBar   = na
-var float refExt   = na   // extrême du marché de référence sur ce swing
-var float cand     = na   // extrême opposé depuis ext (futur point de départ du swing suivant)
+var float refExt   = na
+var float cand     = na
 var int   candBar  = na
 var float refCand  = na
-var float after    = na   // extrême dans le sens du swing depuis cand
+var float after    = na
 var int   afterBar = na
 var float refAfter = na
 
+// derniers niveaux solides (ce marché et la référence)
 var float prevSH    = na
 var float prevRefSH = na
 var float prevSL    = na
@@ -60,11 +76,87 @@ var float prevRefSL = na
 var int   pivBar    = na
 var float pivPx     = na
 
-bool newSH = false
-bool newSL = false
-bool smtSH = false
-bool smtSL = false
+// pour chaque niveau : qui l'a déjà cassé, et le signal a-t-il déjà été donné
+var bool shC = false
+var bool shR = false
+var bool shDone = false
+var bool slC = false
+var bool slR = false
+var bool slDone = false
 
+// signaux en cours de suivi
+var array<int>   tDir  = array.new<int>()
+var array<float> tStop = array.new<float>()
+var array<float> tTgt  = array.new<float>()
+var array<label> tLab  = array.new<label>()
+var int   nWin  = 0
+var int   nLoss = 0
+
+// --------------------------------------------- 1) résultat des signaux précédents (sur cette bougie)
+int nOpen = array.size(tDir)
+if nOpen > 0
+    for i = nOpen - 1 to 0
+        int   d  = array.get(tDir, i)
+        float st = array.get(tStop, i)
+        float tg = array.get(tTgt, i)
+        bool  stopTouche = d < 0 ? high >= st : low <= st
+        bool  tgtTouche  = d < 0 ? low <= tg : high >= tg
+        if stopTouche or tgtTouche
+            label lb = array.get(tLab, i)
+            string fl = d < 0 ? "SMT ▼" : "SMT ▲"
+            if stopTouche
+                nLoss += 1
+                label.set_text(lb, fl + " ✗")
+                label.set_color(lb, color.new(color.red, 10))
+                label.set_textcolor(lb, color.white)
+            else
+                nWin += 1
+                label.set_text(lb, fl + " ✓")
+                label.set_color(lb, color.new(color.green, 10))
+                label.set_textcolor(lb, color.white)
+            array.remove(tDir, i)
+            array.remove(tStop, i)
+            array.remove(tTgt, i)
+            array.remove(tLab, i)
+
+// ------------------------------------- 2) divergence EN DIRECT contre les derniers niveaux solides
+bool sigDn = false
+bool sigUp = false
+if not na(prevSH) and not na(prevRefSH) and not na(rH) and not shDone
+    bool cB = high > prevSH
+    bool rB = rH > prevRefSH
+    if (cB and not rB and not shR) or (rB and not cB and not shC)
+        sigDn := true
+        shDone := true
+    shC := shC or cB
+    shR := shR or rB
+if not na(prevSL) and not na(prevRefSL) and not na(rL) and not slDone
+    bool cB = low < prevSL
+    bool rB = rL < prevRefSL
+    if (cB and not rB and not slR) or (rB and not cB and not slC)
+        sigUp := true
+        slDone := true
+    slC := slC or cB
+    slR := slR or rB
+
+if sigDn
+    float st = math.max(high, prevSH) + buf
+    float rk = st - close
+    array.push(tDir, -1)
+    array.push(tStop, st)
+    array.push(tTgt, close - rr * rk)
+    array.push(tLab, label.new(bar_index, high, "SMT ▼", style = label.style_label_down, color = colSmt,
+         textcolor = color.black, size = size.normal))
+if sigUp
+    float st = math.min(low, prevSL) - buf
+    float rk = close - st
+    array.push(tDir, 1)
+    array.push(tStop, st)
+    array.push(tTgt, close + rr * rk)
+    array.push(tLab, label.new(bar_index, low, "SMT ▲", style = label.style_label_up, color = colSmt,
+         textcolor = color.black, size = size.normal))
+
+// ------------------------------------------------------------- 3) swings solides (niveaux, après coup)
 if dir == 0 and not na(thr)
     dir      := 1
     ext      := high
@@ -102,23 +194,18 @@ else if dir == 1
         refCand  := fmin(refCand, rL)
     refExt := fmax(refExt, rH)
     if close <= ext - thr
-        // sommet de swing validé
-        newSH := true
-        smtSH := not na(prevSH) and not na(refExt) and not na(prevRefSH) and
-             ((ext > prevSH and refExt <= prevRefSH) or (ext <= prevSH and refExt > prevRefSH))
         if showZz
             line.new(pivBar, pivPx, extBar, ext, color = color.new(colUp, 30), width = 2)
-        if smtSH and showSmt
-            label.new(extBar, ext, "SMT ▼", style = label.style_label_down, color = colSmt,
-                 textcolor = color.black, size = size.normal)
-        else
-            label.new(extBar, ext, "SH", style = label.style_label_down, color = color.new(colDn, 20),
+        if showPiv
+            label.new(extBar, ext, "SH", style = label.style_label_down, color = color.new(colDn, 40),
                  textcolor = color.white, size = size.tiny)
         prevSH    := ext
         prevRefSH := refExt
+        shC       := false
+        shR       := false
+        shDone    := false
         pivBar    := extBar
         pivPx     := ext
-        // départ du swing baissier
         dir      := -1
         ext      := cand
         extBar   := candBar
@@ -153,23 +240,18 @@ else if dir == -1
         refCand  := fmax(refCand, rH)
     refExt := fmin(refExt, rL)
     if close >= ext + thr
-        // creux de swing validé
-        newSL := true
-        smtSL := not na(prevSL) and not na(refExt) and not na(prevRefSL) and
-             ((ext < prevSL and refExt >= prevRefSL) or (ext >= prevSL and refExt < prevRefSL))
         if showZz
             line.new(pivBar, pivPx, extBar, ext, color = color.new(colDn, 30), width = 2)
-        if smtSL and showSmt
-            label.new(extBar, ext, "SMT ▲", style = label.style_label_up, color = colSmt,
-                 textcolor = color.black, size = size.normal)
-        else
-            label.new(extBar, ext, "SL", style = label.style_label_up, color = color.new(colUp, 20),
+        if showPiv
+            label.new(extBar, ext, "SL", style = label.style_label_up, color = color.new(colUp, 40),
                  textcolor = color.black, size = size.tiny)
         prevSL    := ext
         prevRefSL := refExt
+        slC       := false
+        slR       := false
+        slDone    := false
         pivBar    := extBar
         pivPx     := ext
-        // départ du swing haussier
         dir      := 1
         ext      := cand
         extBar   := candBar
@@ -184,15 +266,27 @@ else if dir == -1
 // ---------------------------------------------------------------------------------------- affichage
 barcolor(colBars ? (dir == 1 ? colUp : dir == -1 ? colDn : na) : na)
 
-// ligne pointillée du swing en cours, du dernier pivot validé jusqu'à l'extrême actuel
-var line enCours = na
-if showZz and barstate.islast and not na(pivBar)
-    line.delete(enCours)
-    enCours := line.new(pivBar, pivPx, extBar, ext, color = color.gray, style = line.style_dashed)
+// niveaux solides actuels : c'est là que le prochain SMT peut se produire
+plot(prevSH, "Dernier sommet solide", color = color.new(colDn, 50), style = plot.style_stepline)
+plot(prevSL, "Dernier creux solide", color = color.new(colUp, 50), style = plot.style_stepline)
 
-if newSH
-    alert(smtSH ? "SMT baissier : sommet non confirmé par " + refSym : "Sommet de swing validé",
-         alert.freq_once_per_bar_close)
-if newSL
-    alert(smtSL ? "SMT haussier : creux non confirmé par " + refSym : "Creux de swing validé",
-         alert.freq_once_per_bar_close)
+var table tb = table.new(position.top_right, 2, 5, bgcolor = color.new(color.black, 30), border_width = 1)
+if showTab and barstate.islast
+    int   nTot = nWin + nLoss
+    float wr   = nTot > 0 ? 100.0 * nWin / nTot : na
+    float espR = nTot > 0 ? (nWin * rr - nLoss) / nTot : na
+    table.cell(tb, 0, 0, "SMT (tous)", text_color = color.white)
+    table.cell(tb, 1, 0, str.tostring(nTot) + " terminés, " + str.tostring(array.size(tDir)) + " en cours", text_color = color.white)
+    table.cell(tb, 0, 1, "Gagnés ✓", text_color = color.white)
+    table.cell(tb, 1, 1, str.tostring(nWin), text_color = color.lime)
+    table.cell(tb, 0, 2, "Perdus ✗", text_color = color.white)
+    table.cell(tb, 1, 2, str.tostring(nLoss), text_color = color.red)
+    table.cell(tb, 0, 3, "Réussite", text_color = color.white)
+    table.cell(tb, 1, 3, na(wr) ? "-" : str.tostring(wr, "#.#") + " % (seuil " + str.tostring(100.0 / (1 + rr), "#") + " %)", text_color = color.white)
+    table.cell(tb, 0, 4, "Gain moyen", text_color = color.white)
+    table.cell(tb, 1, 4, na(espR) ? "-" : str.tostring(espR, "+#.##;-#.##") + " R par signal", text_color = na(espR) ? color.white : espR > 0 ? color.lime : color.red)
+
+if sigDn
+    alert("SMT ▼ en direct : " + syminfo.ticker + " / " + refSym + " (sommet non confirmé)", alert.freq_once_per_bar_close)
+if sigUp
+    alert("SMT ▲ en direct : " + syminfo.ticker + " / " + refSym + " (creux non confirmé)", alert.freq_once_per_bar_close)
