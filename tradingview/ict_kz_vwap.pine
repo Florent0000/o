@@ -304,25 +304,49 @@ abs_col_twz   = input.color(color.new(color.white, 50), "Couleur Tweezer",    gr
 //  ta.vwap appelé à chaque bougie, sans condition (sinon il se fige).
 //  Reset au début de chaque journée / semaine / mois de trading (comme MotiveWave).
 // ============================================================
-cumVolume = ta.cum(volume)
-if barstate.islast and cumVolume == 0
-    runtime.error("No volume is provided by the data vendor.")
+// Pas de volume (ex. TVC:USOIL, symboles CFD) : AVANT, le script s'arrêtait en erreur et plus rien ne
+// s'affichait, killzones comprises. MAINTENANT : chaque bougie compte pour 1 (moyenne simple) et un
+// avertissement s'affiche. Pour un vrai VWAP comme MotiveWave, utilise un contrat future (CL1!, MCL1!).
+noVol = ta.cum(nz(volume)) == 0
+w     = noVol ? 1.0 : nz(volume)
 
 newD = timeframe.change("D") or na(src_vD[1])
 newW = timeframe.change("W") or na(src_vW[1])
 newM = timeframe.change("M") or na(src_vM[1])
 
-[vD, upD, _] = ta.vwap(src_vD, newD, 1)
-[vW, upW, _] = ta.vwap(src_vW, newW, 1)
-[vM, upM, _] = ta.vwap(src_vM, newM, 1)
+// VWAP + écart-type pondéré par le volume, remis à zéro à chaque période (même calcul que ta.vwap)
+f_vwap(float src, bool reset, float wt) =>
+    var float sw   = 0.0
+    var float spv  = 0.0
+    var float spv2 = 0.0
+    if reset
+        sw   := 0.0
+        spv  := 0.0
+        spv2 := 0.0
+    if not na(src)
+        sw   += wt
+        spv  += src * wt
+        spv2 += src * src * wt
+    float v  = sw > 0 ? spv / sw : na
+    float sd = sw > 0 ? math.sqrt(math.max(0.0, spv2 / sw - v * v)) : na
+    [v, sd]
+
+[vD, sdD] = f_vwap(src_vD, newD, w)
+[vW, sdW] = f_vwap(src_vW, newW, w)
+[vM, sdM] = f_vwap(src_vM, newM, w)
 
 // unité des bandes : écart-type, ou 1 % du VWAP
-f_basis(float v, float up, string mode) =>
-    mode == "Écart-type" ? math.max(0.0, up - v) : v * 0.01
+f_basis(float v, float sd, string mode) =>
+    mode == "Écart-type" ? sd : v * 0.01
 
-bD = f_basis(vD, upD, mode_vD)
-bW = f_basis(vW, upW, mode_vW)
-bM = f_basis(vM, upM, mode_vM)
+bD = f_basis(vD, sdD, mode_vD)
+bW = f_basis(vW, sdW, mode_vW)
+bM = f_basis(vM, sdM, mode_vM)
+
+var label noVolLbl = na
+if barstate.islast and show_vwap
+    label.delete(noVolLbl)
+    noVolLbl := noVol ? label.new(bar_index, high, "Pas de volume sur ce symbole : VWAP sans volume.\nUtilise CL1! ou MCL1! pour le vrai VWAP.", style = label.style_label_lower_left, color = color.new(color.orange, 20), textcolor = color.black, size = size.small) : na
 
 // « Masquer en 1D et plus » : on vide les valeurs (l'affichage d'un plot ne peut dépendre que des réglages)
 hideD = hide_vD and timeframe.isdwm
