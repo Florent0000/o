@@ -1,0 +1,548 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "sm-nuage-buy",
+      "settings": {
+        "default_values": "39-40",
+        "per_pair": false,
+        "promo_text": "",
+        "launch_badge": "",
+        "perk_1": "Livraison offerte dès 39 €"
+      },
+      "blocks": {
+        "row_1": {
+          "type": "row",
+          "settings": {
+            "title": "Description",
+            "content": "<p>Une semelle en mousse épaisse et alvéolée qui amortit chaque pas. Elle se glisse à la place de la semelle d'origine de vos chaussures.</p>",
+            "open": true,
+            "use_description": false
+          }
+        },
+        "row_2": {
+          "type": "row",
+          "settings": {
+            "title": "Dans quelles chaussures ?",
+            "content": "<p>Baskets, bottes, chaussures de ville ou de travail : retirez la semelle d'origine si elle s'enlève, puis glissez la Semelle Nuage à sa place.</p>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_3": {
+          "type": "row",
+          "settings": {
+            "title": "Entretien",
+            "content": "<p>Lavez-la à la main à l'eau tiède savonneuse, puis laissez-la sécher à l'air libre, loin d'un radiateur.</p>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_4": {
+          "type": "row",
+          "settings": {
+            "title": "Livraison et retours",
+            "content": "<p>Les délais et frais de livraison s'affichent au moment de payer. Vous avez 30 jours pour essayer : si elle ne vous convient pas, on vous rembourse.</p>",
+            "open": false,
+            "use_description": false
+          }
+        }
+      },
+      "block_order": [
+        "row_1",
+        "row_2",
+        "row_3",
+        "row_4"
+      ]
+    },
+    "testimonials": {
+      "type": "sm-testimonials",
+      "settings": {
+        "heading": "Témoignages",
+        "note": ""
+      },
+      "blocks": {
+        "temoignage_1": {
+          "type": "temoignage",
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false,
+            "photo": "shopify://shop_images/heelo-temoin-4.jpg"
+          }
+        },
+        "temoignage_2": {
+          "type": "temoignage",
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false,
+            "photo": "shopify://shop_images/heelo-temoin-5.jpg"
+          }
+        },
+        "temoignage_3": {
+          "type": "temoignage",
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false,
+            "photo": "shopify://shop_images/heelo-temoin-6.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "temoignage_1",
+        "temoignage_2",
+        "temoignage_3"
+      ]
+    },
+    "ruban": {
+      "type": "sm-trust-bar",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "avantages": {
+      "type": "sm-features",
+      "settings": {},
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "title": "Moelleuse sous le doigt",
+            "text": "Une mousse épaisse qui s'enfonce en douceur puis reprend sa forme. Chaque pas est amorti.",
+            "image": "shopify://shop_images/heelo-avantage-1-moelleuse.jpg"
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "title": "Respire à chaque pas",
+            "text": "Des trous d'aération laissent passer l'air sous le pied, pour garder plus de fraîcheur dans la chaussure.",
+            "image": "shopify://shop_images/heelo-avantage-2-aeration.jpg"
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "title": "Garde sa forme",
+            "text": "Pliez-la, roulez-la : la mousse souple revient en place, jour après jour.",
+            "image": "shopify://shop_images/heelo-avantage-3-garde-sa-forme.jpg"
+          }
+        },
+        "card_4": {
+          "type": "card",
+          "settings": {
+            "title": "Facile à entretenir",
+            "text": "Un lavage à la main à l'eau tiède savonneuse, un séchage à l'air libre, et elle est prête.",
+            "image": "shopify://shop_images/heelo-avantage-4-lavable.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3",
+        "card_4"
+      ]
+    },
+    "semelle_usee": {
+      "type": "sm-worn",
+      "settings": {
+        "image": "shopify://shop_images/heelo-accroche-nuage.jpg",
+        "swap_image": "shopify://shop_images/heelo-nuage-panier.jpg"
+      },
+      "blocks": {
+        "sign_1": {
+          "type": "sign",
+          "settings": {
+            "text": "Debout toute la journée au travail"
+          }
+        },
+        "sign_2": {
+          "type": "sign",
+          "settings": {
+            "text": "Sur des sols durs : carrelage, béton, entrepôt"
+          }
+        },
+        "sign_3": {
+          "type": "sign",
+          "settings": {
+            "text": "Pendant les longues balades"
+          }
+        },
+        "sign_4": {
+          "type": "sign",
+          "settings": {
+            "text": "Dans des chaussures de ville un peu raides"
+          }
+        }
+      },
+      "block_order": [
+        "sign_1",
+        "sign_2",
+        "sign_3",
+        "sign_4"
+      ]
+    },
+    "comparatif": {
+      "type": "sm-comparison",
+      "settings": {
+        "us_image": "shopify://shop_images/heelo-nuage-panier.jpg"
+      },
+      "blocks": {
+        "row_1": {
+          "type": "row",
+          "settings": {
+            "label": "Mousse épaisse et moelleuse",
+            "us": true,
+            "c2": false,
+            "c3": false
+          }
+        },
+        "row_2": {
+          "type": "row",
+          "settings": {
+            "label": "Moulée sur votre pied",
+            "us": false,
+            "c2": false,
+            "c3": true
+          }
+        },
+        "row_3": {
+          "type": "row",
+          "settings": {
+            "label": "Sans rendez-vous ni ordonnance",
+            "us": true,
+            "c2": true,
+            "c3": false
+          }
+        },
+        "row_4": {
+          "type": "row",
+          "settings": {
+            "label": "Petit prix",
+            "us": true,
+            "c2": true,
+            "c3": false
+          }
+        },
+        "row_5": {
+          "type": "row",
+          "settings": {
+            "label": "Livrée chez vous",
+            "us": true,
+            "c2": false,
+            "c3": false
+          }
+        },
+        "row_6": {
+          "type": "row",
+          "settings": {
+            "label": "30 jours pour essayer",
+            "us": true,
+            "c2": false,
+            "c3": false
+          }
+        }
+      },
+      "block_order": [
+        "row_1",
+        "row_2",
+        "row_3",
+        "row_4",
+        "row_5",
+        "row_6"
+      ]
+    },
+    "avis": {
+      "type": "sm-reviews",
+      "settings": {
+        "btn_link": "/products/semelle-nuage"
+      },
+      "blocks": {
+        "text_1": {
+          "type": "text",
+          "settings": {
+            "stars": 5,
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
+        },
+        "video_2": {
+          "type": "video",
+          "settings": {
+            "poster": "shopify://shop_images/heelo-nuage-bottine.jpg"
+          }
+        },
+        "text_3": {
+          "type": "text",
+          "settings": {
+            "stars": 5,
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
+        },
+        "text_4": {
+          "type": "text",
+          "settings": {
+            "stars": 5,
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
+        }
+      },
+      "block_order": [
+        "text_1",
+        "video_2",
+        "text_3",
+        "text_4"
+      ]
+    },
+    "podologue": {
+      "type": "sm-expert",
+      "settings": {},
+      "disabled": true
+    },
+    "faq": {
+      "type": "sm-faq",
+      "settings": {},
+      "blocks": {
+        "qa_1": {
+          "type": "qa",
+          "settings": {
+            "question": "Dans quelles chaussures puis-je les mettre ?",
+            "answer": "<p>Dans la plupart des chaussures fermées : baskets, bottes, chaussures de ville ou de travail. Retirez la semelle d'origine si elle s'enlève, puis glissez la Semelle Nuage à sa place.</p>"
+          }
+        },
+        "qa_2": {
+          "type": "qa",
+          "settings": {
+            "question": "Comment choisir ma taille ?",
+            "answer": "<p>Prenez votre pointure habituelle. Si vous hésitez entre deux tailles, écrivez-nous avant de commander.</p>"
+          }
+        },
+        "qa_3": {
+          "type": "qa",
+          "settings": {
+            "question": "Comment les entretenir ?",
+            "answer": "<p>Lavez-les à la main à l'eau tiède savonneuse, puis laissez-les sécher à l'air libre, loin d'un radiateur.</p>"
+          }
+        },
+        "qa_4": {
+          "type": "qa",
+          "settings": {
+            "question": "Et si elles ne me conviennent pas ?",
+            "answer": "<p>Vous avez 30 jours pour les essayer. Si elles ne vous plaisent pas, contactez-nous et on vous rembourse.</p>"
+          }
+        },
+        "qa_5": {
+          "type": "qa",
+          "settings": {
+            "question": "Est-ce un produit médical ?",
+            "answer": "<p>Non. La Semelle Nuage est une semelle de confort, pas un dispositif médical. En cas de douleur, consultez un professionnel de santé.</p>"
+          }
+        },
+        "qa_6": {
+          "type": "qa",
+          "settings": {
+            "question": "Comment fonctionnent les packs ?",
+            "answer": "<p>Nos packs regroupent plusieurs produits pour moins cher que s'ils étaient achetés un par un. Par exemple, 2 paires de Semelle Nuage coûtent 49,90 € au lieu de 59,90 €. Vous choisissez la pointure de chaque paire. La livraison est offerte dès 39 € d'achat et le rouleau de massage est offert dès 69 €.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "qa_1",
+        "qa_2",
+        "qa_3",
+        "qa_4",
+        "qa_5",
+        "qa_6"
+      ]
+    },
+    "complements": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Pour aller avec",
+        "subheading": "Le reste de la boutique. Livraison offerte dès 39 € d'achat.",
+        "collection": "best-sellers",
+        "cards": "semelle-carbone||Best-seller|hp-card-carbone.jpg|\nclaquettes-comfort|Noir|Best-seller|hp-claquettes-c-noir-classique.jpg|hp-claquettes-m-noir-classique.jpg\ntongs-comfort|Noir||hp-tongs-c-noir.jpg|hp-tongs-m-noir.jpg\nclaquettes-comfort|Beige|Best-seller|hp-claquettes-c-beige-classique.jpg|hp-claquettes-m-beige-classique.jpg",
+        "all_link": "/collections/all"
+      }
+    },
+    "garantie": {
+      "type": "sm-guarantee",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "judgeme": {
+      "type": "sm-judgeme",
+      "settings": {
+        "heading": "Avis clients",
+        "color_bg": "#e4f0f6"
+      }
+    },
+    "lightbox": {
+      "type": "sm-lightbox",
+      "settings": {}
+    },
+    "packs": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "collection": "packs",
+        "cards": "",
+        "count": 4,
+        "quick_add": false,
+        "hover_image": false,
+        "tag_label": "",
+        "eyebrow": "",
+        "heading": "Économisez avec nos packs",
+        "subheading": "Plusieurs produits dans le même colis, pour moins cher. Livraison offerte dès 39 €.",
+        "all_label": "Voir la boutique",
+        "all_link": "/collections/all"
+      }
+    },
+    "visuel_nano": {
+      "type": "sm-explain",
+      "settings": {
+        "image_side": "right",
+        "eyebrow": "Au quotidien",
+        "heading": "Du matin au soir, dans vos chaussures.",
+        "text": "",
+        "image": "shopify://shop_images/heelo-9-nuage-travail_jpg.jpg"
+      },
+      "blocks": {
+        "point_1": {
+          "type": "point",
+          "settings": {
+            "icon": "feather",
+            "title": "Légère et moelleuse",
+            "text": ""
+          }
+        },
+        "point_2": {
+          "type": "point",
+          "settings": {
+            "icon": "size",
+            "title": "Se glisse à la place de la semelle",
+            "text": ""
+          }
+        },
+        "point_3": {
+          "type": "point",
+          "settings": {
+            "icon": "clock",
+            "title": "Pour toute la journée",
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "point_1",
+        "point_2",
+        "point_3"
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "packs",
+    "testimonials",
+    "ruban",
+    "visuel_nano",
+    "avantages",
+    "semelle_usee",
+    "comparatif",
+    "avis",
+    "judgeme",
+    "podologue",
+    "faq",
+    "complements",
+    "garantie",
+    "lightbox"
+  ]
+}
