@@ -1,0 +1,236 @@
+{%- liquid
+  assign fh = section.settings.font_head
+  assign fb = section.settings.font_body
+  assign fb7 = fb | font_modify: 'weight', '700'
+  assign gift = section.settings.gift_product
+  if gift == blank
+    assign gift = all_products['rouleau-massage']
+  endif
+  assign gift_v = gift.selected_or_first_available_variant
+-%}
+<style>
+  {{ fh | font_face: font_display: 'swap' }}
+  {{ fb | font_face: font_display: 'swap' }}
+  {%- if fb7 %}{{ fb7 | font_face: font_display: 'swap' }}{% endif %}
+  #sm-cd { --ink: #13283a; --muted: #52697b; --mint: #6fcfc8; --teal: #17807b; --line: #d3e3ec; --soft: #eff6f9; --sky: #e4f0f6;
+    --fh: {{ fh.family }}, {{ fh.fallback_families }}; --fb: {{ fb.family }}, {{ fb.fallback_families }};
+    position: fixed; inset: 0; z-index: 2147483000; visibility: hidden; pointer-events: none; font-family: var(--fb); color: var(--ink); font-size: 15px; line-height: 1.45; }
+  #sm-cd *, #sm-cd *::before, #sm-cd *::after { box-sizing: border-box; }
+  #sm-cd.is-open { visibility: visible; pointer-events: auto; }
+  #sm-cd .cd__bg { position: absolute; inset: 0; background: rgba(19,40,58,.45); opacity: 0; transition: opacity .25s; }
+  #sm-cd.is-open .cd__bg { opacity: 1; }
+  #sm-cd .cd__panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: #f6fafc; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .3s cubic-bezier(.2,.8,.2,1); box-shadow: -12px 0 40px rgba(19,40,58,.18); }
+  #sm-cd.is-open .cd__panel { transform: none; }
+  #sm-cd .cd__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 12px; background: #fff; border-bottom: 1px solid var(--line); }
+  #sm-cd .cd__title { font-family: var(--fh); font-weight: 700; font-size: 22px; margin: 0; letter-spacing: -.01em; }
+  #sm-cd .cd__x { width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--soft); color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  #sm-cd .cd__proof { display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: #fff; border-bottom: 1px solid var(--line); font-size: 14px; }
+  #sm-cd .cd__faces { display: flex; flex: none; }
+  #sm-cd .cd__faces span { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; display: grid; place-items: center; margin-left: -9px; overflow: hidden; }
+  #sm-cd .cd__faces span:first-child { margin-left: 0; }
+  #sm-cd .cd__faces svg { width: 30px; height: 30px; display: block; }
+  #sm-cd .cd__proof b { font-weight: 800; }
+  #sm-cd .cd__goal { padding: 14px 18px 16px; background: var(--sky); }
+  #sm-cd .cd__msg { margin: 0 0 12px; font-size: 15px; text-align: center; }
+  #sm-cd .cd__msg b { color: var(--teal); }
+  #sm-cd .cd__track { position: relative; height: 8px; border-radius: 99px; background: #fff; margin: 0 14px 30px; }
+  #sm-cd .cd__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: linear-gradient(90deg, var(--mint), var(--teal)); width: 0; transition: width .5s cubic-bezier(.2,.8,.2,1); }
+  #sm-cd .cd__mk { position: absolute; top: 50%; transform: translate(-50%, -50%); display: grid; justify-items: center; }
+  #sm-cd .cd__mk i { width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 2px solid var(--line); display: grid; place-items: center; color: var(--muted); transition: background .3s, border-color .3s, color .3s; }
+  #sm-cd .cd__mk.is-on i { background: var(--teal); border-color: var(--teal); color: #fff; }
+  #sm-cd .cd__mk i svg { width: 16px; height: 16px; }
+  #sm-cd .cd__mk small { position: absolute; top: 34px; white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--muted); }
+  #sm-cd .cd__mk.is-on small { color: var(--teal); }
+  #sm-cd .cd__body { flex: 1; overflow-y: auto; padding: 6px 18px 16px; }
+  #sm-cd .cd__line { display: grid; grid-template-columns: 76px 1fr auto; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  #sm-cd .cd__line img { width: 76px; height: 76px; object-fit: cover; border-radius: 8px; background: var(--soft); display: block; }
+  #sm-cd .cd__n { font-weight: 700; font-size: 15px; line-height: 1.3; text-decoration: none; color: inherit; }
+  #sm-cd .cd__v { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  #sm-cd .cd__tag { display: inline-block; margin-top: 4px; background: var(--mint); color: var(--ink); font-weight: 800; font-size: 12px; padding: 2px 8px; border-radius: 99px; }
+  #sm-cd .cd__qty { display: inline-flex; align-items: center; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 99px; background: #fff; }
+  #sm-cd .cd__qty button { width: 32px; height: 32px; border: 0; background: none; font-size: 18px; color: var(--ink); cursor: pointer; }
+  #sm-cd .cd__qty span { min-width: 22px; text-align: center; font-weight: 700; }
+  #sm-cd .cd__right { display: grid; justify-items: end; align-content: space-between; text-align: right; }
+  #sm-cd .cd__p { font-weight: 800; }
+  #sm-cd .cd__p s { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
+  #sm-cd .cd__rm { border: 0; background: none; color: var(--muted); font-size: 13px; text-decoration: underline; cursor: pointer; padding: 4px 0; }
+  #sm-cd .cd__empty { text-align: center; padding: 40px 10px; }
+  #sm-cd .cd__empty p { margin: 0 0 16px; font-size: 17px; }
+  #sm-cd .cd__foot { padding: 14px 18px 18px; background: #fff; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+  #sm-cd .cd__row { display: flex; justify-content: space-between; font-size: 15px; }
+  #sm-cd .cd__row.is-save { color: var(--teal); font-weight: 700; }
+  #sm-cd .cd__row.is-tot { font-family: var(--fh); font-weight: 700; font-size: 19px; }
+  #sm-cd .cd__btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font: 700 17px var(--fb); text-decoration: none; cursor: pointer; transition: background .2s; }
+  #sm-cd .cd__btn:hover { background: #22405a; }
+  #sm-cd .cd__btn.is-2 { background: var(--mint); color: var(--ink); }
+  #sm-cd .cd__note { margin: 0; text-align: center; color: var(--muted); font-size: 13px; }
+  #sm-cd.is-busy .cd__body, #sm-cd.is-busy .cd__foot { opacity: .55; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #sm-cd * { transition: none !important; } }
+</style>
+
+<div id="sm-cd" aria-hidden="true"
+  data-ship="{{ section.settings.ship_at | times: 100 }}"
+  data-gift-at="{{ section.settings.gift_at | times: 100 }}"
+  data-gift-v="{% if gift_v %}{{ gift_v.id }}{% endif %}"
+  data-gift-name="{{ section.settings.gift_name | escape }}"
+  data-money="{{ shop.money_format | escape }}"
+  data-empty-url="{{ section.settings.empty_link }}">
+  <div class="cd__bg" data-cd-close></div>
+  <div class="cd__panel" role="dialog" aria-modal="true" aria-labelledby="sm-cd-t">
+    <div class="cd__head">
+      <p class="cd__title" id="sm-cd-t">Votre panier <span data-cd-count></span></p>
+      <button type="button" class="cd__x" data-cd-close aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    {%- if section.settings.proof_text != blank -%}
+      <div class="cd__proof">
+        <div class="cd__faces" aria-hidden="true">
+          {%- assign cols = '#6fcfc8,#bcd3df,#13283a' | split: ',' -%}
+          {%- assign fgs = '#13283a,#13283a,#e4f0f6' | split: ',' -%}
+          {%- for c in cols -%}
+            <span style="background: {{ c }}"><svg viewBox="0 0 30 30"><circle cx="15" cy="12" r="5.2" fill="{{ fgs[forloop.index0] }}"/><path d="M5.5 28c1.2-5.4 5-8.2 9.5-8.2s8.3 2.8 9.5 8.2z" fill="{{ fgs[forloop.index0] }}"/></svg></span>
+          {%- endfor -%}
+        </div>
+        <span>{{ section.settings.proof_text | escape | replace: '[b]', '<b>' | replace: '[/b]', '</b>' }}</span>
+      </div>
+    {%- endif -%}
+    <div class="cd__goal" data-cd-goal>
+      <p class="cd__msg" data-cd-msg></p>
+      <div class="cd__track">
+        <div class="cd__fill" data-cd-fill></div>
+        <div class="cd__mk" data-cd-mk="ship"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></i><small>Livraison offerte</small></div>
+        <div class="cd__mk" data-cd-mk="gift" style="left: 100%"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="9" width="17" height="11" rx="1.5"/><path d="M2.5 9h19v-3h-19zM12 6v14"/><path d="M12 6c-1.5-3-5-3.2-5-1s3 1 5 1c2 0 5 1.2 5-1s-3.5-2-5 1z"/></svg></i><small>{{ section.settings.gift_name | escape }} offert</small></div>
+      </div>
+    </div>
+    <div class="cd__body" data-cd-body></div>
+    <div class="cd__foot" data-cd-foot></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var cd = document.getElementById('sm-cd');
+  if (!cd || window.__smCart) return;
+  window.__smCart = true;
+  var SHIP = +cd.dataset.ship, GIFT_AT = +cd.dataset.giftAt, GIFT_V = +cd.dataset.giftV || 0, GIFT_NAME = cd.dataset.giftName;
+  var body = cd.querySelector('[data-cd-body]'), foot = cd.querySelector('[data-cd-foot]');
+  var lastFocus = null, cart = null;
+  function money(c) { return (c / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' €'; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function isGift(l) { return l.properties && l.properties._cadeau; }
+  function base(c) { return c.items.reduce(function (s, l) { return isGift(l) ? s : s + l.original_line_price; }, 0); }
+  function api(url, data) {
+    return fetch(url, data ? { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) } : { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); });
+  }
+  function load() { return api('/cart.js').then(function (c) { cart = c; return c; }); }
+  /* keep the free gift in step with the cart total */
+  function syncGift(c) {
+    if (!GIFT_V) return Promise.resolve(c);
+    var g = c.items.filter(isGift), b = base(c), real = c.items.some(function (l) { return !isGift(l); });
+    if (b >= GIFT_AT && real && !g.length) {
+      return api('/cart/add.js', { items: [{ id: GIFT_V, quantity: 1, properties: { _cadeau: '1' } }] }).then(load).catch(function () { return c; });
+    }
+    if ((b < GIFT_AT || !real) && g.length) {
+      return api('/cart/change.js', { id: g[0].key, quantity: 0 }).then(function (j) { cart = j; return j; });
+    }
+    if (g.length && g[0].quantity > 1) return api('/cart/change.js', { id: g[0].key, quantity: 1 }).then(function (j) { cart = j; return j; });
+    return Promise.resolve(c);
+  }
+  function render(c) {
+    var b = base(c), n = c.items.reduce(function (s, l) { return isGift(l) ? s : s + l.quantity; }, 0);
+    cd.querySelector('[data-cd-count]').textContent = n ? '(' + n + ')' : '';
+    document.querySelectorAll('.sm-header__count').forEach(function (e) { e.textContent = c.item_count; });
+    var icon = document.querySelector('.sm-header__icon[href="/cart"]');
+    if (icon && !icon.querySelector('.sm-header__count') && c.item_count) { var s = document.createElement('span'); s.className = 'sm-header__count'; s.textContent = c.item_count; icon.appendChild(s); }
+    /* goal bar */
+    var top = Math.max(GIFT_AT, SHIP), pct = Math.min(100, b / top * 100), msg;
+    cd.querySelector('[data-cd-fill]').style.width = pct + '%';
+    var mk = cd.querySelector('[data-cd-mk="ship"]'); mk.style.left = (SHIP / top * 100) + '%'; mk.classList.toggle('is-on', b >= SHIP);
+    var gk = cd.querySelector('[data-cd-mk="gift"]'); gk.classList.toggle('is-on', b >= GIFT_AT); gk.style.display = GIFT_V ? '' : 'none';
+    if (b < SHIP) msg = 'Plus que <b>' + money(SHIP - b) + '</b> pour la livraison offerte';
+    else if (GIFT_V && b < GIFT_AT) msg = 'Livraison offerte ✓ Plus que <b>' + money(GIFT_AT - b) + '</b> pour votre ' + esc(GIFT_NAME.toLowerCase()) + ' offert';
+    else msg = GIFT_V ? 'Bravo, la livraison et le ' + esc(GIFT_NAME.toLowerCase()) + ' sont offerts' : 'Bravo, la livraison est offerte';
+    cd.querySelector('[data-cd-msg]').innerHTML = msg;
+    if (!c.items.length) {
+      body.innerHTML = '<div class="cd__empty"><p>Votre panier est vide.</p><a class="cd__btn is-2" href="' + esc(cd.dataset.emptyUrl || '/collections/all') + '">Voir les produits</a></div>';
+      foot.innerHTML = ''; foot.style.display = 'none'; return;
+    }
+    foot.style.display = '';
+    body.innerHTML = c.items.map(function (l) {
+      var g = isGift(l), props = '';
+      if (l.properties) Object.keys(l.properties).forEach(function (k) { if (k.charAt(0) !== '_' && l.properties[k]) props += '<div class="cd__v">' + esc(k) + ' : ' + esc(l.properties[k]) + '</div>'; });
+      var img = l.image ? '<img src="' + esc(l.image + (l.image.indexOf('?') > -1 ? '&' : '?') + 'width=200') + '" alt="" loading="lazy">' : '<span></span>';
+      var was = l.original_line_price > l.final_line_price ? '<s>' + money(l.original_line_price) + '</s>' : '';
+      return '<div class="cd__line">' + img + '<div><a class="cd__n" href="' + esc(l.url) + '">' + esc(l.product_title) + '</a>' +
+        (l.variant_title && !l.product_has_only_default_variant ? '<div class="cd__v">' + esc(l.variant_title) + '</div>' : '') + props +
+        (g ? '<span class="cd__tag">Offert</span>' : '<div class="cd__qty"><button type="button" data-q="' + esc(l.key) + '" data-n="' + (l.quantity - 1) + '" aria-label="Retirer un">−</button><span>' + l.quantity + '</span><button type="button" data-q="' + esc(l.key) + '" data-n="' + (l.quantity + 1) + '" aria-label="Ajouter un">+</button></div>') +
+        '</div><div class="cd__right"><div class="cd__p">' + (g && l.final_line_price === 0 ? 'Offert' : money(l.final_line_price)) + was + '</div>' +
+        (g ? '' : '<button type="button" class="cd__rm" data-q="' + esc(l.key) + '" data-n="0">Retirer</button>') + '</div></div>';
+    }).join('');
+    var save = c.original_total_price - c.total_price;
+    foot.innerHTML = (save > 0 ? '<div class="cd__row is-save"><span>Vos économies</span><span>−' + money(save) + '</span></div>' : '') +
+      '<div class="cd__row is-tot"><span>Total</span><span>' + money(c.total_price) + '</span></div>' +
+      '<a class="cd__btn" href="/checkout">Commander · ' + money(c.total_price) + '</a>' +
+      '<p class="cd__note">' + (b >= SHIP ? 'Livraison offerte' : 'Livraison calculée à l\'étape suivante') + ' · Paiement sécurisé · 30 jours pour essayer</p>';
+  }
+  function refresh() { cd.classList.add('is-busy'); return load().then(syncGift).then(function (c) { render(c); cd.classList.remove('is-busy'); }).catch(function () { cd.classList.remove('is-busy'); }); }
+  function open() {
+    lastFocus = document.activeElement;
+    cd.classList.add('is-open'); cd.setAttribute('aria-hidden', 'false'); document.documentElement.style.overflow = 'hidden';
+    setTimeout(function () { var x = cd.querySelector('.cd__x'); if (x) x.focus(); }, 50);
+  }
+  function close() {
+    cd.classList.remove('is-open'); cd.setAttribute('aria-hidden', 'true'); document.documentElement.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  window.smCartOpen = function () { open(); refresh(); };
+  cd.addEventListener('click', function (e) {
+    if (e.target.closest('[data-cd-close]')) { close(); return; }
+    var q = e.target.closest('[data-q]');
+    if (q) { cd.classList.add('is-busy'); api('/cart/change.js', { id: q.dataset.q, quantity: +q.dataset.n }).then(syncGift).then(function () { return refresh(); }); }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cd.classList.contains('is-open')) close(); });
+  /* header bag opens the drawer instead of the cart page */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href="/cart"], a[href$="/cart"]');
+    if (!a || cd.contains(a) || e.metaKey || e.ctrlKey) return;
+    e.preventDefault(); window.smCartOpen();
+  });
+  /* every product form adds in place and opens the drawer */
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (e.defaultPrevented || !f.action || f.action.indexOf('/cart/add') === -1 || f.closest('product-form-component')) return;
+    e.preventDefault();
+    var btn = f.querySelector('[type="submit"]'), lab = btn && btn.innerHTML;
+    if (btn) { btn.disabled = true; btn.style.opacity = '.7'; }
+    fetch('/cart/add.js', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(f) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
+      .then(function () { open(); return refresh(); })
+      .catch(function (err) { alertMsg(f, (err && (err.description || err.message)) || 'Impossible d\'ajouter ce produit.'); })
+      .then(function () { if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = lab; } });
+  });
+  function alertMsg(f, t) {
+    var m = f.querySelector('.sm-cd-err');
+    if (!m) { m = document.createElement('p'); m.className = 'sm-cd-err'; m.style.cssText = 'color:#b03a2e;font-size:14px;margin:8px 0 0'; f.appendChild(m); }
+    m.textContent = t;
+  }
+  load().then(syncGift).then(render).catch(function () {});
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SM Panier latéral",
+  "settings": [
+    { "type": "text", "id": "proof_text", "label": "Bulle clients (vide = masquée)", "default": "[b]4 000 clients[/b] nous ont fait confiance", "info": "Mettez votre vrai nombre de clients. [b]…[/b] met en gras." },
+    { "type": "header", "content": "Barre d'objectifs" },
+    { "type": "number", "id": "ship_at", "label": "Livraison offerte à partir de (€)", "default": 39, "info": "La remise Shopify « Livraison offerte » doit avoir le même montant." },
+    { "type": "product", "id": "gift_product", "label": "Cadeau offert", "info": "Vide = Rouleau de massage" },
+    { "type": "text", "id": "gift_name", "label": "Nom du cadeau", "default": "Rouleau de massage" },
+    { "type": "number", "id": "gift_at", "label": "Cadeau offert à partir de (€)", "default": 69, "info": "La remise Shopify « Rouleau offert » doit avoir le même montant." },
+    { "type": "url", "id": "empty_link", "label": "Lien quand le panier est vide", "default": "/collections/all" },
+    { "type": "font_picker", "id": "font_head", "label": "Police des titres", "default": "archivo_n7" },
+    { "type": "font_picker", "id": "font_body", "label": "Police du texte", "default": "karla_n4" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,58 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "t:names.footer",
+  "sections": {
+    "sm_footer": {
+      "type": "sm-footer",
+      "settings": {
+        "brand": "Heelo",
+        "logo": "shopify://shop_images/heelo-logo-blanc.png",
+        "tagline": "Semelles, claquettes et tongs pour être bien dans vos chaussures. Livraison offerte dès 39 €, satisfait ou remboursé pendant 30 jours."
+      },
+      "blocks": {
+        "links_1": {
+          "type": "links",
+          "settings": {
+            "heading": "Boutique",
+            "links": "Best sellers | /collections/best-sellers\nSemelles | /collections/semelles\nSoins des pieds | /collections/soins-des-pieds\nClaquettes | /collections/claquettes\nTongs | /collections/tongs\nTout voir | /collections/all"
+          }
+        },
+        "links_2": {
+          "type": "links",
+          "settings": {
+            "heading": "Aide",
+            "links": "Suivre ma commande | /pages/suivre-ma-commande\nContact | /pages/contact\nLivraison | /policies/shipping-policy\nRetours et remboursements | /policies/refund-policy\nConditions générales | /policies/terms-of-service\nConfidentialité | /policies/privacy-policy\nMentions légales | /policies/legal-notice"
+          }
+        },
+        "text_1": {
+          "type": "text",
+          "settings": {
+            "heading": "Contact"
+          }
+        }
+      },
+      "block_order": [
+        "links_1",
+        "links_2",
+        "text_1"
+      ]
+    },
+    "sm_cart_drawer": {
+      "type": "sm-cart-drawer",
+      "settings": {}
+    }
+  },
+  "order": [
+    "sm_footer",
+    "sm_cart_drawer"
+  ]
+}

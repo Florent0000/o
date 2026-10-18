@@ -1,0 +1,98 @@
+{% raw %}<style>
+  
+  
+  #sm-t0 {
+    --brand-bg: #13283a;
+    --brand-bg-alt: #e4f0f6;
+    --brand-bg-soft: #eff6f9;
+    --brand-text: #f6fafc;
+    --brand-heading: #f6fafc;
+    --brand-btn: #13283a;
+    --brand-btn-text: #ffffff;
+    --brand-btn-hover: #22405a;
+    --brand-btn-2: #6fcfc8;
+    --brand-btn-2-text: #13283a;
+    --brand-accent: #6fcfc8;
+    --brand-accent-dark: #17807b;
+    --brand-border: #d3e3ec;
+    --brand-divider: #bcd3df;
+    --brand-star: #1f9d95;
+    --brand-footer: #13283a;
+    --brand-muted: #52697b;
+    --radius-arch: 999px 999px 6px 6px;
+    --font-head: Archivo, 'Helvetica Neue', Arial, sans-serif;
+    --font-body: Karla, 'Helvetica Neue', Arial, sans-serif;
+    --radius: 6px;
+    --radius-btn: 999px;
+    --radius-lg: 6px;
+    --section-pad: 64px;
+    --max-width: 1280px;
+    --gutter-mobile: 20px;
+    --gap: 16px;
+    --btn-height: 54px;
+    --btn-pad-x: 24px;
+    --pt: 16px;
+    --pb: 16px;
+  }
+
+  #sm-t0 { background: var(--brand-bg); color: var(--brand-text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; padding: var(--pt) 0 var(--pb); -webkit-font-smoothing: antialiased; }
+  #sm-t0 *, #sm-t0 *::before, #sm-t0 *::after { box-sizing: border-box; }
+  #sm-t0 .sm-wrap { width: 100%; max-width: calc(var(--max-width) + 2 * var(--gutter-mobile)); margin: 0 auto; padding: 0 var(--gutter-mobile); }
+  #sm-t0 h1, #sm-t0 h2, #sm-t0 h3, #sm-t0 h4 { font-family: var(--font-head); font-weight: 700; color: var(--brand-heading); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  #sm-t0 .sm-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--brand-accent-dark); }
+  #sm-t0 p, #sm-t0 ul { margin: 0; }
+  #sm-t0 a { color: inherit; }
+  #sm-t0 img, #sm-t0 svg, #sm-t0 video { max-width: 100%; }
+  #sm-t0 .sm-h2 { font-size: 32px; line-height: 1.1; }
+  #sm-t0 .sm-sub { font-size: 16px; line-height: 1.5; }
+  #sm-t0 .sm-ic { width: 20px; height: 20px; flex: none; }
+  #sm-t0 .sm-ic-acc { stroke: var(--brand-accent); }
+  #sm-t0 .sm-star { width: 16px; height: 16px; color: var(--brand-star); }
+  #sm-t0 .sm-btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--btn-height); padding: 0 var(--btn-pad-x); background: var(--brand-btn); color: var(--brand-btn-text); border: 2px solid var(--brand-btn); border-radius: var(--radius-btn); font-family: var(--font-body); font-weight: 700; font-size: 16px; line-height: 1.2; text-transform: none; letter-spacing: .01em; text-decoration: none; text-align: center; cursor: pointer; transition: background .2s, border-color .2s, transform .12s; }
+  #sm-t0 .sm-btn:active { transform: scale(.97); }
+  #sm-t0 .sm-btn { -webkit-tap-highlight-color: transparent; }
+  #sm-t0 .sm-btn:hover { background: var(--brand-btn-hover); border-color: var(--brand-btn-hover); }
+  #sm-t0 .sm-btn:focus-visible, #sm-t0 a:focus-visible, #sm-t0 button:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  #sm-t0 .sm-media { position: relative; overflow: hidden; background: var(--brand-bg-soft); }
+  #sm-t0 .sm-media img, #sm-t0 .sm-media svg.sm-ph, #sm-t0 .sm-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #sm-t0 svg.sm-ph { background: #dce9f0; fill: #bcd3df; }
+  #sm-t0 .sm-vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (min-width: 750px) {
+    #sm-t0 .sm-wrap { padding: 0 40px; max-width: calc(var(--max-width) + 80px); }
+    #sm-t0 .sm-h2 { font-size: 52px; }
+    #sm-t0 .sm-sub { font-size: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #sm-t0 * { transition: none !important; scroll-behavior: auto !important; } }
+
+  #sm-t0 { overflow: hidden; }
+  #sm-t0 .sm-trust__viewport { overflow: hidden; }
+  #sm-t0 .sm-trust__track { display: flex; width: max-content; animation: sm-marquee-t0 35s linear infinite; }
+  #sm-t0 .sm-trust__viewport:hover .sm-trust__track { animation-play-state: paused; }
+  #sm-t0 .sm-trust__list { list-style: none; padding: 0; display: flex; }
+  #sm-t0 .sm-trust__item { display: flex; align-items: center; gap: 10px; padding-right: 28px; white-space: nowrap; font-size: 15px; font-weight: 600; }
+  #sm-t0 .sm-trust__item .sm-ic { width: 18px; height: 18px; }
+  #sm-t0 .sm-spark { color: var(--brand-accent); margin-left: 18px; }
+  @keyframes sm-marquee-t0 { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { #sm-t0 .sm-trust__track { animation: none; } }
+</style>
+
+
+<div id="sm-t0" class="sm-trust">
+<div class="sm-trust__viewport">
+  <div class="sm-trust__track"><ul class="sm-trust__list"><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg><span>Livraison offerte dès 39 €</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 010 10h-4"/></svg><span>Échange de pointure</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>30 jours pour changer d&#x27;avis</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg><span>8 couleurs, du 35 au 40</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li></ul><ul class="sm-trust__list" aria-hidden="true"><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg><span>Livraison offerte dès 39 €</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 010 10h-4"/></svg><span>Échange de pointure</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>30 jours pour changer d&#x27;avis</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li><li class="sm-trust__item" ><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg><span>8 couleurs, du 35 au 40</span><svg class="sm-spark" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></li></ul></div>
+</div>
+</div>
+
+{% endraw %}
+{% schema %}
+{
+  "name": "Tongs bandeau",
+  "tag": "div",
+  "class": "sm-shell sm-static",
+  "presets": [
+    {
+      "name": "Tongs bandeau"
+    }
+  ]
+}
+{% endschema %}
