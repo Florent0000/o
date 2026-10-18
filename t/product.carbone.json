@@ -83,15 +83,30 @@
       "blocks": {
         "temoignage_1": {
           "type": "temoignage",
-          "settings": {}
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
         },
         "temoignage_2": {
           "type": "temoignage",
-          "settings": {}
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
         },
         "temoignage_3": {
           "type": "temoignage",
-          "settings": {}
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
         }
       },
       "block_order": [

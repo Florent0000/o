@@ -101,6 +101,7 @@
   #{{ sid }} .sm-rev__intro-t { color: var(--brand-muted); max-width: 380px; }
   #{{ sid }} .sm-rev__card--video { position: relative; min-height: 380px; }
   #{{ sid }} .sm-rev__card--video img, #{{ sid }} .sm-rev__card--video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #{{ sid }} .sm-verif { display: inline-block; margin-left: 6px; font-weight: 600; font-size: 13px; color: inherit; white-space: nowrap; }
 </style>
 
 {%- liquid
@@ -143,7 +144,7 @@
         <figure class="sm-rev__card sm-rev__card--text" {{ block.shopify_attributes }}>
           <svg class="sm-rev__q" viewBox="0 0 32 24" width="32" height="24" aria-hidden="true"><path fill="currentColor" d="M0 24V14C0 6 4 1 12 0l1 4c-4 1-6 4-6 8h6v12zm19 0V14c0-8 4-13 12-14l1 4c-4 1-6 4-6 8h6v12z"/></svg>
           <blockquote class="sm-rev__quote">{{ block.settings.text | escape }}</blockquote>
-          <figcaption><span class="sm-rev__stars">{%- for i in (1..block.settings.stars) -%}<svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>{%- endfor -%}</span><span class="sm-rev__name">{{ block.settings.name | escape }}</span></figcaption>
+          <figcaption><span class="sm-rev__stars">{%- for i in (1..block.settings.stars) -%}<svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>{%- endfor -%}</span><span class="sm-rev__name">{{ block.settings.name | escape }}{% if block.settings.verified %} <span class="sm-verif">✅ Achat vérifié</span>{% endif %}</span></figcaption>
         </figure>
       {%- endif -%}
     {%- endfor -%}
@@ -318,6 +319,13 @@ t.addEventListener('scroll',function(){window.requestAnimationFrame(u)});u();})(
           "id": "name",
           "label": "Nom",
           "default": "Prénom N."
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "✅ Achat vérifié",
+          "info": "À cocher seulement si cette personne a vraiment commandé chez vous.",
+          "default": false
         }
       ]
     },
@@ -348,7 +356,7 @@ t.addEventListener('scroll',function(){window.requestAnimationFrame(u)});u();})(
           "settings": {
             "stars": 5,
             "name": "Prénom N.",
-            "text": "Je travaille debout toute la journée. Avec la Semelle Nuage, mes chaussures de travail sont bien plus agréables en fin de journée."
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots."
           }
         },
         {
@@ -360,7 +368,7 @@ t.addEventListener('scroll',function(){window.requestAnimationFrame(u)});u();})(
           "settings": {
             "stars": 5,
             "name": "Prénom N.",
-            "text": "Moelleuse et pas trop épaisse : elle rentre dans mes baskets sans serrer. J'ai pris le pack pour toute la famille."
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots."
           }
         },
         {
@@ -368,7 +376,7 @@ t.addEventListener('scroll',function(){window.requestAnimationFrame(u)});u();})(
           "settings": {
             "stars": 5,
             "name": "Prénom N.",
-            "text": "Lavée à la main, séchée en une nuit, elle a gardé sa forme. Je la passe d'une paire à l'autre sans souci."
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots."
           }
         }
       ]

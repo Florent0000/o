@@ -115,15 +115,30 @@
       "blocks": {
         "temoignage_1": {
           "type": "temoignage",
-          "settings": {}
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
         },
         "temoignage_2": {
           "type": "temoignage",
-          "settings": {}
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
         },
         "temoignage_3": {
           "type": "temoignage",
-          "settings": {}
+          "settings": {
+            "title": "Titre de l'avis",
+            "quote": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
+          }
         }
       },
       "block_order": [
@@ -334,7 +349,10 @@
         "text_1": {
           "type": "text",
           "settings": {
-            "stars": 5
+            "stars": 5,
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
           }
         },
         "video_2": {
@@ -346,13 +364,19 @@
         "text_3": {
           "type": "text",
           "settings": {
-            "stars": 5
+            "stars": 5,
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
           }
         },
         "text_4": {
           "type": "text",
           "settings": {
-            "stars": 5
+            "stars": 5,
+            "text": "Remplacez ce texte par le message de votre client, avec ses mots.",
+            "name": "Prénom N.",
+            "verified": false
           }
         }
       },
