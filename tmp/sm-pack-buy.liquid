@@ -1,0 +1,205 @@
+{%- liquid
+  assign fh = section.settings.font_head
+  assign fb = section.settings.font_body
+  assign fb7 = fb | font_modify: 'weight', '700'
+  assign sid = 'sm-' | append: section.id
+  assign p = product
+  assign v = p.selected_or_first_available_variant
+-%}
+<style>
+  {{ fh | font_face: font_display: 'swap' }}
+  {{ fb | font_face: font_display: 'swap' }}
+  {%- if fb7 %}{{ fb7 | font_face: font_display: 'swap' }}{% endif %}
+  #{{ sid }} { --ink: #13283a; --muted: #52697b; --mint: #6fcfc8; --teal: #17807b; --line: #d3e3ec; --soft: #eff6f9; --sky: #e4f0f6;
+    --fh: {{ fh.family }}, {{ fh.fallback_families }}; --fb: {{ fb.family }}, {{ fb.fallback_families }};
+    background: #f6fafc; color: var(--ink); font-family: var(--fb); font-size: 17px; line-height: 1.55; padding: 24px 0 56px; }
+  #{{ sid }} *, #{{ sid }} *::before, #{{ sid }} *::after { box-sizing: border-box; }
+  #{{ sid }} .pk { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; gap: 28px; }
+  #{{ sid }} .pk__gal { display: grid; gap: 10px; min-width: 0; }
+  #{{ sid }} .pk__main { position: relative; aspect-ratio: 4 / 5; border-radius: 6px; overflow: hidden; background: var(--soft); }
+  #{{ sid }} .pk__main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #{{ sid }} .pk__off { position: absolute; top: 14px; left: 14px; background: var(--mint); color: var(--ink); font-weight: 800; font-size: 14px; padding: 5px 12px; border-radius: 999px; }
+  #{{ sid }} .pk__thumbs { display: flex; gap: 8px; overflow-x: auto; }
+  #{{ sid }} .pk__thumbs button { flex: none; width: 68px; aspect-ratio: 4 / 5; padding: 0; border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--soft); cursor: pointer; }
+  #{{ sid }} .pk__thumbs button.is-on { border-color: var(--ink); }
+  #{{ sid }} .pk__thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #{{ sid }} h1 { font-family: var(--fh); font-weight: 700; font-size: 32px; line-height: 1.08; letter-spacing: -.02em; margin: 0 0 8px; }
+  #{{ sid }} .pk__lead { color: var(--muted); margin: 0 0 14px; }
+  #{{ sid }} .pk__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-bottom: 18px; }
+  #{{ sid }} .pk__now { font-family: var(--fh); font-weight: 700; font-size: 30px; color: var(--teal); }
+  #{{ sid }} .pk__was { color: var(--muted); font-size: 17px; }
+  #{{ sid }} .pk__save { background: var(--ink); color: #fff; font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 999px; }
+  #{{ sid }} .pk__offer { position: relative; border: 2px solid var(--ink); border-radius: 14px; background: #effaf8; padding: 18px 16px 14px; margin: 6px 0 18px; display: grid; gap: 6px; }
+  #{{ sid }} .pk__reco { position: absolute; top: -13px; left: 14px; background: var(--ink); color: #fff; font-weight: 800; font-size: 13px; padding: 4px 12px; border-radius: 999px; }
+  #{{ sid }} .pk__row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 15px; color: var(--muted); }
+  #{{ sid }} .pk__row s { font-size: 17px; }
+  #{{ sid }} .pk__row.is-big { color: var(--ink); font-weight: 700; font-size: 17px; }
+  #{{ sid }} .pk__row.is-big b { font-family: var(--fh); font-size: 32px; color: var(--teal); line-height: 1; }
+  #{{ sid }} .pk__gain { justify-self: start; background: var(--mint); color: var(--ink); font-weight: 800; font-size: 15px; padding: 6px 12px; border-radius: 999px; margin-top: 4px; }
+  #{{ sid }} .pk__plus { display: grid; place-items: center; width: 34px; height: 34px; margin: -8px auto -8px; border-radius: 50%; background: var(--mint); color: var(--ink); font: 800 22px/1 var(--fh); position: relative; z-index: 1; box-shadow: 0 0 0 4px #fff; }
+  #{{ sid }} .pk__box { border: 1.5px solid var(--line); border-radius: 12px; background: #fff; padding: 16px; display: grid; gap: 4px; margin-bottom: 16px; }
+  #{{ sid }} .pk__box-t { margin-bottom: 8px !important; }
+  #{{ sid }} .pk__box-t { font-weight: 800; font-size: 15px; margin: 0; }
+  #{{ sid }} .pk__item { display: grid; grid-template-columns: 58px 1fr; gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #f6fafc; }
+  #{{ sid }} .pk__item img { width: 58px; height: 58px; object-fit: cover; border-radius: 8px; background: var(--soft); display: block; }
+  #{{ sid }} .pk__name { font-weight: 700; font-size: 16px; line-height: 1.3; }
+  #{{ sid }} .pk__unit { color: var(--muted); font-size: 14px; }
+  #{{ sid }} .pk__sels { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  #{{ sid }} .pk__sels label { display: grid; gap: 3px; font-size: 13px; color: var(--muted); }
+  #{{ sid }} .pk__sels select { min-width: 120px; height: 42px; padding: 0 34px 0 12px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2313283a' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center; -webkit-appearance: none; appearance: none; font: 600 15px var(--fb); color: var(--ink); }
+  #{{ sid }} .pk__sels select:focus { outline: 2px solid var(--mint); outline-offset: 1px; }
+  #{{ sid }} .pk__add { width: 100%; min-height: 56px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font: 700 17px var(--fb); cursor: pointer; transition: background .2s, transform .12s; }
+  #{{ sid }} .pk__add:hover { background: #22405a; }
+  #{{ sid }} .pk__add:active { transform: scale(.98); }
+  #{{ sid }} .pk__add[disabled] { opacity: .5; cursor: default; }
+  #{{ sid }} .pk__perks { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; font-size: 15px; }
+  #{{ sid }} .pk__perks li { display: flex; align-items: center; gap: 10px; }
+  #{{ sid }} .pk__perks svg { width: 22px; height: 22px; color: var(--teal); flex: none; }
+  #{{ sid }} .pk__desc { margin-top: 18px; font-size: 16px; color: var(--ink); }
+  #{{ sid }} .pk__desc p { margin: 0 0 10px; }
+  @media (min-width: 900px) {
+    #{{ sid }} { padding: 40px 0 72px; }
+    #{{ sid }} .pk { grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: start; padding: 0 40px; }
+    #{{ sid }} .pk__gal { position: sticky; top: 90px; }
+    #{{ sid }} h1 { font-size: 44px; }
+  }
+</style>
+
+<div id="{{ sid }}">
+<div class="pk">
+  <div class="pk__gal">
+    <div class="pk__main">
+      {%- if p.featured_media -%}
+        {{ p.featured_media | image_url: width: 1200 | image_tag: loading: 'eager', sizes: '(min-width: 900px) 50vw, 100vw', alt: p.title, data-pk-main: '' }}
+      {%- else -%}{{ 'product-1' | placeholder_svg_tag }}{%- endif -%}
+      {%- if v.compare_at_price > v.price -%}
+        {%- assign pct = v.compare_at_price | minus: v.price | times: 100 | divided_by: v.compare_at_price -%}
+        <span class="pk__off">-{{ pct }} %</span>
+      {%- endif -%}
+    </div>
+    {%- if p.media.size > 1 -%}
+      <div class="pk__thumbs">
+        {%- for m in p.media -%}{%- if m.media_type != 'image' -%}{%- continue -%}{%- endif -%}
+          <button type="button" class="{% if forloop.first %}is-on{% endif %}" data-src="{{ m | image_url: width: 1200 }}" aria-label="Photo {{ forloop.index }}">{{ m | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}</button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div>
+    <h1>{{ p.title | escape }}</h1>
+    {%- if section.settings.lead != blank -%}<p class="pk__lead">{{ section.settings.lead | escape }}</p>{%- endif -%}
+    {%- if v.compare_at_price > v.price -%}
+      {%- assign save = v.compare_at_price | minus: v.price -%}
+      {%- assign pct2 = save | times: 100 | divided_by: v.compare_at_price -%}
+      <div class="pk__offer">
+        {%- if p.tags contains 'recommande' -%}<span class="pk__reco">★ Le plus recommandé</span>{%- endif -%}
+        <div class="pk__row"><span>Acheté séparément</span><s>{{ v.compare_at_price | money }}</s></div>
+        <div class="pk__row is-big"><span>Prix du pack</span><b>{{ v.price | money }}</b></div>
+        <span class="pk__gain">Vous économisez {{ save | money }} (-{{ pct2 }} %)</span>
+      </div>
+    {%- else -%}
+      <div class="pk__price"><span class="pk__now">{{ v.price | money }}</span></div>
+    {%- endif -%}
+
+    {% form 'product', p, class: 'pk__form', novalidate: 'novalidate' %}
+      <input type="hidden" name="id" value="{{ v.id }}">
+      <input type="hidden" name="quantity" value="1">
+      <div class="pk__box">
+        <p class="pk__box-t">Dans ce pack</p>
+        {%- assign shown = 0 -%}
+        {%- for tag in p.tags -%}
+          {%- liquid
+            assign parts = tag | split: ':'
+            if parts[0] != 'contenu'
+              continue
+            endif
+            assign cp = all_products[parts[1]]
+            if cp.id == blank
+              continue
+            endif
+            assign qty = parts[2] | default: 1 | plus: 0
+            assign unit_word = 'paire'
+            if cp.handle contains 'rouleau'
+              assign unit_word = 'rouleau'
+            endif
+          -%}
+          {%- for n in (1..qty) -%}
+          {%- if shown > 0 -%}<div class="pk__plus" aria-hidden="true">+</div>{%- endif -%}
+          {%- assign shown = shown | plus: 1 -%}
+          <div class="pk__item">
+            {%- if cp.featured_image -%}{{ cp.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}{%- endif -%}
+            <div>
+              <div class="pk__name">{{ cp.title | escape }}{% if qty > 1 %} <span class="pk__unit">({{ unit_word }} {{ n }})</span>{% endif %}</div>
+              <div class="pk__unit">{{ cp.price | money }} si {% if unit_word == 'paire' %}achetée{% else %}acheté{% endif %} seul{% if unit_word == 'paire' %}e{% endif %}</div>
+              {%- unless cp.has_only_default_variant -%}
+                <div class="pk__sels">
+                  {%- for opt in cp.options_with_values -%}
+                    {%- if opt.values.size < 2 -%}{%- continue -%}{%- endif -%}
+                    {%- capture lab -%}{{ cp.title }}{% if qty > 1 %} ({{ unit_word }} {{ n }}){% endif %} · {{ opt.name }}{%- endcapture -%}
+                    <label>{{ opt.name }}
+                      <select name="properties[{{ lab | escape }}]" required>
+                        <option value="">Choisir</option>
+                        {%- for val in opt.values -%}<option value="{{ val | escape }}">{{ val | escape }}</option>{%- endfor -%}
+                      </select>
+                    </label>
+                  {%- endfor -%}
+                </div>
+              {%- endunless -%}
+            </div>
+          </div>
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+      <button type="submit" name="add" class="pk__add" data-pk-add{% unless v.available %} disabled{% endunless %}>{% if v.available %}{{ section.settings.add_label | escape }}{% else %}Épuisé{% endif %}</button>
+    {% endform %}
+
+    <ul class="pk__perks" role="list">
+      {%- if section.settings.perk_1 != blank -%}<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>{{ section.settings.perk_1 | escape }}</li>{%- endif -%}
+      {%- if section.settings.perk_2 != blank -%}<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>{{ section.settings.perk_2 | escape }}</li>{%- endif -%}
+      {%- if section.settings.perk_3 != blank -%}<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 010 10h-4"/></svg>{{ section.settings.perk_3 | escape }}</li>{%- endif -%}
+    </ul>
+    {%- if p.description != blank -%}<div class="pk__desc">{{ p.description }}</div>{%- endif -%}
+  </div>
+</div>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('{{ sid }}');
+  if (!root) return;
+  var main = root.querySelector('[data-pk-main]');
+  root.querySelectorAll('.pk__thumbs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (main) { main.removeAttribute('srcset'); main.src = b.getAttribute('data-src'); }
+      root.querySelectorAll('.pk__thumbs button').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+    });
+  });
+  var form = root.querySelector('.pk__form');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    var miss = Array.prototype.filter.call(form.querySelectorAll('select[required]'), function (s) { return !s.value; });
+    if (miss.length) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      miss[0].focus();
+      miss.forEach(function (s) { s.style.borderColor = '#c0392b'; s.addEventListener('change', function () { s.style.borderColor = ''; }, { once: true }); });
+    }
+  }, true);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SM Pack : achat",
+  "settings": [
+    { "type": "paragraph", "content": "Le contenu du pack vient des tags du produit : contenu:poignée-du-produit:quantité (ex. contenu:semelle-nuage:2). Une liste de pointures apparaît pour chaque paire." },
+    { "type": "text", "id": "lead", "label": "Phrase sous le titre", "default": "Tout est dans le même colis. Vous choisissez la pointure de chaque paire." },
+    { "type": "text", "id": "add_label", "label": "Bouton", "default": "Ajouter le pack au panier" },
+    { "type": "text", "id": "perk_1", "label": "Avantage 1", "default": "Livraison offerte dès 39 €" },
+    { "type": "text", "id": "perk_2", "label": "Avantage 2", "default": "30 jours pour essayer" },
+    { "type": "text", "id": "perk_3", "label": "Avantage 3", "default": "Retour simple" },
+    { "type": "font_picker", "id": "font_head", "label": "Police des titres", "default": "archivo_n7" },
+    { "type": "font_picker", "id": "font_body", "label": "Police du texte", "default": "karla_n4" }
+  ]
+}
+{% endschema %}

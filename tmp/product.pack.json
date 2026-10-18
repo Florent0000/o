@@ -1,0 +1,131 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "sm-pack-buy",
+      "settings": {}
+    },
+    "ruban": {
+      "type": "sm-trust-bar",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "packs": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "collection": "packs",
+        "cards": "",
+        "count": 4,
+        "quick_add": false,
+        "hover_image": false,
+        "tag_label": "",
+        "eyebrow": "",
+        "heading": "Les autres packs",
+        "subheading": "Livraison offerte dès 39 €. Rouleau de massage offert dès 69 €.",
+        "all_label": "Voir la boutique",
+        "all_link": "/collections/all"
+      }
+    },
+    "complements": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "eyebrow": "",
+        "heading": "À l'unité",
+        "subheading": "Le reste de la boutique. Livraison offerte dès 39 € d'achat.",
+        "collection": "best-sellers",
+        "cards": "semelle-carbone||Best-seller|hp-card-carbone.jpg|\nclaquettes-comfort|Noir|Best-seller|hp-claquettes-c-noir-classique.jpg|hp-claquettes-m-noir-classique.jpg\ntongs-comfort|Noir||hp-tongs-c-noir.jpg|hp-tongs-m-noir.jpg\nclaquettes-comfort|Beige|Best-seller|hp-claquettes-c-beige-classique.jpg|hp-claquettes-m-beige-classique.jpg",
+        "all_link": "/collections/all"
+      }
+    },
+    "garantie": {
+      "type": "sm-guarantee",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "ruban",
+    "packs",
+    "complements",
+    "garantie"
+  ]
+}
