@@ -1,0 +1,162 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "sm-collection-main",
+      "settings": {
+        "cards": "semelle-nuage|||hp-card-nuage.jpg|\npack-duo-nuage||★ Le plus recommandé||\nsemelle-carbone|||hp-card-carbone.jpg|\npack-sport||Pack -12 %||\nsemelle-rehausse|||hp-card-rehausse.jpg|\nrouleau-massage|||hp-card-rouleau.jpg|\npack-trio-nuage||Pack -13 %||\nclaquettes-comfort|Noir|Best-seller|hp-claquettes-c-noir-classique.jpg|hp-claquettes-m-noir-classique.jpg\nclaquettes-comfort|Beige|Best-seller|hp-claquettes-c-beige-classique.jpg|hp-claquettes-m-beige-classique.jpg\ntongs-comfort|Noir||hp-tongs-c-noir.jpg|hp-tongs-m-noir.jpg\npack-ete||Pack -10 %||\nclaquettes-comfort|Gris||hp-claquettes-c-gris.jpg|hp-claquettes-m-gris.jpg|best-sellers\ntongs-comfort|Blanc crème||hp-tongs-c-blanc-creme.jpg|hp-tongs-m-blanc-creme.jpg\nclaquettes-comfort-epure|Jaune|Épure|hp-claquettes-c-jaune.jpg|hp-claquettes-m-jaune.jpg\ntongs-comfort|Sable||hp-tongs-c-sable.jpg|hp-tongs-m-sable.jpg\nclaquettes-comfort|Rose||hp-claquettes-c-rose.jpg|hp-claquettes-m-rose.jpg|best-sellers\ntongs-comfort|Taupe||hp-tongs-c-taupe.jpg|hp-tongs-m-taupe.jpg\nclaquettes-comfort-epure|Noir|Épure|hp-claquettes-c-noir.jpg|hp-claquettes-m-noir.jpg\ntongs-comfort|Camel||hp-tongs-c-camel.jpg|hp-tongs-m-camel.jpg\nclaquettes-comfort-epure|Matcha|Épure|hp-claquettes-c-matcha.jpg|hp-claquettes-m-matcha.jpg\ntongs-comfort|Bleu marine||hp-tongs-c-bleu-marine.jpg|hp-tongs-m-bleu-marine.jpg\nclaquettes-comfort-epure|Rouge|Épure|hp-claquettes-c-rouge.jpg|hp-claquettes-m-rouge.jpg\ntongs-comfort|Rose||hp-tongs-c-rose.jpg|hp-tongs-m-rose.jpg\nclaquettes-comfort|Violet||hp-claquettes-c-violet.jpg|hp-claquettes-m-violet.jpg|best-sellers\ntongs-comfort|Rouge||hp-tongs-c-rouge.jpg|hp-tongs-m-rouge.jpg\nclaquettes-comfort-epure|Beige|Épure|hp-claquettes-c-beige.jpg|hp-claquettes-m-beige.jpg"
+      },
+      "blocks": {
+        "category_1": {
+          "type": "category",
+          "settings": {
+            "label": "Tout voir",
+            "link": "/collections/all",
+            "icon": "none"
+          }
+        },
+        "category_2": {
+          "type": "category",
+          "settings": {
+            "label": "Best sellers",
+            "link": "/collections/best-sellers",
+            "icon": "flame"
+          }
+        },
+        "category_3": {
+          "type": "category",
+          "settings": {
+            "label": "Semelles",
+            "link": "/collections/semelles",
+            "icon": "none"
+          }
+        },
+        "category_5": {
+          "type": "category",
+          "settings": {
+            "label": "Claquettes",
+            "link": "/collections/claquettes",
+            "icon": "none"
+          }
+        },
+        "category_6": {
+          "type": "category",
+          "settings": {
+            "label": "Tongs",
+            "link": "/collections/tongs",
+            "icon": "none"
+          }
+        },
+        "category_4": {
+          "type": "category",
+          "settings": {
+            "label": "Soins des pieds",
+            "link": "/collections/soins-des-pieds",
+            "icon": "none"
+          }
+        }
+      },
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3",
+        "category_4",
+        "category_5",
+        "category_6"
+      ]
+    },
+    "ruban": {
+      "type": "sm-trust-bar",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "garantie": {
+      "type": "sm-guarantee",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "ruban",
+    "garantie"
+  ]
+}
