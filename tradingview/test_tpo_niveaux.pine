@@ -1,0 +1,218 @@
+//@version=6
+// =====================================================================================================
+// TEST DES NIVEAUX TPO — quel découpage de sessions rejette le mieux, et de combien de points ?
+//
+// Même principe que ton « Session TPO Profile » : chaque BOUGIE compte pour 1 TPO sur chaque ligne de
+// prix qu'elle touche (lignes de « Ticks par ligne »), POC = ligne la plus remplie, Value Area à 68 %
+// en partant du POC. À la fin de chaque session, on prend ses niveaux (POC, VAH, VAL, Haut, Bas) et on
+// les teste pendant la session SUIVANTE :
+//   1) 1re touche du niveau ; arrivée d'au-dessus = support testé, d'en dessous = résistance testée
+//   2) on suit le prix jusqu'au STOP (le prix traverse de « Stop » ticks) ou jusqu'à l'horizon max
+//   3) « Objectif » = le prix est reparti de « Objectif » ticks AVANT le stop
+//      « Points » = le plus grand mouvement dans le sens du rejet avant le stop (en prix)
+//
+// TÉMOINS : deux niveaux sans signification (à mi-distance au-dessus de la VAH et sous la VAL).
+// Un niveau n'est utile que s'il fait NETTEMENT mieux que les témoins, et sur les DEUX moitiés.
+//
+// Pour comparer les découpages : lance avec « 1 session », note le tableau, puis « 2 sessions », puis
+// « 3 sessions » (mêmes objectif / stop). Garde celui qui bat les témoins sur les deux moitiés.
+// Mets le graphique sur l'unité de temps où tu utilises ton TPO (1 TPO = 1 bougie, comme ton script).
+// =====================================================================================================
+indicator("Test TPO niveaux", overlay=true, max_bars_back=5000)
+
+string G1 = "Sessions"
+i_mode = input.string("2 sessions", "Découpage", options=["1 session (journée entière)", "2 sessions", "3 sessions"], group=G1)
+i_tz   = input.string("Europe/Paris", "Fuseau des horaires", options=["Europe/Paris", "America/New_York"], group=G1)
+i_s1   = input.session("1530-0200", "2 sessions : session 1", group=G1, tooltip="Heure de Paris par défaut. Ta découpe : 1530-0200 et 0200-1530.")
+i_s2   = input.session("0200-1530", "2 sessions : session 2", group=G1)
+i_sA   = input.session("0000-0900", "3 sessions : Asie", group=G1)
+i_sB   = input.session("0900-1530", "3 sessions : Londres", group=G1)
+i_sC   = input.session("1530-2300", "3 sessions : New York", group=G1)
+
+string G2 = "Profil TPO (comme ton indicateur)"
+i_ticks = input.int(25, "Ticks par ligne TPO", minval=1, group=G2)
+i_va    = input.float(68.0, "Value Area %", minval=10.0, maxval=95.0, group=G2)
+
+string G3 = "Test du rejet"
+i_tgt  = input.int(20, "Objectif (ticks)", minval=1, group=G3, tooltip="Pétrole (tick 0,01) : 20 ticks = 0,20 $. Or (tick 0,10) : 20 ticks = 2 $.")
+i_stop = input.int(10, "Stop (ticks)", minval=1, group=G3)
+i_hor  = input.int(120, "Horizon max (bougies)", minval=5, group=G3)
+i_show = input.bool(true, "Afficher les niveaux", group=G3)
+
+// ------------------------------------------------------------------------------------------ sessions
+bool in1 = not na(time(timeframe.period, i_s1, i_tz))
+bool in2 = not na(time(timeframe.period, i_s2, i_tz))
+bool inA = not na(time(timeframe.period, i_sA, i_tz))
+bool inB = not na(time(timeframe.period, i_sB, i_tz))
+bool inC = not na(time(timeframe.period, i_sC, i_tz))
+bool dayChg = timeframe.change("D")
+int  nS  = i_mode == "1 session (journée entière)" ? 1 : i_mode == "2 sessions" ? 2 : 3
+int  idx = nS == 1 ? 0 : nS == 2 ? (in1 ? 0 : in2 ? 1 : -1) : (inA ? 0 : inB ? 1 : inC ? 2 : -1)
+bool newSeg = nS == 1 ? dayChg : idx != idx[1]
+
+// ------------------------------------------------------------------------------------- profil TPO
+f_tpo(array<float> hs, array<float> ls, float sH, float sL, float rowIn, float vaPct) =>
+    float r = rowIn
+    int   n = int(math.floor((sH - sL) / r)) + 1
+    if n > 2000
+        r := (sH - sL) / 1999
+        n := 2000
+    array<int> prof = array.new_int(n, 0)
+    int tot = 0
+    for b = 0 to array.size(hs) - 1
+        int a = math.max(0, math.min(int(math.floor((array.get(ls, b) - sL) / r)), n - 1))
+        int c = math.max(0, math.min(int(math.floor((array.get(hs, b) - sL) / r)), n - 1))
+        for k = a to c
+            array.set(prof, k, array.get(prof, k) + 1)
+            tot += 1
+    int poc = 0
+    for i = 0 to n - 1
+        if array.get(prof, i) > array.get(prof, poc)
+            poc := i
+    float target = tot * vaPct / 100.0
+    float acc = array.get(prof, poc)
+    int up = poc
+    int lo = poc
+    while acc < target and (up < n - 1 or lo > 0)
+        int aV = up < n - 1 ? array.get(prof, up + 1) : -1
+        int bV = lo > 0     ? array.get(prof, lo - 1) : -1
+        if aV >= bV
+            up  += 1
+            acc += aV
+        else
+            lo  -= 1
+            acc += bV
+    [sL + (poc + 0.5) * r, sL + (up + 1) * r, sL + lo * r]
+
+var array<float> segH = array.new_float()
+var array<float> segL = array.new_float()
+var float sHi = na
+var float sLo = na
+var int   segIdx = -1
+
+// niveaux : 0 POC, 1 VAH, 2 VAL, 3 Haut, 4 Bas, 5 Témoin haut, 6 Témoin bas
+var array<string> noms = array.from("POC", "VAH", "VAL", "Haut session", "Bas session", "Témoin haut", "Témoin bas")
+var array<float> lv    = array.new_float(7, na)
+var array<bool>  touch = array.new_bool(7, false)
+var array<bool>  pend  = array.new_bool(7, false)
+var array<int>   dirs  = array.new_int(7, 0)
+var array<int>   t0    = array.new_int(7, 0)
+var array<float> mfe   = array.new_float(7, 0.0)
+var array<bool>  won   = array.new_bool(7, false)
+var array<int>   half  = array.new_int(7, 0)
+var array<int>   nC    = array.new_int(7, 0)
+var array<int>   nW    = array.new_int(7, 0)
+var array<float> sM    = array.new_float(7, 0.0)
+var array<int>   n0    = array.new_int(7, 0)
+var array<int>   n1    = array.new_int(7, 0)
+var array<float> sM0   = array.new_float(7, 0.0)
+var array<float> sM1   = array.new_float(7, 0.0)
+
+fin(int i) =>
+    float m = array.get(mfe, i)
+    array.set(nC, i, array.get(nC, i) + 1)
+    if array.get(won, i)
+        array.set(nW, i, array.get(nW, i) + 1)
+    array.set(sM, i, array.get(sM, i) + m)
+    if array.get(half, i) == 0
+        array.set(n0, i, array.get(n0, i) + 1)
+        array.set(sM0, i, array.get(sM0, i) + m)
+    else
+        array.set(n1, i, array.get(n1, i) + 1)
+        array.set(sM1, i, array.get(sM1, i) + m)
+    array.set(pend, i, false)
+
+// fin de session : niveaux de la session qui vient de finir (sans la bougie en cours : pas de futur)
+if newSeg
+    if segIdx != -1 and array.size(segH) > 0 and sHi > sLo
+        for i = 0 to 6
+            if array.get(pend, i)
+                fin(i)
+            array.set(touch, i, false)
+        [pc, vh, vl] = f_tpo(segH, segL, sHi, sLo, i_ticks * syminfo.mintick, i_va)
+        float w = vh - vl
+        array.set(lv, 0, pc)
+        array.set(lv, 1, vh)
+        array.set(lv, 2, vl)
+        array.set(lv, 3, sHi)
+        array.set(lv, 4, sLo)
+        array.set(lv, 5, vh + 0.5 * w)
+        array.set(lv, 6, vl - 0.5 * w)
+    array.clear(segH)
+    array.clear(segL)
+    sHi := na
+    sLo := na
+    segIdx := idx
+
+if idx != -1
+    array.push(segH, high)
+    array.push(segL, low)
+    sHi := na(sHi) ? high : math.max(sHi, high)
+    sLo := na(sLo) ? low  : math.min(sLo, low)
+
+// --------------------------------------------------------------------------------------- test
+float prevClose = close[1]
+float tgt = i_tgt * syminfo.mintick
+float stp = i_stop * syminfo.mintick
+int   hNow = bar_index < last_bar_index / 2 ? 0 : 1
+if not na(array.get(lv, 0))
+    for i = 0 to 6
+        float L = array.get(lv, i)
+        if not array.get(touch, i) and low <= L and high >= L
+            array.set(touch, i, true)
+            array.set(pend, i, true)
+            array.set(dirs, i, prevClose > L ? 1 : -1)
+            array.set(t0, i, bar_index)
+            array.set(mfe, i, 0.0)
+            array.set(won, i, false)
+            array.set(half, i, hNow)
+        if array.get(pend, i)
+            int   d   = array.get(dirs, i)
+            float fav = d > 0 ? high - L : L - low
+            float adv = d > 0 ? L - low  : high - L
+            if adv >= stp
+                fin(i)
+            else
+                array.set(mfe, i, math.max(array.get(mfe, i), fav))
+                if array.get(mfe, i) >= tgt
+                    array.set(won, i, true)
+                if bar_index - array.get(t0, i) >= i_hor
+                    fin(i)
+
+// ---------------------------------------------------------------------------------------- affichage
+plot(i_show ? array.get(lv, 0) : na, "POC", color=color.orange, style=plot.style_stepline)
+plot(i_show ? array.get(lv, 1) : na, "VAH", color=color.white, style=plot.style_stepline)
+plot(i_show ? array.get(lv, 2) : na, "VAL", color=color.white, style=plot.style_stepline)
+plot(i_show ? array.get(lv, 3) : na, "Haut session", color=color.gray, style=plot.style_stepline)
+plot(i_show ? array.get(lv, 4) : na, "Bas session", color=color.gray, style=plot.style_stepline)
+plot(i_show ? array.get(lv, 5) : na, "Témoin haut", color=color.new(color.gray, 60), style=plot.style_circles)
+plot(i_show ? array.get(lv, 6) : na, "Témoin bas", color=color.new(color.gray, 60), style=plot.style_circles)
+
+f_pts(float s, int n) =>
+    n > 0 ? str.tostring(s / n, format.mintick) : "-"
+
+var table tb = table.new(position.bottom_right, 6, 9, bgcolor=color.new(color.black, 25), border_width=1)
+if barstate.islast
+    int   tn = array.get(nC, 5) + array.get(nC, 6)
+    float tw = tn > 0 ? 100.0 * (array.get(nW, 5) + array.get(nW, 6)) / tn : na
+    float tp = tn > 0 ? (array.get(sM, 5) + array.get(sM, 6)) / tn : na
+    table.cell(tb, 0, 0, "Niveau", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 0, "Cas", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 2, 0, "Objectif", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 3, 0, "Points moy.", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 4, 0, "1re moitié", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 5, 0, "2e moitié", text_color=color.gray, text_size=size.small)
+    for i = 0 to 6
+        int   n  = array.get(nC, i)
+        float wr = n > 0 ? 100.0 * array.get(nW, i) / n : na
+        float pm = n > 0 ? array.get(sM, i) / n : na
+        color c  = i >= 5 or na(wr) or na(tw) ? color.white : wr > tw + 5 ? color.lime : wr < tw - 5 ? color.red : color.white
+        color cp = i >= 5 or na(pm) or na(tp) ? color.white : pm > tp * 1.15 ? color.lime : pm < tp * 0.85 ? color.red : color.white
+        table.cell(tb, 0, i + 1, array.get(noms, i), text_color=color.white, text_size=size.small)
+        table.cell(tb, 1, i + 1, str.tostring(n), text_color=color.white, text_size=size.small)
+        table.cell(tb, 2, i + 1, na(wr) ? "-" : str.tostring(wr, "#") + " %", text_color=c, text_size=size.small)
+        table.cell(tb, 3, i + 1, f_pts(array.get(sM, i), n), text_color=cp, text_size=size.small)
+        table.cell(tb, 4, i + 1, f_pts(array.get(sM0, i), array.get(n0, i)), text_color=color.white, text_size=size.small)
+        table.cell(tb, 5, i + 1, f_pts(array.get(sM1, i), array.get(n1, i)), text_color=color.white, text_size=size.small)
+    table.cell(tb, 0, 8, i_mode + " | objectif " + str.tostring(i_tgt) + " / stop " + str.tostring(i_stop) + " ticks | témoins : " + (na(tw) ? "-" : str.tostring(tw, "#") + " %, " + str.tostring(tp, format.mintick) + " pts"), text_color=color.gray, text_size=size.tiny)
+    table.merge_cells(tb, 0, 8, 5, 8)
