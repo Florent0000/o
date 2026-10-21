@@ -1,0 +1,323 @@
+{
+  "sections": {
+    "main": {
+      "type": "sm-product-gallery",
+      "settings": {
+        "subtitle": "Le talon reste en place dans la chaussure",
+        "color_name": "Beige",
+        "color_hex": "#e8d3b9",
+        "launch_badge": "Nouveau",
+        "guide_label": "",
+        "half_title": "",
+        "half_text": "",
+        "tip_title": "Conseil d'utilisation",
+        "tip_text": "Collez-le dans une chaussure propre et sèche, là où le talon frotte. Appuyez quelques secondes, puis attendez une heure avant de marcher.",
+        "bullets": "Mousse douce qui se colle à l'arrière de la chaussure\nLe talon ne glisse plus et ne frotte plus contre le bord\nBallerines, mocassins, escarpins, baskets\nLot de 2 paires (4 coussinets)",
+        "show_caps": true,
+        "default_size": ""
+      },
+      "blocks": {
+        "row_1": {
+          "type": "row",
+          "settings": {
+            "title": "Description",
+            "content": "<p>Des coussinets en mousse à coller à l'intérieur de l'arrière de la chaussure. Le talon ne glisse plus et ne frotte plus contre le bord. Pratique pour les chaussures neuves, ou une paire un peu grande.</p>",
+            "open": true,
+            "use_description": false
+          }
+        },
+        "row_2": {
+          "type": "row",
+          "settings": {
+            "title": "Caractéristiques",
+            "content": "<ul><li><strong>Couleur :</strong> beige</li><li><strong>Matière :</strong> mousse douce, dos adhésif</li><li><strong>Taille :</strong> unique, pour toutes les pointures</li><li><strong>Contenu :</strong> 2 paires, soit 4 coussinets</li></ul>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_3": {
+          "type": "row",
+          "settings": {
+            "title": "Entretien",
+            "content": "<p>Ne pas laver. Pour le retirer, décollez-le doucement en partant d'un coin.</p>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_4": {
+          "type": "row",
+          "settings": {
+            "title": "Livraison et retours",
+            "content": "<p>Les délais et frais de livraison s'affichent au moment de payer. Ajouté à une commande de semelles, tout part dans le même colis. Vous avez 30 jours pour essayer : si ça ne vous convient pas, on vous rembourse.</p>",
+            "open": false,
+            "use_description": false
+          }
+        }
+      },
+      "block_order": [
+        "row_1",
+        "row_2",
+        "row_3",
+        "row_4"
+      ]
+    },
+    "ruban": {
+      "type": "sm-trust-bar",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "avantages": {
+      "type": "sm-features",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Pourquoi on les aime",
+        "show_numbers": false,
+        "ratio": "1 / 1"
+      },
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "title": "Le talon tient",
+            "text": "La chaussure ne bâille plus à chaque pas.",
+            "image": "shopify://shop_images/0_4df8e63a-cbde-40d3-9bbe-f04422971ad4.jpg"
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "title": "Plus de frottement",
+            "text": "La mousse se place entre le talon et le bord de la chaussure.",
+            "image": "shopify://shop_images/0_d7c25f34-eeaf-4be8-96a7-5745e88c24c8.jpg"
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "title": "4 coussinets dans le lot",
+            "text": "De quoi équiper deux paires de chaussures.",
+            "image": "shopify://shop_images/0_e309e7c4-e080-4a2f-9c04-22bb4f6a6a61.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3"
+      ]
+    },
+    "etapes": {
+      "type": "sm-features",
+      "settings": {
+        "eyebrow": "",
+        "heading": "En place en une minute",
+        "show_numbers": true,
+        "ratio": "1 / 1"
+      },
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "title": "Retirez le papier",
+            "text": "Sur une chaussure propre et sèche, tenez le coussinet par les bords.",
+            "image": "shopify://shop_images/0_1c9966de-eb00-451a-bd7c-4a18a67eeb9d.jpg"
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "title": "Collez et appuyez",
+            "text": "À l'endroit où le talon frotte, quelques secondes.",
+            "image": "shopify://shop_images/0_d7c25f34-eeaf-4be8-96a7-5745e88c24c8.jpg"
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "title": "Marchez",
+            "text": "Attendez une heure : le talon reste calé dans la chaussure.",
+            "image": "shopify://shop_images/0_4df8e63a-cbde-40d3-9bbe-f04422971ad4.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3"
+      ]
+    },
+    "judgeme": {
+      "type": "sm-judgeme",
+      "settings": {
+        "heading": "Avis clients",
+        "color_bg": "#e4f0f6"
+      }
+    },
+    "faq": {
+      "type": "sm-faq",
+      "settings": {},
+      "blocks": {
+        "qa_1": {
+          "type": "qa",
+          "settings": {
+            "question": "Ça tient combien de temps ?",
+            "answer": "<p>Plusieurs semaines en général, selon la chaussure et le nombre de pas. Quand il commence à se décoller, remplacez-le : le lot en contient 4.</p>"
+          }
+        },
+        "qa_2": {
+          "type": "qa",
+          "settings": {
+            "question": "Est-ce que ça réduit la place dans la chaussure ?",
+            "answer": "<p>Un peu, et c'est le but si la chaussure est grande. Dans une chaussure déjà juste, il peut serrer : essayez d'abord sans coller.</p>"
+          }
+        },
+        "qa_3": {
+          "type": "qa",
+          "settings": {
+            "question": "Sur quelles chaussures ?",
+            "answer": "<p>Cuir, simili, toile : ballerines, mocassins, escarpins, baskets. Évitez les chaussures mouillées ou en daim très fin.</p>"
+          }
+        },
+        "qa_4": {
+          "type": "qa",
+          "settings": {
+            "question": "Est-ce un produit médical ?",
+            "answer": "<p>Non. C'est un accessoire de confort pour la chaussure. En cas de plaie ou de douleur, demandez l'avis d'un professionnel de santé.</p>"
+          }
+        },
+        "qa_5": {
+          "type": "qa",
+          "settings": {
+            "question": "Et s'ils ne me conviennent pas ?",
+            "answer": "<p>Vous avez 30 jours pour les essayer. S'ils ne vous plaisent pas, écrivez-nous et on vous rembourse.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "qa_1",
+        "qa_2",
+        "qa_3",
+        "qa_4",
+        "qa_5"
+      ]
+    },
+    "soins": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "collection": "soins-des-pieds",
+        "cards": "",
+        "count": 4,
+        "quick_add": true,
+        "hover_image": false,
+        "tag_label": "",
+        "eyebrow": "",
+        "heading": "Les autres soins des pieds",
+        "subheading": "Petits prix, dans le même colis que vos semelles.",
+        "all_label": "Voir la boutique",
+        "all_link": "/collections/soins-des-pieds"
+      }
+    },
+    "complements": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Avec la Semelle Heelo, c'est encore mieux",
+        "subheading": "Notre best-seller. Livraison offerte dès 39 € d'achat.",
+        "collection": "best-sellers",
+        "cards": "semelle-nuage||Best-seller|hp-card-nuage.jpg|||dès\nclaquettes-comfort|Noir|Best-seller|hp-claquettes-c-noir-classique.jpg|hp-claquettes-m-noir-classique.jpg\ntongs-comfort|Noir||hp-tongs-c-noir.jpg|hp-tongs-m-noir.jpg\ntongs-comfort|Blanc crème||hp-tongs-c-blanc-creme.jpg|hp-tongs-m-blanc-creme.jpg",
+        "all_link": "/collections/all"
+      }
+    },
+    "garantie": {
+      "type": "sm-guarantee",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "lightbox": {
+      "type": "sm-lightbox",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "ruban",
+    "avantages",
+    "etapes",
+    "complements",
+    "judgeme",
+    "faq",
+    "soins",
+    "garantie",
+    "lightbox"
+  ]
+}

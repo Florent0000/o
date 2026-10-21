@@ -1,0 +1,107 @@
+{% raw %}<style>
+  
+  
+  #sm-r7 {
+    --brand-bg: #eff6f9;
+    --brand-bg-alt: #e4f0f6;
+    --brand-bg-soft: #eff6f9;
+    --brand-text: #13283a;
+    --brand-heading: #13283a;
+    --brand-btn: #13283a;
+    --brand-btn-text: #ffffff;
+    --brand-btn-hover: #22405a;
+    --brand-btn-2: #6fcfc8;
+    --brand-btn-2-text: #13283a;
+    --brand-accent: #6fcfc8;
+    --brand-accent-dark: #17807b;
+    --brand-border: #d3e3ec;
+    --brand-divider: #bcd3df;
+    --brand-star: #1f9d95;
+    --brand-footer: #13283a;
+    --brand-muted: #52697b;
+    --radius-arch: 999px 999px 6px 6px;
+    --font-head: Archivo, 'Helvetica Neue', Arial, sans-serif;
+    --font-body: Karla, 'Helvetica Neue', Arial, sans-serif;
+    --radius: 6px;
+    --radius-btn: 999px;
+    --radius-lg: 6px;
+    --section-pad: 64px;
+    --max-width: 1280px;
+    --gutter-mobile: 20px;
+    --gap: 16px;
+    --btn-height: 54px;
+    --btn-pad-x: 24px;
+    --pt: 64px;
+    --pb: 64px;
+  }
+
+  #sm-r7 { background: var(--brand-bg); color: var(--brand-text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; padding: var(--pt) 0 var(--pb); -webkit-font-smoothing: antialiased; }
+  #sm-r7 *, #sm-r7 *::before, #sm-r7 *::after { box-sizing: border-box; }
+  #sm-r7 .sm-wrap { width: 100%; max-width: calc(var(--max-width) + 2 * var(--gutter-mobile)); margin: 0 auto; padding: 0 var(--gutter-mobile); }
+  #sm-r7 h1, #sm-r7 h2, #sm-r7 h3, #sm-r7 h4 { font-family: var(--font-head); font-weight: 700; color: var(--brand-heading); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  #sm-r7 .sm-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--brand-accent-dark); }
+  #sm-r7 p, #sm-r7 ul { margin: 0; }
+  #sm-r7 a { color: inherit; }
+  #sm-r7 img, #sm-r7 svg, #sm-r7 video { max-width: 100%; }
+  #sm-r7 .sm-h2 { font-size: 32px; line-height: 1.1; }
+  #sm-r7 .sm-sub { font-size: 16px; line-height: 1.5; }
+  #sm-r7 .sm-ic { width: 20px; height: 20px; flex: none; }
+  #sm-r7 .sm-ic-acc { stroke: var(--brand-accent); }
+  #sm-r7 .sm-star { width: 16px; height: 16px; color: var(--brand-star); }
+  #sm-r7 .sm-btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--btn-height); padding: 0 var(--btn-pad-x); background: var(--brand-btn); color: var(--brand-btn-text); border: 2px solid var(--brand-btn); border-radius: var(--radius-btn); font-family: var(--font-body); font-weight: 700; font-size: 16px; line-height: 1.2; text-transform: none; letter-spacing: .01em; text-decoration: none; text-align: center; cursor: pointer; transition: background .2s, border-color .2s, transform .12s; }
+  #sm-r7 .sm-btn:active { transform: scale(.97); }
+  #sm-r7 .sm-btn { -webkit-tap-highlight-color: transparent; }
+  #sm-r7 .sm-btn:hover { background: var(--brand-btn-hover); border-color: var(--brand-btn-hover); }
+  #sm-r7 .sm-btn:focus-visible, #sm-r7 a:focus-visible, #sm-r7 button:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  #sm-r7 .sm-media { position: relative; overflow: hidden; background: var(--brand-bg-soft); }
+  #sm-r7 .sm-media img, #sm-r7 .sm-media svg.sm-ph, #sm-r7 .sm-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #sm-r7 svg.sm-ph { background: #dce9f0; fill: #bcd3df; }
+  #sm-r7 .sm-vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (min-width: 750px) {
+    #sm-r7 .sm-wrap { padding: 0 40px; max-width: calc(var(--max-width) + 80px); }
+    #sm-r7 .sm-h2 { font-size: 52px; }
+    #sm-r7 .sm-sub { font-size: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #sm-r7 * { transition: none !important; scroll-behavior: auto !important; } }
+
+  #sm-r7 .sm-fq__grid { display: grid; gap: 24px; }
+  #sm-r7 .sm-fq__head { display: grid; gap: 12px; justify-items: start; align-content: start; }
+  #sm-r7 .sm-fq__sub { color: var(--brand-muted); }
+  #sm-r7 .sm-fq__link { font-weight: 700; text-underline-offset: 4px; text-decoration-color: var(--brand-accent); text-decoration-thickness: 2px; }
+  #sm-r7 .sm-fq__list { display: grid; gap: 10px; }
+  #sm-r7 .sm-fq__item { border-radius: var(--radius); background: #fff; border: 1px solid var(--brand-border); }
+  #sm-r7 .sm-fq__item[open] { border-color: var(--brand-text); }
+  #sm-r7 .sm-fq__item summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 20px; font-weight: 700; font-size: 16px; cursor: pointer; list-style: none; }
+  #sm-r7 .sm-fq__item summary::-webkit-details-marker { display: none; }
+  #sm-r7 .sm-fq__ic { flex: none; padding: 6px; border-radius: 50%; background: var(--brand-bg-soft); box-sizing: content-box; transition: transform .25s, background .25s; }
+  #sm-r7 .sm-fq__item[open] .sm-fq__ic { transform: rotate(45deg); background: var(--brand-accent); }
+  #sm-r7 .sm-fq__a { padding: 0 20px 20px; color: var(--brand-muted); font-size: 15px; }
+  #sm-r7 .sm-fq__a p + p { margin-top: 8px; }
+  @media (min-width: 750px) {
+    #sm-r7 .sm-fq__grid { grid-template-columns: 4fr 7fr; gap: 56px; }
+    #sm-r7 .sm-fq__head { position: sticky; top: 24px; }
+    #sm-r7 .sm-fq__item summary { font-size: 17px; }
+  }
+</style>
+
+
+<div id="sm-r7" class="sm-fq">
+<div class="sm-wrap sm-fq__grid">
+  <div class="sm-fq__head"><p class="sm-eyebrow">Vos questions</p><h2 class="sm-h2">On vous répond</h2><p class="sm-sub sm-fq__sub">Une autre question ? Écrivez-nous, on répond en général dans la journée.</p><a class="sm-fq__link" href="/pages/contact">Nous contacter</a></div>
+  <div class="sm-fq__list"><details class="sm-fq__item" > <summary>Combien de centimètres je gagne ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>La rehausse fait 1,5 cm, 2,5 cm ou 3,5 cm au talon, selon la hauteur choisie. Le gain réel dépend aussi de la semelle d'origine que vous retirez : si elle était épaisse, vous gagnez un peu moins.</p></div> </details><details class="sm-fq__item" > <summary>Est-ce que ça se voit ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>Dans une basket, une bottine ou une botte, la rehausse reste à l'intérieur de la chaussure. Dans une chaussure très basse ou ouverte, elle peut dépasser.</p></div> </details><details class="sm-fq__item" > <summary>Comment choisir ma taille ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>Prenez votre pointure habituelle. Si vous hésitez entre deux tailles, écrivez-nous avant de commander.</p></div> </details><details class="sm-fq__item" > <summary>Ma chaussure va-t-elle serrer ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>La semelle est plus épaisse au talon, donc elle prend de la place. Retirez toujours la semelle d'origine avant de la glisser, et préférez des chaussures pas trop ajustées.</p></div> </details><details class="sm-fq__item" > <summary>Faut-il un temps d'habitude ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>Oui, souvent quelques jours. Portez-la quelques heures par jour au début, puis plus longtemps.</p></div> </details><details class="sm-fq__item" > <summary>Est-ce un produit médical ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>Non. C'est une semelle de confort qui rehausse le talon, pas un dispositif médical. En cas de douleur, consultez un professionnel de santé.</p></div> </details><details class="sm-fq__item" > <summary>Comment fonctionnent les packs ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>Nos packs regroupent plusieurs produits pour moins cher que s'ils étaient achetés un par un. Par exemple, 2 paires de Semelle Heelo coûtent 49,90 € au lieu de 59,90 €. Vous choisissez la pointure de chaque paire. La livraison est offerte dès 39 € d'achat et le rouleau de massage est offert dès 69 €.</p></div> </details><details class="sm-fq__item" > <summary>Et si elle ne me convient pas ?<svg class="sm-fq__ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary> <div class="sm-fq__a"><p>Vous avez 30 jours pour l'essayer. Si elle ne vous plaît pas, contactez-nous et on vous rembourse.</p></div> </details></div>
+</div>
+</div>
+
+{% endraw %}
+{% schema %}
+{
+  "name": "Rehausse FAQ",
+  "tag": "div",
+  "class": "sm-shell sm-static",
+  "presets": [
+    {
+      "name": "Rehausse FAQ"
+    }
+  ]
+}
+{% endschema %}

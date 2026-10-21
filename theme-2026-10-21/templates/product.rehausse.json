@@ -1,0 +1,230 @@
+{
+  "sections": {
+    "main": {
+      "type": "sm-nuage-buy",
+      "settings": {
+        "subtitle": "Jusqu'à 3,5 cm au talon, avec la même mousse épaisse que la Semelle Heelo",
+        "bullets": "Talon rehaussé de 1,5 à 3,5 cm, caché dans la chaussure\nMousse alvéolée souple sous tout le pied\nDessus aéré, percé de trous\nPour baskets et bottines",
+        "opt_hint": "Plus la rehausse est haute, plus elle prend de place dans la chaussure.",
+        "show_caps": true,
+        "default_values": "2,5 cm|39-40",
+        "gift_match": "rh-25",
+        "per_pair": false,
+        "promo_text": "",
+        "launch_badge": "",
+        "perk_1": "Livraison offerte dès 39 €"
+      },
+      "blocks": {
+        "row_1": {
+          "type": "row",
+          "settings": {
+            "title": "Description",
+            "content": "<p>Une semelle en mousse alvéolée, plus épaisse au talon. Elle remplace la semelle d'origine de vos chaussures. Trois hauteurs au choix : 1,5 cm, 2,5 cm ou 3,5 cm.</p>",
+            "open": true,
+            "use_description": false
+          }
+        },
+        "row_2": {
+          "type": "row",
+          "settings": {
+            "title": "Dans quelles chaussures ?",
+            "content": "<p>Baskets, bottines, bottes : des chaussures fermées dont la semelle d'origine s'enlève. Évitez les chaussures très basses ou très ajustées, la rehausse prend de la place.</p>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_3": {
+          "type": "row",
+          "settings": {
+            "title": "Entretien",
+            "content": "<p>Lavez-la à la main à l'eau tiède savonneuse, puis laissez-la sécher à l'air libre, loin d'un radiateur.</p>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_4": {
+          "type": "row",
+          "settings": {
+            "title": "Livraison et retours",
+            "content": "<p>Les délais et frais de livraison s'affichent au moment de payer. Vous avez 30 jours pour essayer : si elle ne vous convient pas, on vous rembourse.</p>",
+            "open": false,
+            "use_description": false
+          }
+        }
+      },
+      "block_order": [
+        "row_1",
+        "row_2",
+        "row_3",
+        "row_4"
+      ]
+    },
+    "ruban": {
+      "type": "sm-trust-bar",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "complements": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Pour aller avec",
+        "subheading": "Le reste de la boutique. Livraison offerte dès 39 € d'achat.",
+        "collection": "best-sellers",
+        "cards": "semelle-nuage||Best-seller|hp-card-nuage.jpg|||dès\nclaquettes-comfort|Noir|Best-seller|hp-claquettes-c-noir-classique.jpg|hp-claquettes-m-noir-classique.jpg\ntongs-comfort|Noir||hp-tongs-c-noir.jpg|hp-tongs-m-noir.jpg\ntongs-comfort|Blanc crème||hp-tongs-c-blanc-creme.jpg|hp-tongs-m-blanc-creme.jpg",
+        "all_link": "/collections/all"
+      }
+    },
+    "garantie": {
+      "type": "sm-guarantee",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "judgeme": {
+      "type": "sm-judgeme",
+      "settings": {
+        "heading": "Avis clients",
+        "color_bg": "#e4f0f6"
+      }
+    },
+    "remarquer": {
+      "type": "sm-p-rh-remarquer",
+      "settings": {}
+    },
+    "mousse": {
+      "type": "sm-p-rh-mousse",
+      "settings": {}
+    },
+    "enplace": {
+      "type": "sm-p-rh-etapes",
+      "settings": {}
+    },
+    "choisir": {
+      "type": "sm-p-rh-choisir",
+      "settings": {}
+    },
+    "lienrouleau": {
+      "type": "sm-p-rh-rouleau",
+      "settings": {}
+    },
+    "chaussures": {
+      "type": "sm-p-rh-chaussures",
+      "settings": {}
+    },
+    "faq2": {
+      "type": "sm-p-rh-faq",
+      "settings": {}
+    },
+    "hauteur": {
+      "type": "sm-p-rh-hauteur",
+      "settings": {}
+    },
+    "lightbox": {
+      "type": "sm-lightbox",
+      "settings": {}
+    },
+    "packs": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "collection": "packs",
+        "cards": "",
+        "count": 4,
+        "quick_add": false,
+        "hover_image": false,
+        "tag_label": "",
+        "eyebrow": "",
+        "heading": "Économisez avec nos packs",
+        "subheading": "Plusieurs produits dans le même colis, pour moins cher. Livraison offerte dès 39 €.",
+        "all_label": "Voir la boutique",
+        "all_link": "/collections/all"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "packs",
+    "ruban",
+    "remarquer",
+    "mousse",
+    "enplace",
+    "choisir",
+    "lienrouleau",
+    "chaussures",
+    "judgeme",
+    "faq2",
+    "complements",
+    "hauteur",
+    "garantie",
+    "lightbox"
+  ]
+}

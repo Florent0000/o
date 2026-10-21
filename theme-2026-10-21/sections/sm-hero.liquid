@@ -1,0 +1,621 @@
+{%- liquid
+  assign fh = section.settings.font_head
+  assign fb = section.settings.font_body
+  assign fb6 = fb | font_modify: 'weight', '600'
+  assign fb7 = fb | font_modify: 'weight', '700'
+  assign sid = 'sm-' | append: section.id
+-%}
+<style>
+  {{ fh | font_face: font_display: 'swap' }}
+  {{ fb | font_face: font_display: 'swap' }}
+  {%- if fb6 %}{{ fb6 | font_face: font_display: 'swap' }}{% endif %}
+  {%- if fb7 %}{{ fb7 | font_face: font_display: 'swap' }}{% endif %}
+  #{{ sid }} {
+    --brand-bg: {{ section.settings.color_bg }};
+    --brand-bg-alt: #e4f0f6;
+    --brand-bg-soft: #eff6f9;
+    --brand-text: {{ section.settings.color_text }};
+    --brand-heading: {{ section.settings.color_text }};
+    --brand-btn: {{ section.settings.color_btn }};
+    --brand-btn-text: {{ section.settings.color_btn_text }};
+    --brand-btn-hover: {{ section.settings.color_btn_hover }};
+    --brand-btn-2: #6fcfc8;
+    --brand-btn-2-text: #13283a;
+    --brand-accent: {{ section.settings.color_accent }};
+    --brand-accent-dark: #17807b;
+    --brand-border: {{ section.settings.color_border }};
+    --brand-divider: #bcd3df;
+    --brand-star: #1f9d95;
+    --brand-footer: #13283a;
+    --brand-muted: #52697b;
+    --radius-arch: 999px 999px 6px 6px;
+    --font-head: {{ fh.family }}, {{ fh.fallback_families }};
+    --font-body: {{ fb.family }}, {{ fb.fallback_families }};
+    --radius: 6px;
+    --radius-btn: 999px;
+    --radius-lg: 6px;
+    --section-pad: 64px;
+    --max-width: 1280px;
+    --gutter-mobile: 20px;
+    --gap: 16px;
+    --btn-height: 54px;
+    --btn-pad-x: 24px;
+    --pt: {{ section.settings.pad_top }}px;
+    --pb: {{ section.settings.pad_bottom }}px;
+  }
+
+  #{{ sid }} { background: var(--brand-bg); color: var(--brand-text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; padding: var(--pt) 0 var(--pb); -webkit-font-smoothing: antialiased; }
+  #{{ sid }} *, #{{ sid }} *::before, #{{ sid }} *::after { box-sizing: border-box; }
+  #{{ sid }} .sm-wrap { width: 100%; max-width: calc(var(--max-width) + 2 * var(--gutter-mobile)); margin: 0 auto; padding: 0 var(--gutter-mobile); }
+  #{{ sid }} h1, #{{ sid }} h2, #{{ sid }} h3, #{{ sid }} h4 { font-family: var(--font-head); font-weight: 700; color: var(--brand-heading); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  #{{ sid }} .sm-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--brand-accent-dark); }
+  #{{ sid }} p, #{{ sid }} ul { margin: 0; }
+  #{{ sid }} a { color: inherit; }
+  #{{ sid }} img, #{{ sid }} svg, #{{ sid }} video { max-width: 100%; }
+  #{{ sid }} .sm-h2 { font-size: 32px; line-height: 1.1; }
+  #{{ sid }} .sm-sub { font-size: 16px; line-height: 1.5; }
+  #{{ sid }} .sm-ic { width: 20px; height: 20px; flex: none; }
+  #{{ sid }} .sm-ic-acc { stroke: var(--brand-accent); }
+  #{{ sid }} .sm-star { width: 16px; height: 16px; color: var(--brand-star); }
+  #{{ sid }} .sm-btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--btn-height); padding: 0 var(--btn-pad-x); background: var(--brand-btn); color: var(--brand-btn-text); border: 2px solid var(--brand-btn); border-radius: var(--radius-btn); font-family: var(--font-body); font-weight: 700; font-size: 16px; line-height: 1.2; text-transform: none; letter-spacing: .01em; text-decoration: none; text-align: center; cursor: pointer; transition: background .2s, border-color .2s, transform .12s; }
+  #{{ sid }} .sm-btn:active { transform: scale(.97); }
+  #{{ sid }} .sm-btn { -webkit-tap-highlight-color: transparent; }
+  #{{ sid }} .sm-btn:hover { background: var(--brand-btn-hover); border-color: var(--brand-btn-hover); }
+  #{{ sid }} .sm-btn:focus-visible, #{{ sid }} a:focus-visible, #{{ sid }} button:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  #{{ sid }} .sm-media { position: relative; overflow: hidden; background: var(--brand-bg-soft); }
+  #{{ sid }} .sm-media img, #{{ sid }} .sm-media svg.sm-ph, #{{ sid }} .sm-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #{{ sid }} svg.sm-ph { background: #dce9f0; fill: #bcd3df; }
+  #{{ sid }} .sm-vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (min-width: 750px) {
+    #{{ sid }} .sm-wrap { padding: 0 40px; max-width: calc(var(--max-width) + 80px); }
+    #{{ sid }} .sm-h2 { font-size: 52px; }
+    #{{ sid }} .sm-sub { font-size: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #{{ sid }} * { transition: none !important; scroll-behavior: auto !important; } }
+
+  #{{ sid }} { padding-left: 0; padding-right: 0; }
+  #{{ sid }} .sm-ss { position: relative; }
+  #{{ sid }} .sm-ss__viewport { overflow: hidden; }
+  #{{ sid }} .sm-ss--fade .sm-ss__track { display: grid; }
+  #{{ sid }} .sm-ss--fade .sm-ss__slide { grid-area: 1 / 1; opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility 0s linear .8s; }
+  #{{ sid }} .sm-ss--fade .sm-ss__slide.is-active { opacity: 1; visibility: visible; transition: opacity .8s ease, visibility 0s; z-index: 1; }
+  #{{ sid }} .sm-ss--slide .sm-ss__track { display: flex; transition: transform .7s cubic-bezier(.65, 0, .35, 1); will-change: transform; }
+  #{{ sid }} .sm-ss--slide .sm-ss__slide { flex: 0 0 100%; min-width: 0; }
+  #{{ sid }} .sm-ss__slide { display: grid; background: var(--slide-bg); }
+  #{{ sid }} .sm-ss__media { position: relative; overflow: hidden; }
+  #{{ sid }} .sm-ss__img { display: block; width: 100%; height: 100%; }
+  #{{ sid }} .sm-ss__slide--lifestyle .sm-ss__media { aspect-ratio: 5 / 4; }
+  #{{ sid }} .sm-ss__slide--lifestyle .sm-ss__img { position: absolute; inset: 0; object-fit: cover; object-position: var(--focal) center; }
+  #{{ sid }} .sm-ss__slide--product .sm-ss__media { display: flex; justify-content: center; padding: 20px 20px 0; }
+  #{{ sid }} .sm-ss__slide--product .sm-ss__img { width: auto; max-width: 100%; height: auto; max-height: 300px; aspect-ratio: 1 / 1; object-fit: contain; }
+  #{{ sid }} .sm-ss__txt { display: grid; gap: 16px; justify-items: start; align-content: start; padding: 28px 20px 36px; }
+  #{{ sid }} .sm-ss__proof { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; justify-self: start; padding: 6px 14px 6px 10px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--brand-border), 0 6px 18px rgba(19,40,58,.08); font-size: 14px; font-weight: 600; color: var(--brand-text); }
+  #{{ sid }} .sm-ss__proof b { font-family: var(--font-head); font-weight: 800; font-variant-numeric: tabular-nums; }
+  #{{ sid }} .sm-ss__proof-stars { display: inline-flex; gap: 1px; }
+  #{{ sid }} .sm-ss__proof-stars .sm-ic { width: 15px; height: 15px; }
+  #{{ sid }} .sm-ss__badge { display: inline-flex; align-items: center; min-height: 30px; padding: 0 14px; border-radius: 999px; background: var(--brand-accent); color: #13283a; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  #{{ sid }} .sm-ss__title { font-size: 38px; line-height: 1.03; }
+  #{{ sid }} .sm-ss__sub { font-size: 17px; color: var(--brand-muted); max-width: 520px; }
+  #{{ sid }} .sm-ss__price { font-family: var(--font-head); font-weight: 700; font-size: 20px; }
+  #{{ sid }} .sm-ss__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+  #{{ sid }} .sm-ss__link { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--brand-accent); padding-bottom: 2px; }
+  #{{ sid }} .sm-ss__link .sm-ic { transition: transform .2s; }
+  #{{ sid }} .sm-ss__link:hover .sm-ic { transform: translateX(3px); }
+  #{{ sid }} .sm-ss__rating { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+  #{{ sid }} .sm-ss__rating span { display: inline-flex; gap: 1px; }
+  #{{ sid }} .sm-ss__note { font-size: 14px; color: var(--brand-muted); border-top: 1px solid var(--brand-border); padding-top: 14px; width: 100%; max-width: 520px; }
+  #{{ sid }} .sm-ss__slide .sm-ss__txt > * { transition: opacity .6s ease .15s, transform .6s ease .15s; }
+  #{{ sid }} .sm-ss__slide:not(.is-active) .sm-ss__txt > * { opacity: 0; transform: translateY(12px); }
+  #{{ sid }} .sm-ss__nav { display: flex; align-items: center; gap: 16px; padding-top: 16px; padding-bottom: 16px; }
+  #{{ sid }} .sm-ss__dots { display: flex; gap: 8px; flex: 1; }
+  #{{ sid }} .sm-ss__dot { position: relative; width: 44px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; }
+  #{{ sid }} .sm-ss__dot::before, #{{ sid }} .sm-ss__fill { content: ''; position: absolute; left: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 3px; }
+  #{{ sid }} .sm-ss__dot::before { right: 0; background: var(--brand-border); }
+  #{{ sid }} .sm-ss__fill { width: 0; background: var(--brand-text); }
+  #{{ sid }} .sm-ss__dot.is-active .sm-ss__fill { width: 100%; }
+  #{{ sid }} .sm-ss.is-auto .sm-ss__dot.is-active .sm-ss__fill { width: 0; animation: sm-ss-fill var(--delay) linear forwards; }
+  #{{ sid }} .sm-ss.is-paused .sm-ss__dot.is-active .sm-ss__fill { animation-play-state: paused; }
+  @keyframes sm-ss-fill { to { width: 100%; } }
+  #{{ sid }} .sm-ss__ctrls { display: flex; gap: 8px; }
+  #{{ sid }} .sm-ss__btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--brand-border); border-radius: 999px; background: transparent; color: var(--brand-text); cursor: pointer; transition: background .2s, border-color .2s, color .2s; }
+  #{{ sid }} .sm-ss__btn:hover { background: var(--brand-btn); border-color: var(--brand-btn); color: var(--brand-btn-text); }
+  #{{ sid }} .sm-ss__i-play, #{{ sid }} .sm-ss.is-stopped .sm-ss__i-pause { display: none; }
+  #{{ sid }} .sm-ss.is-stopped .sm-ss__i-play { display: block; }
+  @media (max-width: 749px) {
+    #{{ sid }} .sm-ss__ctrls [data-step] { display: none; }
+  }
+  @media (min-width: 750px) {
+    #{{ sid }} .sm-ss__slide { min-height: var(--min-h); }
+    #{{ sid }} .sm-ss__slide--product { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: center; padding: 32px max(40px, calc((100% - 1280px) / 2)); }
+    #{{ sid }} .sm-ss__slide--product .sm-ss__media { order: 2; padding: 0; }
+    #{{ sid }} .sm-ss__slide--product .sm-ss__img { max-height: calc(var(--min-h) - 64px); }
+    #{{ sid }} .sm-ss__txt { align-content: center; }
+    #{{ sid }} .sm-ss__slide--product .sm-ss__txt { padding: 0; }
+    #{{ sid }} .sm-ss__slide--lifestyle { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+    #{{ sid }} .sm-ss__slide--lifestyle .sm-ss__media { aspect-ratio: auto; }
+    #{{ sid }} .sm-ss__slide--lifestyle .sm-ss__txt { padding: 48px clamp(32px, 4vw, 72px); }
+    #{{ sid }} .sm-ss__title { font-size: 56px; }
+    #{{ sid }} .sm-ss__sub { font-size: 18px; }
+    #{{ sid }} .sm-ss__nav { padding-top: 20px; padding-bottom: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #{{ sid }} .sm-ss__slide, #{{ sid }} .sm-ss__track, #{{ sid }} .sm-ss__txt > * { transition: none !important; }
+  }
+
+  #{{ sid }} .sm-ss__proof-ic { display: inline-flex; color: var(--brand-accent-dark); }
+  #{{ sid }} .sm-ss__proof-ic .sm-ic { width: 18px; height: 18px; }
+</style>
+
+<div id="{{ sid }}" class="sm-hero">
+<div class="sm-ss sm-ss--{{ section.settings.transition }}{% if section.settings.autoplay %} is-auto{% endif %}" data-autoplay="{{ section.settings.autoplay }}" style="--min-h: {{ section.settings.height }}px; --delay: {{ section.settings.delay }}s;" role="region" aria-roledescription="carrousel" aria-label="{{ section.settings.aria_label | escape }}">
+  <div class="sm-ss__viewport">
+    <div class="sm-ss__track">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign s = block.settings
+          assign title_tag = 'h2'
+          if forloop.first
+            assign title_tag = 'h1'
+          endif
+        -%}
+        <div class="sm-ss__slide sm-ss__slide--{{ s.layout }}{% if forloop.first %} is-active{% endif %}" role="group" aria-roledescription="diapositive" aria-label="{{ forloop.index }} / {{ forloop.length }}" style="--slide-bg: {{ s.bg }}; --focal: {{ s.focal }};"{% unless forloop.first %} aria-hidden="true" inert{% endunless %} {{ block.shopify_attributes }}>
+          <div class="sm-ss__media">
+            {%- if s.image != blank -%}
+              {%- if forloop.first -%}
+                {{ s.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 750px) 60vw, 100vw', class: 'sm-ss__img', alt: s.heading }}
+              {%- else -%}
+                {{ s.image | image_url: width: 2400 | image_tag: loading: 'lazy', sizes: '(min-width: 750px) 60vw, 100vw', class: 'sm-ss__img', alt: s.heading }}
+              {%- endif -%}
+            {%- else -%}{{ 'lifestyle-1' | placeholder_svg_tag: 'sm-ph sm-ss__img' }}{%- endif -%}
+          </div>
+          <div class="sm-ss__txt">
+            {%- liquid
+              assign pc = section.settings.proof_count | remove: ' ' | remove: '+' | remove: '.' | remove: ','
+            -%}
+            {%- if pc != blank -%}
+              <p class="sm-ss__proof"><span class="sm-ss__proof-stars"><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg></span><span><b data-count="{{ pc | escape }}">+{{ section.settings.proof_count | escape }}</b> {{ section.settings.proof_label | escape }}</span></p>
+            {%- elsif section.settings.proof_fallback != blank -%}
+              <p class="sm-ss__proof sm-ss__proof--plain"><span class="sm-ss__proof-ic"><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span>{{ section.settings.proof_fallback | escape }}</span></p>
+            {%- endif -%}
+            {%- if s.badge != blank -%}<span class="sm-ss__badge">{{ s.badge | escape }}</span>{%- endif -%}
+            {%- if s.eyebrow != blank -%}<p class="sm-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+            <{{ title_tag }} class="sm-ss__title">{{ s.heading | escape }}</{{ title_tag }}>
+            {%- if s.text != blank -%}<p class="sm-ss__sub">{{ s.text | escape }}</p>{%- endif -%}
+            {%- if s.price != blank -%}<p class="sm-ss__price">{{ s.price | escape }}</p>{%- endif -%}
+            <div class="sm-ss__actions">
+              {%- if s.btn_label != blank -%}<a class="sm-btn" href="{{ s.btn_link | default: routes.all_products_collection_url }}">{{ s.btn_label | escape }}</a>{%- endif -%}
+              {%- if s.link_label != blank -%}<a class="sm-ss__link" href="{{ s.link_url | default: routes.all_products_collection_url }}">{{ s.link_label | escape }}<svg class="sm-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>{%- endif -%}
+              {%- if s.rating != blank -%}<p class="sm-ss__rating"><span><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg></span>{{ s.rating | escape }}</p>{%- endif -%}
+            </div>
+            {%- if s.note != blank -%}<p class="sm-ss__note">{{ s.note | escape }}</p>{%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+  {%- if section.blocks.size > 1 -%}
+    <div class="sm-wrap sm-ss__nav">
+      <div class="sm-ss__dots">
+        {%- for block in section.blocks -%}
+          <button type="button" class="sm-ss__dot{% if forloop.first %} is-active{% endif %}" data-go="{{ forloop.index0 }}" aria-label="Aller à la diapositive {{ forloop.index }}"{% if forloop.first %} aria-current="true"{% endif %}><span class="sm-ss__fill"></span></button>
+        {%- endfor -%}
+      </div>
+      <div class="sm-ss__ctrls">
+        <button type="button" class="sm-ss__btn" data-step="-1" aria-label="Diapositive précédente"><svg class="sm-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button type="button" class="sm-ss__btn" data-step="1" aria-label="Diapositive suivante"><svg class="sm-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('{{ sid }}');
+  if (!root) return;
+  /* client counter: counts up once */
+  Array.prototype.forEach.call(root.querySelectorAll('[data-count]'), function (el) {
+    var end = parseInt(el.getAttribute('data-count'), 10);
+    if (!end || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var fmt = function (v) { return '+' + Math.round(v).toLocaleString('fr-FR'); };
+    var t0 = null, dur = 1600;
+    el.textContent = fmt(0);
+    function step(t) { if (!t0) t0 = t; var k = Math.min((t - t0) / dur, 1); el.textContent = fmt(end * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  });
+  var ss = root.querySelector('.sm-ss');
+  var track = ss.querySelector('.sm-ss__track');
+  var slides = Array.prototype.slice.call(ss.querySelectorAll('.sm-ss__slide'));
+  var n = slides.length;
+  if (n < 2) return;
+  var dots = Array.prototype.slice.call(ss.querySelectorAll('.sm-ss__dot'));
+  var cur = ss.querySelector('.sm-ss__cur');
+  var playBtn = ss.querySelector('.sm-ss__play');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var auto = ss.getAttribute('data-autoplay') === 'true' && !reduce;
+  var i = 0, hover = false, focus = false, stopped = false, editor = false;
+  if (!auto) ss.classList.remove('is-auto');
+
+  function sync() {
+    ss.classList.toggle('is-paused', hover || focus || stopped || editor || document.hidden);
+    ss.classList.toggle('is-stopped', stopped);
+    if (playBtn) playBtn.setAttribute('aria-label', stopped ? 'Relancer le défilement' : 'Mettre en pause le défilement');
+  }
+  function go(k) {
+    i = (k + n) % n;
+    slides.forEach(function (s, j) {
+      var on = j === i;
+      s.classList.toggle('is-active', on);
+      if (on) { s.removeAttribute('aria-hidden'); s.inert = false; }
+      else { s.setAttribute('aria-hidden', 'true'); s.inert = true; }
+    });
+    dots.forEach(function (d) { d.classList.remove('is-active'); d.removeAttribute('aria-current'); });
+    void ss.offsetWidth; /* restart the progress bar */
+    if (dots[i]) { dots[i].classList.add('is-active'); dots[i].setAttribute('aria-current', 'true'); }
+    if (ss.classList.contains('sm-ss--slide')) track.style.transform = 'translateX(' + (-100 * i) + '%)';
+    if (cur) cur.textContent = (i + 1 < 10 ? '0' : '') + (i + 1);
+  }
+  dots.forEach(function (d, j) {
+    d.addEventListener('click', function () { go(j); });
+    d.querySelector('.sm-ss__fill').addEventListener('animationend', function () { if (auto && j === i) go(i + 1); });
+  });
+  Array.prototype.forEach.call(ss.querySelectorAll('[data-step]'), function (b) {
+    b.addEventListener('click', function () { go(i + parseInt(b.getAttribute('data-step'), 10)); });
+  });
+  if (playBtn) playBtn.addEventListener('click', function () { stopped = !stopped; sync(); });
+  ss.addEventListener('mouseenter', function () { hover = true; sync(); });
+  ss.addEventListener('mouseleave', function () { hover = false; sync(); });
+  ss.addEventListener('focusin', function (e) { focus = e.target.matches(':focus-visible'); sync(); });
+  ss.addEventListener('focusout', function (e) { if (!ss.contains(e.relatedTarget)) { focus = false; sync(); } });
+  document.addEventListener('visibilitychange', sync);
+  ss.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') go(i - 1);
+    if (e.key === 'ArrowRight') go(i + 1);
+  });
+  var x0 = null, y0 = 0;
+  track.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  track.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(i + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+  document.addEventListener('shopify:block:select', function (e) {
+    var k = slides.indexOf(e.target);
+    if (k > -1) { editor = true; go(k); sync(); }
+  });
+  document.addEventListener('shopify:block:deselect', function (e) {
+    if (slides.indexOf(e.target) > -1) { editor = false; sync(); }
+  });
+  sync();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SM Hero",
+  "tag": "section",
+  "class": "sm-shell sm-hero",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Défilement automatique",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "Temps par diapositive",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "transition",
+      "label": "Transition",
+      "default": "fade",
+      "options": [
+        {
+          "value": "fade",
+          "label": "Fondu"
+        },
+        {
+          "value": "slide",
+          "label": "Glissement"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Hauteur (ordinateur)",
+      "min": 480,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "default": 640
+    },
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "Nom du carrousel (lecteurs d'écran)",
+      "default": "Nos nouveautés"
+    },
+    {
+      "type": "header",
+      "content": "Compteur de clients (en haut du texte)"
+    },
+    {
+      "type": "text",
+      "id": "proof_count",
+      "label": "Nombre de clients (ex. 2 500)",
+      "info": "Mets uniquement ton vrai nombre de clients (Shopify > Clients). Un chiffre inventé est une pratique commerciale trompeuse, interdite en France."
+    },
+    {
+      "type": "text",
+      "id": "proof_label",
+      "label": "Texte après le nombre",
+      "default": "clients satisfaits"
+    },
+    {
+      "type": "text",
+      "id": "proof_fallback",
+      "label": "Texte si pas de nombre (vide = rien)",
+      "default": "Satisfait ou remboursé pendant 30 jours"
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Fond",
+      "default": "#f6fafc"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Texte et titres",
+      "default": "#13283a"
+    },
+    {
+      "type": "color",
+      "id": "color_btn",
+      "label": "Bouton : fond",
+      "default": "#13283a"
+    },
+    {
+      "type": "color",
+      "id": "color_btn_text",
+      "label": "Bouton : texte",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_btn_hover",
+      "label": "Bouton : survol",
+      "default": "#22405a"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Accent",
+      "default": "#6fcfc8"
+    },
+    {
+      "type": "color",
+      "id": "color_border",
+      "label": "Bordures",
+      "default": "#d3e3ec"
+    },
+    {
+      "type": "header",
+      "content": "Polices"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_head",
+      "label": "Police des titres",
+      "default": "archivo_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_body",
+      "label": "Police du texte",
+      "default": "karla_n4"
+    },
+    {
+      "type": "header",
+      "content": "Espacement"
+    },
+    {
+      "type": "range",
+      "id": "pad_top",
+      "label": "Marge haute",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "pad_bottom",
+      "label": "Marge basse",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Diapositive",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo"
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Mise en page",
+          "options": [
+            {
+              "value": "product",
+              "label": "Texte à gauche, photo produit à droite"
+            },
+            {
+              "value": "lifestyle",
+              "label": "Grande photo à gauche, texte à droite"
+            }
+          ],
+          "default": "product",
+          "info": "Photo produit sur fond blanc : 1re option. Photo d'ambiance large : 2e option."
+        },
+        {
+          "type": "color",
+          "id": "bg",
+          "label": "Fond de la diapositive",
+          "default": "#fdfdfd"
+        },
+        {
+          "type": "select",
+          "id": "focal",
+          "label": "Zone à garder visible (grande photo)",
+          "options": [
+            {
+              "value": "0%",
+              "label": "À gauche"
+            },
+            {
+              "value": "30%",
+              "label": "Plutôt à gauche"
+            },
+            {
+              "value": "50%",
+              "label": "Au centre"
+            },
+            {
+              "value": "70%",
+              "label": "Plutôt à droite"
+            },
+            {
+              "value": "100%",
+              "label": "À droite"
+            }
+          ],
+          "default": "50%"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Pastille"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Petite ligne au-dessus du titre",
+          "default": "Nouveau"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Titre",
+          "default": "Titre de la diapositive"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Texte"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Ligne de prix ou d'offre"
+        },
+        {
+          "type": "text",
+          "id": "btn_label",
+          "label": "Bouton : texte",
+          "default": "Découvrir"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Bouton : lien"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Lien secondaire : texte"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Lien secondaire : lien"
+        },
+        {
+          "type": "text",
+          "id": "rating",
+          "label": "Ligne d'avis (avec étoiles)"
+        },
+        {
+          "type": "text",
+          "id": "note",
+          "label": "Ligne sous le bouton"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "SM Hero",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "layout": "product",
+            "bg": "#fdfdfd",
+            "eyebrow": "Semelle Heelo · voûte moulée",
+            "heading": "Chaque pas plus léger. Chaque journée plus longue.",
+            "text": "Une mousse épaisse et aérée qui amortit chaque pas, dans toutes vos chaussures. Économisez avec nos packs.",
+            "btn_label": "Choisir ma semelle",
+            "rating": "",
+            "note": "Livraison offerte dès 39 € · Paiement sécurisé",
+            "btn_link": "/products/semelle-nuage",
+            "link_label": "Voir la boutique",
+            "link_url": "/collections/all"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "layout": "lifestyle",
+            "bg": "#e4f0f6",
+            "focal": "70%",
+            "badge": "Nouveau",
+            "eyebrow": "Collection sandales",
+            "heading": "La sandale qui soutient vos pieds tout l'été.",
+            "text": "Semelle moelleuse, voûte soutenue et talon stable : notre nouvelle sandale garde le confort Semelle, de la maison à la plage.",
+            "price": "Livraison offerte dès 39 €",
+            "btn_label": "Découvrir les sandales",
+            "link_label": "Voir tous les modèles",
+            "btn_link": "/collections/all",
+            "link_url": "/collections/all"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1328 @@
+{%- liquid
+  assign fh = section.settings.font_head
+  assign fb = section.settings.font_body
+  assign fb6 = fb | font_modify: 'weight', '600'
+  assign fb7 = fb | font_modify: 'weight', '700'
+  assign sid = 'sm-' | append: section.id
+-%}
+<style>
+  {{ fh | font_face: font_display: 'swap' }}
+  {{ fb | font_face: font_display: 'swap' }}
+  {%- if fb6 %}{{ fb6 | font_face: font_display: 'swap' }}{% endif %}
+  {%- if fb7 %}{{ fb7 | font_face: font_display: 'swap' }}{% endif %}
+  #{{ sid }} {
+    --brand-bg: {{ section.settings.color_bg }};
+    --brand-bg-alt: #e4f0f6;
+    --brand-bg-soft: #eff6f9;
+    --brand-text: {{ section.settings.color_text }};
+    --brand-heading: {{ section.settings.color_text }};
+    --brand-btn: {{ section.settings.color_btn }};
+    --brand-btn-text: {{ section.settings.color_btn_text }};
+    --brand-btn-hover: {{ section.settings.color_btn_hover }};
+    --brand-btn-2: #6fcfc8;
+    --brand-btn-2-text: #13283a;
+    --brand-accent: {{ section.settings.color_accent }};
+    --brand-accent-dark: #17807b;
+    --brand-border: {{ section.settings.color_border }};
+    --brand-divider: #bcd3df;
+    --brand-star: #1f9d95;
+    --brand-footer: #13283a;
+    --brand-muted: #52697b;
+    --radius-arch: 999px 999px 6px 6px;
+    --font-head: {{ fh.family }}, {{ fh.fallback_families }};
+    --font-body: {{ fb.family }}, {{ fb.fallback_families }};
+    --radius: 6px;
+    --radius-btn: 999px;
+    --radius-lg: 6px;
+    --section-pad: 64px;
+    --max-width: 1280px;
+    --gutter-mobile: 20px;
+    --gap: 16px;
+    --btn-height: 54px;
+    --btn-pad-x: 24px;
+    --pt: {{ section.settings.pad_top }}px;
+    --pb: {{ section.settings.pad_bottom }}px;
+  }
+
+  #{{ sid }} { background: var(--brand-bg); color: var(--brand-text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; padding: var(--pt) 0 var(--pb); -webkit-font-smoothing: antialiased; }
+  #{{ sid }} *, #{{ sid }} *::before, #{{ sid }} *::after { box-sizing: border-box; }
+  #{{ sid }} .sm-wrap { width: 100%; max-width: calc(var(--max-width) + 2 * var(--gutter-mobile)); margin: 0 auto; padding: 0 var(--gutter-mobile); }
+  #{{ sid }} h1, #{{ sid }} h2, #{{ sid }} h3, #{{ sid }} h4 { font-family: var(--font-head); font-weight: 700; color: var(--brand-heading); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  #{{ sid }} .sm-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--brand-accent-dark); }
+  #{{ sid }} p, #{{ sid }} ul { margin: 0; }
+  #{{ sid }} a { color: inherit; }
+  #{{ sid }} img, #{{ sid }} svg, #{{ sid }} video { max-width: 100%; }
+  #{{ sid }} .sm-h2 { font-size: 32px; line-height: 1.1; }
+  #{{ sid }} .sm-sub { font-size: 16px; line-height: 1.5; }
+  #{{ sid }} .sm-ic { width: 20px; height: 20px; flex: none; }
+  #{{ sid }} .sm-ic-acc { stroke: var(--brand-accent); }
+  #{{ sid }} .sm-star { width: 16px; height: 16px; color: var(--brand-star); }
+  #{{ sid }} .sm-btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--btn-height); padding: 0 var(--btn-pad-x); background: var(--brand-btn); color: var(--brand-btn-text); border: 2px solid var(--brand-btn); border-radius: var(--radius-btn); font-family: var(--font-body); font-weight: 700; font-size: 16px; line-height: 1.2; text-transform: none; letter-spacing: .01em; text-decoration: none; text-align: center; cursor: pointer; transition: background .2s, border-color .2s, transform .12s; }
+  #{{ sid }} .sm-btn:active { transform: scale(.97); }
+  #{{ sid }} .sm-btn { -webkit-tap-highlight-color: transparent; }
+  #{{ sid }} .sm-btn:hover { background: var(--brand-btn-hover); border-color: var(--brand-btn-hover); }
+  #{{ sid }} .sm-btn:focus-visible, #{{ sid }} a:focus-visible, #{{ sid }} button:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  #{{ sid }} .sm-media { position: relative; overflow: hidden; background: var(--brand-bg-soft); }
+  #{{ sid }} .sm-media img, #{{ sid }} .sm-media svg.sm-ph, #{{ sid }} .sm-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #{{ sid }} svg.sm-ph { background: #dce9f0; fill: #bcd3df; }
+  #{{ sid }} .sm-vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (min-width: 750px) {
+    #{{ sid }} .sm-wrap { padding: 0 40px; max-width: calc(var(--max-width) + 80px); }
+    #{{ sid }} .sm-h2 { font-size: 52px; }
+    #{{ sid }} .sm-sub { font-size: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #{{ sid }} * { transition: none !important; scroll-behavior: auto !important; } }
+
+  #{{ sid }} .sm-pdp__grid { display: grid; gap: 24px; }
+  #{{ sid }} .sm-pdp__gallery { min-width: 0; }
+  #{{ sid }} .sm-pdp__main { position: relative; }
+  #{{ sid }} .sm-pdp__slides { list-style: none; margin: 0; padding: 0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; border-radius: var(--radius); background: #fff; border: 1px solid var(--brand-border); }
+  #{{ sid }} .sm-pdp__slides::-webkit-scrollbar { display: none; }
+  #{{ sid }} .sm-pdp__slide { flex: 0 0 100%; scroll-snap-align: start; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; background: #fff; }
+  #{{ sid }} .sm-pdp__img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  #{{ sid }} .sm-pdp__arrow { position: absolute; top: 50%; transform: translateY(-50%); display: none; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--brand-border); background: rgba(255,255,255,.92); color: var(--brand-text); cursor: pointer; }
+  #{{ sid }} .sm-pdp__arrow--prev { left: 12px; } #{{ sid }} .sm-pdp__arrow--next { right: 12px; }
+  #{{ sid }} .sm-pdp__arrow:hover { background: var(--brand-btn); color: var(--brand-btn-text); border-color: var(--brand-btn); }
+  #{{ sid }} .sm-pdp__counter { position: absolute; right: 12px; bottom: 12px; padding: 4px 10px; border-radius: 999px; background: rgba(19,40,58,.78); color: #fff; font-size: 12px; font-weight: 700; }
+  #{{ sid }} .sm-pdp__thumbs { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+  #{{ sid }} .sm-pdp__thumb { flex: 0 0 64px; height: 64px; padding: 0; border: 1px solid var(--brand-border); border-radius: var(--radius); background: #fff; overflow: hidden; cursor: pointer; opacity: .65; transition: opacity .2s, border-color .2s; }
+  #{{ sid }} .sm-pdp__thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  #{{ sid }} .sm-pdp__thumb.is-active, #{{ sid }} .sm-pdp__thumb:hover { opacity: 1; border-color: var(--brand-text); }
+  #{{ sid }} .sm-pdp__info { display: grid; gap: 18px; align-content: start; min-width: 0; }
+  #{{ sid }} .sm-pdp__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  #{{ sid }} .sm-pdp__title { font-size: 30px; line-height: 1.08; }
+  #{{ sid }} .sm-pdp__subtitle { margin-top: 6px; font-weight: 600; color: var(--brand-muted); }
+  #{{ sid }} .sm-pdp__price { display: grid; justify-items: end; text-align: right; white-space: nowrap; }
+  #{{ sid }} .sm-pdp__now { font-family: var(--font-head); font-weight: 700; font-size: 24px; }
+  #{{ sid }} .sm-pdp__was { color: var(--brand-muted); font-size: 15px; }
+  #{{ sid }} .sm-pdp__rating { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; text-decoration: none; margin-top: -6px; }
+  #{{ sid }} .sm-pdp__stars { position: relative; display: inline-flex; color: var(--brand-border); }
+  #{{ sid }} .sm-pdp__stars > span { display: inline-flex; gap: 1px; }
+  #{{ sid }} .sm-pdp__stars .sm-star { color: inherit; }
+  #{{ sid }} .sm-pdp__stars-on { position: absolute; inset: 0; overflow: hidden; width: var(--pct); color: var(--brand-accent); white-space: nowrap; }
+  #{{ sid }} .sm-pdp__form { display: grid; gap: 20px; }
+  #{{ sid }} .sm-pdp__opt { border: 0; margin: 0; padding: 0; min-width: 0; }
+  #{{ sid }} .sm-pdp__opt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  #{{ sid }} .sm-pdp__label { padding: 0; font-size: 15px; margin-bottom: 10px; }
+  #{{ sid }} .sm-pdp__guide { font-size: 14px; font-weight: 600; text-underline-offset: 3px; }
+  #{{ sid }} .sm-pdp__swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  #{{ sid }} .sm-pdp__swatch { width: 36px; height: 36px; padding: 0; border-radius: 999px; background: var(--sw); border: 1px solid rgba(0,0,0,.15); box-shadow: inset 0 0 0 3px #fff; cursor: pointer; display: inline-block; }
+  #{{ sid }} .sm-pdp__swatch.is-active { outline: 2px solid var(--brand-text); outline-offset: 2px; }
+  #{{ sid }} .sm-pdp__sizes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  #{{ sid }} .sm-pdp__size { display: grid; place-items: center; min-height: 52px; padding: 6px 4px; border: 1px solid var(--brand-border); border-radius: var(--radius); background: #fff; color: var(--brand-text); font: 700 15px/1.1 var(--font-body); cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
+  #{{ sid }} .sm-pdp__size small { font-size: 10px; font-weight: 600; color: var(--brand-muted); letter-spacing: .06em; }
+  #{{ sid }} .sm-pdp__size:hover { border-color: var(--brand-text); }
+  #{{ sid }} .sm-pdp__size.is-active { background: var(--brand-btn); border-color: var(--brand-btn); color: var(--brand-btn-text); }
+  #{{ sid }} .sm-pdp__size.is-active small { color: inherit; opacity: .75; }
+  #{{ sid }} .sm-pdp__size.is-off { color: var(--brand-muted); background: repeating-linear-gradient(-45deg, #fff 0 6px, var(--brand-bg-soft) 6px 7px); }
+  #{{ sid }} .sm-pdp__half { text-align: center; font-size: 15px; color: var(--brand-muted); }
+  #{{ sid }} .sm-pdp__half-t { font-weight: 700; color: var(--brand-text); }
+  #{{ sid }} .sm-pdp__add { width: 100%; min-height: 56px; }
+  #{{ sid }} .sm-pdp__add[disabled] { opacity: .5; cursor: not-allowed; }
+  #{{ sid }} .sm-pdp__pay { list-style: none; margin: -6px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  #{{ sid }} .sm-pdp__pay-ic { width: 38px; height: 24px; display: block; }
+  #{{ sid }} .sm-pdp__tip { border-left: 4px solid var(--brand-accent); background: var(--brand-bg-soft); border-radius: var(--radius); padding: 16px 18px; font-size: 15px; }
+  #{{ sid }} .sm-pdp__tip-t { font-family: var(--font-head); font-weight: 700; font-size: 17px; margin-bottom: 4px; }
+  #{{ sid }} .sm-pdp__rows { border: 1px solid var(--brand-border); border-radius: var(--radius); background: #fff; }
+  #{{ sid }} .sm-pdp__row + .sm-pdp__row { border-top: 1px solid var(--brand-border); }
+  #{{ sid }} .sm-pdp__row summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; font-weight: 700; cursor: pointer; list-style: none; }
+  #{{ sid }} .sm-pdp__row summary::-webkit-details-marker { display: none; }
+  #{{ sid }} .sm-pdp__chev { flex: none; transition: transform .25s; }
+  #{{ sid }} .sm-pdp__row[open] .sm-pdp__chev { transform: rotate(45deg); }
+  #{{ sid }} .sm-pdp__row-body { padding: 0 18px 18px; font-size: 15px; color: var(--brand-muted); }
+  #{{ sid }} .sm-pdp__row-body p + p, #{{ sid }} .sm-pdp__row-body ul { margin-top: 8px; }
+  #{{ sid }} .sm-pdp__row-body ul { padding-left: 18px; }
+  #{{ sid }} .sm-pdp__row-body strong { color: var(--brand-text); }
+  @media (min-width: 750px) {
+    #{{ sid }} .sm-pdp__sizes { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    #{{ sid }} .sm-pdp__title { font-size: 38px; }
+  }
+  @media (min-width: 990px) {
+    #{{ sid }} .sm-pdp__grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+    #{{ sid }} .sm-pdp__gallery { position: sticky; top: 24px; }
+    #{{ sid }} .sm-pdp__arrow { display: inline-flex; }
+    #{{ sid }} .sm-pdp__counter { display: none; }
+    #{{ sid }} .sm-pdp__thumb { flex-basis: 84px; height: 84px; }
+  }
+
+  #{{ sid }} .sm-nb__empty { padding: 24px; border: 1px dashed var(--brand-divider); border-radius: var(--radius); text-align: center; }
+  #{{ sid }} .sm-nb__bullets { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  #{{ sid }} .sm-nb__bullets li { display: flex; gap: 10px; align-items: center; font-weight: 600; }
+  #{{ sid }} .sm-nb__bullets .sm-ic { width: 18px; height: 18px; flex: none; padding: 3px; border-radius: 50%; background: var(--brand-accent); color: #13283a; box-sizing: content-box; }
+  #{{ sid }} .sm-nb__perks { list-style: none; margin: 0; padding: 14px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; border-top: 1px solid var(--brand-border); border-bottom: 1px solid var(--brand-border); }
+  #{{ sid }} .sm-nb__perks li { display: grid; justify-items: center; gap: 6px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.25; }
+  #{{ sid }} .sm-nb__perk-ic .sm-ic { width: 28px; height: 28px; color: var(--brand-accent-dark); }
+  #{{ sid }} .sm-nb__packs { border: 0; margin: 0; padding: 0; display: grid; gap: 14px; min-width: 0; }
+  #{{ sid }} .sm-nb__legend { display: flex; align-items: center; gap: 12px; width: 100%; padding: 0; margin-bottom: 4px; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  #{{ sid }} .sm-nb__legend::before, #{{ sid }} .sm-nb__legend::after { content: ""; flex: 1; height: 1.5px; background: var(--brand-text); }
+  #{{ sid }} .sm-nb__promo { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 9px 14px; border-radius: var(--radius); background: var(--brand-bg-soft); border: 1px dashed var(--brand-accent-dark); color: var(--brand-accent-dark); font-weight: 700; font-size: 14px; text-align: center; }
+  #{{ sid }} .sm-nb__promo .sm-ic { width: 18px; height: 18px; flex: none; }
+  #{{ sid }} .sm-nb__pack { position: relative; display: block; border: 1.5px solid var(--brand-border); border-radius: calc(var(--radius) * 2); background: #fff; cursor: pointer; overflow: visible; transition: border-color .15s, box-shadow .15s, background .15s; }
+  #{{ sid }} .sm-nb__pack input { position: absolute; opacity: 0; pointer-events: none; }
+  #{{ sid }} .sm-nb__pack:hover { border-color: var(--brand-divider); }
+  #{{ sid }} .sm-nb__pack.is-active { border-color: var(--brand-text); box-shadow: 0 0 0 1px var(--brand-text); background: #effaf8; }
+  #{{ sid }} .sm-nb__pack:focus-within { outline: 2px solid var(--brand-accent); outline-offset: 3px; }
+  #{{ sid }} .sm-nb__tag { position: absolute; right: 14px; top: 0; transform: translateY(-55%); z-index: 1; padding: 4px 10px; border-radius: 999px; background: var(--brand-text); color: var(--brand-accent); font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  #{{ sid }} .sm-nb__row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 16px 16px; }
+  #{{ sid }} .sm-nb__dot { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--brand-divider); background: #fff; }
+  #{{ sid }} .sm-nb__pack.is-active .sm-nb__dot { border-color: var(--brand-text); background: radial-gradient(circle, var(--brand-text) 0 5.5px, #fff 6px); }
+  #{{ sid }} .sm-nb__pack-main { display: grid; gap: 3px; min-width: 0; }
+  #{{ sid }} .sm-nb__pack-t { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-family: var(--font-head); font-weight: 700; font-size: 18px; line-height: 1.1; }
+  #{{ sid }} .sm-nb__pack-t em { font-style: normal; font-family: var(--font-body); font-size: 12px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: var(--brand-accent); color: #13283a; }
+  #{{ sid }} .sm-nb__pack small { font-size: 13px; color: var(--brand-muted); }
+  #{{ sid }} .sm-nb__pack-price { display: grid; justify-items: end; white-space: nowrap; line-height: 1.15; }
+  #{{ sid }} .sm-nb__pack-price b { font-family: var(--font-head); font-size: 21px; color: var(--brand-accent-dark); }
+  #{{ sid }} .sm-nb__now { display: grid; justify-items: end; }
+  #{{ sid }} .sm-nb__now i { font-style: normal; font-size: 12px; font-weight: 700; color: var(--brand-muted); line-height: 1.2; }
+  #{{ sid }} .sm-nb__save { white-space: nowrap; }
+  @media (min-width: 750px) {
+    #{{ sid }} .sm-nb__now { display: flex; align-items: baseline; gap: 4px; }
+  }
+  #{{ sid }} .sm-nb__pack-price s { font-size: 13px; color: var(--brand-muted); }
+  #{{ sid }} .sm-nb__note { font-weight: 700; color: var(--brand-text) !important; }
+  #{{ sid }} .sm-nb__off { display: none !important; }
+  #{{ sid }} .sm-nb__pairs { display: none; gap: 8px; padding: 0 16px 16px 50px; cursor: default; }
+  #{{ sid }} .sm-nb__pack.is-active .sm-nb__pairs { display: grid; }
+  #{{ sid }} .sm-nb__pairs-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13px; font-weight: 800; }
+  #{{ sid }} .sm-nb__pairs-h .sm-pdp__guide { font-size: 12px; }
+  #{{ sid }} .sm-nb__pair { display: flex; align-items: center; gap: 10px; }
+  #{{ sid }} .sm-nb__pair-n { display: grid; place-items: center; width: 24px; font-size: 13px; font-weight: 800; color: var(--brand-muted); }
+  #{{ sid }} .sm-nb__pair.is-free { margin: 0 -8px; padding: 6px 8px; border-radius: 12px; background: var(--brand-bg-soft); }
+  #{{ sid }} .sm-nb__pair.is-free .sm-nb__pair-n { color: var(--brand-accent-dark); }
+  #{{ sid }} .sm-nb__pair-n .sm-ic { width: 18px; height: 18px; }
+  #{{ sid }} .sm-nb__sel-w { position: relative; flex: 0 1 150px; min-width: 0; }
+  #{{ sid }} .sm-nb__sel { width: 100%; appearance: none; -webkit-appearance: none; margin: 0; padding: 8px 30px 8px 12px; border: 1.5px solid var(--brand-divider); border-radius: 999px; background: #fff; color: var(--brand-text); font: 700 14px/1.2 var(--font-body); cursor: pointer; }
+  #{{ sid }} .sm-nb__sel:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  #{{ sid }} .sm-nb__chev { position: absolute; right: 11px; top: 50%; width: 12px; height: 12px; transform: translateY(-50%); pointer-events: none; }
+  #{{ sid }} .sm-nb__pair-free { padding: 3px 8px; border-radius: 6px; background: var(--brand-accent); color: #13283a; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+  #{{ sid }} .sm-nb__band { display: flex; align-items: center; gap: 12px; padding: 8px 16px; font-size: 14px; font-weight: 800; border-top: 1px solid var(--brand-border); }
+  #{{ sid }} .sm-nb__band-t { flex: 1; min-width: 0; }
+  #{{ sid }} .sm-nb__band-v { display: grid; justify-items: end; line-height: 1.15; white-space: nowrap; }
+  #{{ sid }} .sm-nb__band-v s { font-weight: 600; font-size: 12px; color: var(--brand-muted); }
+  #{{ sid }} .sm-nb__band-v b { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  #{{ sid }} .sm-nb__thumb { position: relative; flex: none; width: 46px; height: 46px; border-radius: 10px; overflow: visible; background: #fff; box-shadow: 0 0 0 1px var(--brand-border); }
+  #{{ sid }} .sm-nb__thumb img, #{{ sid }} .sm-nb__thumb .sm-nb__art { display: block; width: 100%; height: 100%; border-radius: 10px; object-fit: cover; }
+  #{{ sid }} .sm-nb__thumb > .sm-ic { width: 24px; height: 24px; margin: 11px; }
+  #{{ sid }} .sm-nb__thumb i { position: absolute; right: -6px; top: -6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--brand-accent); color: #13283a; box-shadow: 0 0 0 2px #fff; }
+  #{{ sid }} .sm-nb__thumb i .sm-ic { width: 13px; height: 13px; }
+  #{{ sid }} .sm-nb__band--gift { background: var(--brand-bg-soft); color: var(--brand-accent-dark); }
+  #{{ sid }} .sm-nb__band--gift .sm-nb__band-v b { color: var(--brand-accent-dark); }
+  #{{ sid }} .sm-nb__band--ship { background: var(--brand-text); color: #fff; border-top-color: var(--brand-text); }
+  #{{ sid }} .sm-nb__band--ship .sm-nb__band-v s { color: rgba(255,255,255,.6); }
+  #{{ sid }} .sm-nb__band--ship .sm-nb__band-v b { color: var(--brand-accent); }
+  #{{ sid }} .sm-nb__band--ship .sm-nb__thumb { box-shadow: none; }
+  #{{ sid }} .sm-nb__pack > .sm-nb__band:last-child { border-radius: 0 0 calc(var(--radius) * 2 - 2px) calc(var(--radius) * 2 - 2px); }
+  #{{ sid }} [hidden] { display: none !important; }
+  #{{ sid }} .sm-pdp__slide, #{{ sid }} .sm-pdp__slides { background: var(--brand-bg-soft); }
+  #{{ sid }} .sm-pdp__img { object-fit: cover; }
+
+  #{{ sid }} .sm-pdp__pricebox { display: grid; justify-items: end; gap: 6px; }
+  #{{ sid }} .sm-pdp__flag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .02em; line-height: 1; padding: 6px 10px; border-radius: 999px; border: 1.5px solid var(--brand-accent-dark); color: var(--brand-accent-dark); white-space: nowrap; }
+  #{{ sid }} .sm-pdp__flag--off { background: var(--brand-accent); border-color: var(--brand-accent); color: var(--brand-text); }
+
+  #{{ sid }} .sm-nb__pack-t em.sm-nb__launch { background: transparent; border: 1.5px solid var(--brand-accent-dark); color: var(--brand-accent-dark); padding: 2px 8px; }
+  #{{ sid }} .sm-pdp__slide[hidden], #{{ sid }} .sm-pdp__thumb[hidden] { display: none !important; }
+  #{{ sid }} .sm-pdp__cap { margin: 12px 0 0; font-size: 15px; line-height: 1.5; color: #52697b; min-height: 3em; }
+  #{{ sid }} .sm-pdp__hint { margin: 8px 0 0; font-size: 14px; color: #52697b; }
+  #{{ sid }} .sm-pdp__bul { list-style: none; margin: 16px 0 20px; padding: 0; display: grid; gap: 8px; font-weight: 600; font-size: 16px; line-height: 1.4; }
+  #{{ sid }} .sm-pdp__bul li { display: flex; gap: 10px; align-items: center; }
+  #{{ sid }} .sm-pdp__bul li::before { content: "✓"; display: grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 999px; background: #6fcfc8; color: #13283a; font-size: 13px; font-weight: 700; }
+</style>
+
+<div id="{{ sid }}" class="sm-nb">
+{%- liquid
+  assign p = product
+  if section.settings.product != blank
+    assign p = section.settings.product
+  endif
+-%}
+{%- if p == blank -%}<div class="sm-wrap"><p class="sm-nb__empty">Choisis la Semelle Heelo dans le réglage « Produit » de cette section.</p></div>{%- else -%}
+{%- liquid
+  assign p = product
+  if section.settings.product != blank
+    assign p = section.settings.product
+  endif
+  assign current = p.selected_or_first_available_variant
+  if p.selected_variant == blank and section.settings.default_values != blank
+    assign dvals = section.settings.default_values | split: '|'
+    for v in p.variants
+      assign okv = v.available
+      for dv in dvals
+        assign dvs = dv | strip
+        unless v.options contains dvs
+          assign okv = false
+        endunless
+      endfor
+      if okv
+        assign current = v
+        break
+      endif
+    endfor
+  endif
+  assign form_id = 'pdp-form-' | append: section.id
+  assign r = p.metafields.reviews.rating.value.rating | default: 0
+  assign r_count = p.metafields.reviews.rating_count.value | default: 0
+  assign has_color = false
+  for option in p.options_with_values
+    assign oname = option.name | downcase
+    if oname == 'couleur' or oname == 'color' or oname == 'colour' or oname == 'coloris'
+      assign has_color = true
+    endif
+  endfor
+-%}
+<div class="sm-wrap sm-pdp__grid">
+  <div class="sm-pdp__gallery">
+    <div class="sm-pdp__main">
+      <ul class="sm-pdp__slides" role="list">
+        {%- for media in p.media -%}
+          {%- if media.media_type == 'image' -%}
+            {%- liquid
+  assign mc = ''
+  assign alt_d = media.alt | downcase | strip
+  for opt in p.options_with_values
+    assign on = opt.name | downcase
+    if on == 'couleur' or on == 'color' or on == 'colour' or on == 'coloris'
+      for value in opt.values
+        assign vl = value | append: '' | downcase
+        assign vlen = vl.size
+        assign neg = 0 | minus: vlen
+        assign tail = alt_d | slice: neg, vlen
+        if tail == vl
+          assign mc = vl
+        endif
+      endfor
+    endif
+  endfor
+-%}
+            <li class="sm-pdp__slide" data-i="{{ forloop.index0 }}" data-c="{{ mc | escape }}">
+              {%- if forloop.first -%}
+                {{ media | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 990px) 55vw, 100vw', class: 'sm-pdp__img', alt: media.alt | default: p.title }}
+              {%- else -%}
+                {{ media | image_url: width: 1400 | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 55vw, 100vw', class: 'sm-pdp__img', alt: media.alt | default: p.title }}
+              {%- endif -%}
+            </li>
+          {%- endif -%}
+        {%- else -%}
+          <li class="sm-pdp__slide">{{ 'product-1' | placeholder_svg_tag: 'sm-ph sm-pdp__img' }}</li>
+        {%- endfor -%}
+      </ul>
+      {%- if p.media.size > 1 -%}
+        <button type="button" class="sm-pdp__arrow sm-pdp__arrow--prev" data-step="-1" aria-label="Photo précédente"><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button type="button" class="sm-pdp__arrow sm-pdp__arrow--next" data-step="1" aria-label="Photo suivante"><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <p class="sm-pdp__counter" aria-hidden="true"><span class="sm-pdp__cur">1</span> / <span class="sm-pdp__tot">{{ p.media.size }}</span></p>
+      {%- endif -%}
+    </div>
+    {%- if p.media.size > 1 -%}
+      <div class="sm-pdp__thumbs">
+        {%- for media in p.media -%}
+          {%- if media.media_type == 'image' -%}
+            <button type="button" class="sm-pdp__thumb{% if forloop.first %} is-active{% endif %}" data-go="{{ forloop.index0 }}" aria-label="Voir la photo {{ forloop.index }}">
+              {{ media | image_url: width: 200 | image_tag: loading: 'lazy', sizes: '96px', alt: '' }}
+            </button>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  {%- if section.settings.show_caps -%}
+      {%- assign first_img = p.media | where: 'media_type', 'image' | first -%}
+      <p class="sm-pdp__cap" data-cap>{{ first_img.alt | escape }}</p>
+    {%- endif -%}
+  </div>
+
+  <div class="sm-pdp__info">
+    <div class="sm-pdp__top">
+      <div class="sm-pdp__titles">
+        <{{ section.settings.title_tag }} class="sm-pdp__title">{{ p.title | escape }}</{{ section.settings.title_tag }}>
+        {%- if section.settings.subtitle != blank -%}<p class="sm-pdp__subtitle">{{ section.settings.subtitle | escape }}</p>{%- endif -%}
+      </div>
+      <div class="sm-pdp__pricebox">
+      <p class="sm-pdp__price" data-price>
+        <span class="sm-pdp__now">{{ current.price | money }}</span>
+        {%- if current.compare_at_price > current.price -%}<s class="sm-pdp__was">{{ current.compare_at_price | money }}</s>{%- endif -%}
+      </p>
+      {%- if current.compare_at_price > current.price -%}
+        {%- assign off_pct = current.compare_at_price | minus: current.price | times: 100 | divided_by: current.compare_at_price -%}
+        <span class="sm-pdp__flag sm-pdp__flag--off">-{{ off_pct }} %</span>
+      {%- elsif section.settings.launch_badge != blank -%}
+        <span class="sm-pdp__flag">{{ section.settings.launch_badge | escape }}</span>
+      {%- endif -%}
+      </div>
+    </div>
+    {%- if r_count > 0 -%}
+      {%- assign r_pct = r | times: 20 -%}
+      <a class="sm-pdp__rating" href="#{{ section.settings.reviews_anchor | default: 'avis' }}">
+        <span class="sm-pdp__stars" style="--pct: {{ r_pct }}%;" aria-hidden="true"><span><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg></span><span class="sm-pdp__stars-on"><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg></span></span>
+        <span>{{ r | replace: '.', ',' }}/5 · {{ r_count }} avis</span>
+      </a>
+    {%- else -%}
+      <a class="sm-pdp__rating" href="#{{ section.settings.reviews_anchor | default: 'avis' }}"><span class="sm-pdp__stars" style="--pct: 0%;" aria-hidden="true"><span><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg></span><span class="sm-pdp__stars-on"><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg><svg class="sm-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg></span></span> <span>Soyez le premier à donner votre avis</span></a>
+    {%- endif -%}
+
+    {%- assign bl = section.settings.bullets | newline_to_br | split: '<br />' -%}
+    <ul class="sm-nb__bullets" role="list">
+      {%- for line in bl -%}{%- assign l = line | strip -%}{%- if l != '' -%}<li><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>{{ l | escape }}</span></li>{%- endif -%}{%- endfor -%}
+    </ul>
+    <ul class="sm-nb__perks" role="list">
+      {%- for i in (1..3) -%}
+        {%- assign pk = 'perk_' | append: i -%}{%- assign pi = 'perk_icon_' | append: i -%}
+        {%- if section.settings[pk] != blank -%}<li><span class="sm-nb__perk-ic">{%- case section.settings[pi] -%}{%- when 'truck' -%}<svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>{%- when 'cal' -%}<svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><text x="12" y="17.6" font-size="6.6" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none" font-family="Arial">30</text></svg>{%- when 'return' -%}<svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 010 10h-4"/></svg>{%- when 'shield' -%}<svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>{%- when 'heart' -%}<svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg>{%- endcase -%}</span><span>{{ section.settings[pk] | escape }}</span></li>{%- endif -%}
+      {%- endfor -%}
+    </ul>
+
+    {%- liquid
+      assign has_packs = false
+      for block in section.blocks
+        if block.type == 'pack'
+          assign has_packs = true
+        endif
+      endfor
+      assign per_pair = false
+      assign pair_opt = p.options_with_values.size | minus: 1
+      if has_packs and section.settings.per_pair
+        unless p.has_only_default_variant
+          assign per_pair = true
+        endunless
+      endif
+    -%}
+    {% form 'product', p, id: form_id, class: 'sm-pdp__form', novalidate: 'novalidate' %}
+      <input type="hidden" name="id" value="{{ current.id }}" data-variant-id>
+
+      {%- unless has_color or section.settings.color_name == blank -%}
+        <div class="sm-pdp__opt">
+          <p class="sm-pdp__label">Couleur : <strong>{{ section.settings.color_name | escape }}</strong></p>
+          <div class="sm-pdp__swatches"><span class="sm-pdp__swatch is-active" style="--sw: {{ section.settings.color_hex }};" title="{{ section.settings.color_name | escape }}"></span></div>
+        </div>
+      {%- endunless -%}
+
+      {%- for option in p.options_with_values -%}
+        {%- assign oname = option.name | downcase -%}
+        {%- if oname == 'title' and option.values.size == 1 -%}{%- continue -%}{%- endif -%}
+        {%- assign is_color = false -%}
+        {%- if oname == 'couleur' or oname == 'color' or oname == 'colour' or oname == 'coloris' -%}{%- assign is_color = true -%}{%- endif -%}
+        {%- assign osel = current.options[forloop.index0] -%}
+        <fieldset class="sm-pdp__opt{% if per_pair and forloop.index0 == pair_opt %} sm-nb__off{% endif %}" data-opt="{{ forloop.index0 }}">
+          <div class="sm-pdp__opt-head">
+            <legend class="sm-pdp__label">{{ option.name | escape }} : <strong data-opt-label>{{ osel | escape }}</strong></legend>
+            {%- if is_color == false and section.settings.guide_label != blank and section.settings.guide_link != blank -%}
+              <a class="sm-pdp__guide" href="{{ section.settings.guide_link }}">{{ section.settings.guide_label | escape }}</a>
+            {%- endif -%}
+          </div>
+          <div class="{% if is_color %}sm-pdp__swatches{% else %}sm-pdp__sizes{% endif %}"{% if is_color == false and option.values.size < 4 %} style="grid-template-columns: repeat({{ option.values.size }}, minmax(0, 1fr));"{% endif %}>
+            {%- for value in option.values -%}
+              {%- liquid
+                assign vname = value | append: ''
+                assign vlow = vname | downcase
+                assign sw = value.swatch.color | default: ''
+                if sw == ''
+                  case vlow
+                    when 'noir', 'black'
+                      assign sw = '#141414'
+                    when 'blanc', 'white'
+                      assign sw = '#ffffff'
+                    when 'gris', 'grey', 'gray'
+                      assign sw = '#8a8a8a'
+                    when 'beige', 'sable'
+                      assign sw = '#b9d9e3'
+                    else
+                      assign sw = '#bcd3df'
+                  endcase
+                endif
+              -%}
+              <button type="button" class="{% if is_color %}sm-pdp__swatch{% else %}sm-pdp__size{% endif %}{% if vname == osel %} is-active{% endif %}" data-value="{{ vname | escape }}" aria-pressed="{% if vname == osel %}true{% else %}false{% endif %}"{% if is_color %} style="--sw: {{ sw }};" title="{{ vname | escape }}" aria-label="{{ vname | escape }}"{% endif %}>{% unless is_color %}{% unless oname == 'hauteur' %}<small>EU</small>{% endunless %}{{ vname | escape }}{% endunless %}</button>
+            {%- endfor -%}
+          </div>
+        {%- if section.settings.opt_hint != blank and oname == 'hauteur' -%}<p class="sm-pdp__hint">{{ section.settings.opt_hint | escape }}</p>{%- endif -%}
+        </fieldset>
+      {%- endfor -%}
+
+      {%- if has_packs -%}
+        <fieldset class="sm-nb__packs">
+          <legend class="sm-nb__legend"><span>{{ section.settings.packs_title | escape }}</span></legend>
+          {%- if section.settings.promo_text != blank -%}<p class="sm-nb__promo"><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8c-1.5-3-5-3.5-5-1.2C7 8 9.5 8 12 8zM12 8c1.5-3 5-3.5 5-1.2C17 8 14.5 8 12 8z"/></svg><span>{{ section.settings.promo_text | escape }}</span></p>{%- endif -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'pack' -%}
+              {%- liquid
+                assign keep = 100 | minus: block.settings.discount
+                assign paid = block.settings.qty | minus: block.settings.free
+                if paid < 1
+                  assign paid = 1
+                endif
+                assign total = current.price | times: paid | times: keep | divided_by: 100
+                assign per = total | divided_by: block.settings.qty
+                assign ref = current.price
+                if block.settings.qty == 1 and current.compare_at_price > current.price
+                  assign ref = current.compare_at_price
+                endif
+                assign ref_full = ref | times: block.settings.qty
+                assign save = ref_full | minus: total
+                assign pct = save | times: 100 | divided_by: ref_full
+                assign free_value = current.price | times: block.settings.free
+              -%}
+              <label class="sm-nb__pack{% if block.settings.selected %} is-active{% endif %}" data-pack data-n="{{ block.settings.qty }}" data-free="{{ block.settings.free }}" data-off="{{ block.settings.discount }}" data-cmp="{% if block.settings.qty == 1 %}1{% else %}0{% endif %}" {{ block.shopify_attributes }}>
+                <input type="radio" name="pack-{{ section.id }}" value="{{ block.settings.qty }}"{% if block.settings.selected %} checked{% endif %}>
+                {%- if block.settings.badge != blank -%}<span class="sm-nb__tag">{{ block.settings.badge | escape }}</span>{%- endif -%}
+                <span class="sm-nb__row">
+                  <span class="sm-nb__dot" aria-hidden="true"></span>
+                  <span class="sm-nb__pack-main">
+                    <span class="sm-nb__pack-t">{{ block.settings.title | escape }}<em data-pack-pct{% if pct < 1 %} hidden{% endif %}>-{{ pct }} %</em>{%- if block.settings.qty == 1 and block.settings.free == 0 and section.settings.launch_badge != blank and current.compare_at_price <= current.price -%}<em class="sm-nb__launch">{{ section.settings.launch_badge | escape }}</em>{%- endif -%}</span>
+                    {%- if block.settings.note != blank -%}<small class="sm-nb__note">{{ block.settings.note | escape }}</small>{%- endif -%}
+                    <small class="sm-nb__save" data-pack-save{% if save < 1 %} hidden{% endif %}>Vous économisez {{ save | money }}</small>
+                  </span>
+                  <span class="sm-nb__pack-price"><span class="sm-nb__now"><b data-pack-now>{{ per | money }}</b>{%- if section.settings.each_label != blank -%}<i>{{ section.settings.each_label | escape }}</i>{%- endif -%}</span><s data-pack-was{% if ref <= per %} hidden{% endif %} aria-label="au lieu de {{ ref | money }}">{{ ref | money }}</s></span>
+                </span>
+                {%- if per_pair -%}
+                  <span class="sm-nb__pairs">
+                    <span class="sm-nb__pairs-h"><span>{{ section.settings.pairs_label | escape }}</span>
+                      {%- if section.settings.guide_label != blank and section.settings.guide_link != blank -%}<a class="sm-pdp__guide" href="{{ section.settings.guide_link }}">{{ section.settings.guide_label | escape }}</a>{%- endif -%}
+                    </span>
+                    {%- for k in (1..block.settings.qty) -%}
+                      <span class="sm-nb__pair{% if k > paid %} is-free{% endif %}">
+                        <span class="sm-nb__pair-n">{% if k > paid %}<svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8c-1.5-3-5-3.5-5-1.2C7 8 9.5 8 12 8zM12 8c1.5-3 5-3.5 5-1.2C17 8 14.5 8 12 8z"/></svg>{% else %}#{{ k }}{% endif %}</span>
+                        <span class="sm-nb__sel-w">
+                          <select class="sm-nb__sel" data-pair aria-label="{{ section.settings.pairs_label | escape }} {{ k }}">
+                            {%- assign po = p.options_with_values[pair_opt] -%}{%- for value in po.values -%}{%- assign vn = value | append: '' -%}<option value="{{ vn | escape }}"{% if vn == current.options[pair_opt] %} selected{% endif %}>{{ vn | escape }}</option>{%- endfor -%}
+                          </select><svg class="sm-nb__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        {%- if k > paid -%}<span class="sm-nb__pair-free">Offerte</span>{%- endif -%}
+                      </span>
+                    {%- endfor -%}
+                  </span>
+                {%- endif -%}
+                {%- if block.settings.free > 0 -%}
+                  <span class="sm-nb__band sm-nb__band--gift">
+                    <span class="sm-nb__thumb sm-nb__thumb--gift">
+                      {%- liquid
+                        assign gm = p.media.first
+                        if section.settings.gift_match != blank
+                          for m in p.media
+                            assign mu = m | image_url: width: 10
+                            if mu contains section.settings.gift_match
+                              assign gm = m
+                              break
+                            endif
+                          endfor
+                        endif
+                      -%}{%- if section.settings.gift_image != blank -%}{{ section.settings.gift_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}{%- elsif p.media.size > 0 -%}{{ gm | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}{%- else -%}<svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8c-1.5-3-5-3.5-5-1.2C7 8 9.5 8 12 8zM12 8c1.5-3 5-3.5 5-1.2C17 8 14.5 8 12 8z"/></svg>{%- endif -%}
+                      <i><svg class="sm-ic" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8c-1.5-3-5-3.5-5-1.2C7 8 9.5 8 12 8zM12 8c1.5-3 5-3.5 5-1.2C17 8 14.5 8 12 8z"/></svg></i>
+                    </span>
+                    <span class="sm-nb__band-t">+ {{ block.settings.free }} paire{% if block.settings.free > 1 %}s{% endif %} offerte{% if block.settings.free > 1 %}s{% endif %}</span>
+                    <span class="sm-nb__band-v"><s data-pack-free>{{ free_value | money }}</s><b>{{ section.settings.free_word | escape }}</b></span>
+                  </span>
+                {%- endif -%}
+                {%- if block.settings.free_shipping -%}
+                  <span class="sm-nb__band sm-nb__band--ship">
+                    <span class="sm-nb__thumb sm-nb__thumb--ship">
+                      {%- if section.settings.ship_image != blank -%}{{ section.settings.ship_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}{%- else -%}<svg class="sm-nb__art" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="12" fill="#6fcfc8"/><path d="M5 25h8M3 31h10M7 37h6" stroke="#13283a" stroke-width="2.6" stroke-linecap="round"/><rect x="16" y="19" width="25" height="21" rx="3" fill="#f6fafc" stroke="#13283a" stroke-width="2.6"/><path d="M22 27.5c2-2.6 5.5-2.6 7 0 1.4-1.6 4.2-1 4.4 1.3 1.8.2 2.4 2.7.2 3.4H22.3c-2 0-2.3-3.4-.3-4.7z" fill="#6fcfc8"/><path d="M41 25h8.5l6.5 7.5V40H41z" fill="#13283a"/><path d="M44 27.6h4.4l3.9 4.6H44z" fill="#f6fafc"/><circle cx="24" cy="42" r="5.2" fill="#13283a" stroke="#6fcfc8" stroke-width="2"/><circle cx="24" cy="42" r="1.8" fill="#f6fafc"/><circle cx="48.5" cy="42" r="5.2" fill="#13283a" stroke="#6fcfc8" stroke-width="2"/><circle cx="48.5" cy="42" r="1.8" fill="#f6fafc"/></svg>{%- endif -%}
+                    </span>
+                    <span class="sm-nb__band-t">{{ section.settings.ship_label | escape }}</span>
+                    <span class="sm-nb__band-v">{%- if section.settings.ship_value != blank -%}<s>{{ section.settings.ship_value | escape }}</s>{%- endif -%}<b>{{ section.settings.free_word | escape }}</b></span>
+                  </span>
+                {%- endif -%}
+              </label>
+            {%- endif -%}
+          {%- endfor -%}
+        </fieldset>
+      {%- endif -%}
+      <input type="hidden" name="quantity" value="1" data-qty-input>
+
+      {%- if section.settings.half_title != blank -%}
+        <div class="sm-pdp__half">
+          <p class="sm-pdp__half-t">{{ section.settings.half_title | escape }}</p>
+          <p>{{ section.settings.half_text | escape }}</p>
+        </div>
+      {%- endif -%}
+
+      <button type="submit" name="add" class="sm-btn sm-pdp__add" data-add{% unless current.available %} disabled{% endunless %}>
+        <span data-add-label>{% if current.available %}{{ section.settings.add_label | escape }}{% else %}Épuisé{% endif %}</span>
+      </button>
+    {% endform %}
+
+    {%- if section.settings.show_payment -%}
+      <ul class="sm-pdp__pay" role="list" aria-label="Moyens de paiement">
+        {%- for type in shop.enabled_payment_types -%}<li>{{ type | payment_type_svg_tag: class: 'sm-pdp__pay-ic' }}</li>{%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- if section.settings.tip_title != blank -%}
+      <div class="sm-pdp__tip">
+        <p class="sm-pdp__tip-t">{{ section.settings.tip_title | escape }}</p>
+        <p>{{ section.settings.tip_text | escape }}</p>
+      </div>
+    {%- endif -%}
+
+    <div class="sm-pdp__rows">
+      {%- for block in section.blocks -%}{%- if block.type != 'row' -%}{%- continue -%}{%- endif -%}
+        <details class="sm-pdp__row" {{ block.shopify_attributes }}{% if block.settings.open %} open{% endif %}>
+          <summary>{{ block.settings.title | escape }}<svg class="sm-pdp__chev" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <div class="sm-pdp__row-body">
+            {%- if block.settings.use_description and p.description != blank -%}{{ p.description }}{%- else -%}{{ block.settings.content }}{%- endif -%}
+          </div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+<script type="application/json" data-pdp-json>{"variants": {{ p.variants | json }}, "money": {{ shop.money_format | json }}, "add": {{ section.settings.add_label | json }}}</script>
+{%- endif -%}
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('{{ sid }}');
+  if (!root) return;
+  /* gallery */
+  var track = root.querySelector('.sm-pdp__slides');
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.sm-pdp__slide'));
+  var thumbs = Array.prototype.slice.call(root.querySelectorAll('.sm-pdp__thumb'));
+  var cur = root.querySelector('.sm-pdp__cur');
+  var tot = root.querySelector('.sm-pdp__tot');
+  var cap = root.querySelector('[data-cap]');
+  var vis = slides.slice();
+  var idx = 0;
+  function show(k) {
+    if (!vis.length) return;
+    idx = (k + vis.length) % vis.length;
+    track.scrollTo({ left: track.clientWidth * idx });
+  }
+  function mark() {
+    var k = Math.round(track.scrollLeft / Math.max(track.clientWidth, 1));
+    if (k > vis.length - 1) k = vis.length - 1;
+    if (k < 0) k = 0;
+    idx = k;
+    var real = slides.indexOf(vis[k]);
+    thumbs.forEach(function (t) { t.classList.toggle('is-active', +t.getAttribute('data-go') === real); });
+    if (cur) cur.textContent = k + 1;
+    if (cap) { var im = vis[k] && vis[k].querySelector('img'); cap.textContent = im ? (im.getAttribute('alt') || '') : ''; }
+  }
+  root.__smFilter = function (c) {
+    if (!c || !track) return;
+    c = String(c).toLowerCase();
+    if (!slides.some(function (s) { return s.getAttribute('data-c') === c; })) return;
+    vis = slides.filter(function (s) { var x = s.getAttribute('data-c'); return !x || x === c; });
+    slides.forEach(function (s) { s.hidden = vis.indexOf(s) < 0; });
+    thumbs.forEach(function (t) { t.hidden = vis.indexOf(slides[+t.getAttribute('data-go')]) < 0; });
+    if (tot) tot.textContent = vis.length;
+    track.scrollTo({ left: 0 });
+    idx = 0;
+    mark();
+  };
+  if (track && slides.length) {
+    track.addEventListener('scroll', function () { window.requestAnimationFrame(mark); }, { passive: true });
+    thumbs.forEach(function (t) { t.addEventListener('click', function () { show(vis.indexOf(slides[+t.getAttribute('data-go')])); }); });
+    Array.prototype.forEach.call(root.querySelectorAll('.sm-pdp__arrow'), function (b) { b.addEventListener('click', function () { show(idx + (+b.getAttribute('data-step'))); }); });
+    mark();
+  }
+  /* variants */
+  var dataEl = root.querySelector('[data-pdp-json]');
+  if (!dataEl) return;
+  var data = JSON.parse(dataEl.textContent);
+  var groups = Array.prototype.slice.call(root.querySelectorAll('[data-opt]'));
+  var idInput = root.querySelector('[data-variant-id]');
+  var addBtn = root.querySelector('[data-add]');
+  var addLabel = root.querySelector('[data-add-label]');
+  var priceEl = root.querySelector('[data-price]');
+  function money(cents) {
+    var fmt = data.money || '{' + '{amount}}';
+    var n = (cents / 100);
+    return fmt.replace(/\{\{\s*(\w+)\s*\}\}/, function (m, k) {
+      var dec = k.indexOf('no_decimals') > -1 ? 0 : 2;
+      var s = n.toFixed(dec).split('.');
+      var comma = k.indexOf('comma') > -1;
+      s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, comma ? '.' : ',');
+      return s.join(comma ? ',' : '.');
+    });
+  }
+  function selected() {
+    return groups.map(function (g) {
+      var a = g.querySelector('.is-active');
+      return { i: +g.getAttribute('data-opt'), v: a ? a.getAttribute('data-value') : null };
+    });
+  }
+  function find(sel) {
+    return data.variants.find(function (v) {
+      return sel.every(function (s) { return v.options[s.i] === s.v; });
+    });
+  }
+  var qtyInput = root.querySelector('[data-qty-input]');
+  var packEls = Array.prototype.slice.call(root.querySelectorAll('[data-pack]'));
+  var lastV = null;
+  function packs(v) {
+    lastV = v;
+    var q = 1;
+    packEls.forEach(function (el) {
+      var n = +el.getAttribute('data-n'), f = +el.getAttribute('data-free'), o = +el.getAttribute('data-off');
+      var total = Math.floor(v.price * Math.max(n - f, 1) * (100 - o) / 100), per = Math.floor(total / n);
+      var ref = (el.getAttribute('data-cmp') === '1' && v.compare_at_price > v.price) ? v.compare_at_price : v.price;
+      var save = ref * n - total, pct = Math.floor(save * 100 / (ref * n));
+      var a = el.querySelector('[data-pack-now]'), b = el.querySelector('[data-pack-was]'), c = el.querySelector('[data-pack-pct]'), d = el.querySelector('[data-pack-save]'), g = el.querySelector('[data-pack-free]');
+      if (a) a.textContent = money(per);
+      if (b) { b.textContent = money(ref); b.hidden = ref <= per; }
+      if (c) { c.textContent = '-' + pct + ' %'; c.hidden = pct < 1; }
+      if (d) { d.textContent = 'Vous économisez ' + money(save); d.hidden = save < 1; }
+      if (g) g.textContent = money(v.price * f);
+      var r = el.querySelector('input');
+      el.classList.toggle('is-active', r.checked);
+      if (r.checked) q = n;
+    });
+    if (qtyInput) qtyInput.value = q;
+    addLabel.textContent = v.available ? data.add : 'Épuisé';
+  }
+  packEls.forEach(function (el) { el.querySelector('input').addEventListener('change', function () { if (lastV) packs(lastV); }); });
+  /* one size per pair: the active pack's selects become cart lines */
+  var form = root.querySelector('.sm-pdp__form');
+  if (form && root.querySelector('[data-pair]')) {
+    form.addEventListener('submit', function () {
+      var act = root.querySelector('[data-pack].is-active') || packEls[0];
+      if (!act) return;
+      var count = {}, order = [];
+      var pIdx = groups.length - 1;
+      act.querySelectorAll('[data-pair]').forEach(function (sel) {
+        var s2 = selected().filter(function (x) { return x.i !== pIdx; });
+        s2.push({ i: pIdx, v: sel.value });
+        var pv = find(s2);
+        if (!pv) return;
+        var id = String(pv.id);
+        if (!count[id]) { count[id] = 0; order.push(id); }
+        count[id]++;
+      });
+      if (!order.length) return;
+      form.querySelectorAll('[data-pair-line]').forEach(function (x) { x.remove(); });
+      idInput.removeAttribute('name');
+      if (qtyInput) qtyInput.removeAttribute('name');
+      order.forEach(function (id, i) {
+        [['id', id], ['quantity', count[id]]].forEach(function (kv) {
+          var h = document.createElement('input');
+          h.type = 'hidden'; h.name = 'items[' + i + '][' + kv[0] + ']'; h.value = kv[1]; h.setAttribute('data-pair-line', '');
+          form.appendChild(h);
+        });
+      });
+    });
+  }
+  function refresh() {
+    var sel = selected();
+    var v = find(sel);
+    groups.forEach(function (g) {
+      var gi = +g.getAttribute('data-opt');
+      Array.prototype.forEach.call(g.querySelectorAll('[data-value]'), function (b) {
+        var trial = sel.map(function (s) { return s.i === gi ? { i: s.i, v: b.getAttribute('data-value') } : s; });
+        var tv = find(trial);
+        b.classList.toggle('is-off', !tv || !tv.available);
+      });
+      var lab = g.querySelector('[data-opt-label]');
+      var act = g.querySelector('.is-active');
+      if (lab && act) lab.textContent = act.getAttribute('data-value');
+    });
+    if (!v) { addBtn.disabled = true; addLabel.textContent = 'Indisponible'; return; }
+    idInput.value = v.id;
+    addBtn.disabled = !v.available;
+    packs(v);
+    priceEl.innerHTML = '<span class="sm-pdp__now">' + money(v.price) + '</span>' + (v.compare_at_price > v.price ? '<s class="sm-pdp__was">' + money(v.compare_at_price) + '</s>' : '');
+    if (window.history.replaceState && !window.Shopify?.designMode) {
+      var u = new URL(window.location.href); u.searchParams.set('variant', v.id); window.history.replaceState({}, '', u.toString());
+    }
+  }
+  groups.forEach(function (g) {
+    g.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-value]');
+      if (!b) return;
+      Array.prototype.forEach.call(g.querySelectorAll('[data-value]'), function (x) { x.classList.remove('is-active'); x.setAttribute('aria-pressed', 'false'); });
+      b.classList.add('is-active'); b.setAttribute('aria-pressed', 'true');
+      refresh();
+    });
+  });
+  refresh();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SM Achat Semelle Heelo",
+  "tag": "section",
+  "class": "sm-shell sm-nb",
+  "settings": [
+    {
+      "type": "text",
+      "id": "launch_badge",
+      "label": "Badge à côté du prix",
+      "default": "Prix de lancement",
+      "info": "Vide = pas de badge. Si tu remplis « Prix avant réduction » du produit (vrai prix pratiqué les 30 derniers jours), le badge devient le % de réduction."
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Produit",
+      "info": "Sur la page d'accueil, choisis la Semelle Heelo. Sur la page produit, laisse vide."
+    },
+    {
+      "type": "select",
+      "id": "title_tag",
+      "label": "Niveau du titre",
+      "default": "h1",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1 (page produit)"
+        },
+        {
+          "value": "h2",
+          "label": "H2 (page d'accueil)"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Sous-titre sous le nom",
+      "default": "Des semelles moelleuses pour toutes vos chaussures"
+    },
+    {
+      "type": "textarea",
+      "id": "bullets",
+      "label": "Points forts (un par ligne)",
+      "default": "Amorti épais sous tout le pied\nMousse qui reprend sa forme\nDessus aéré\nSe glisse dans toutes vos chaussures"
+    },
+    {
+      "type": "header",
+      "content": "Trois garanties sous les points forts"
+    },
+    {
+      "type": "select",
+      "id": "perk_icon_1",
+      "label": "Icône 1",
+      "options": [
+        {
+          "value": "truck",
+          "label": "Camion"
+        },
+        {
+          "value": "cal",
+          "label": "30 jours"
+        },
+        {
+          "value": "return",
+          "label": "Retour"
+        },
+        {
+          "value": "shield",
+          "label": "Bouclier"
+        },
+        {
+          "value": "heart",
+          "label": "Cœur"
+        }
+      ],
+      "default": "truck"
+    },
+    {
+      "type": "text",
+      "id": "perk_1",
+      "label": "Texte 1",
+      "default": "Livraison offerte dès 2 paires"
+    },
+    {
+      "type": "select",
+      "id": "perk_icon_2",
+      "label": "Icône 2",
+      "options": [
+        {
+          "value": "truck",
+          "label": "Camion"
+        },
+        {
+          "value": "cal",
+          "label": "30 jours"
+        },
+        {
+          "value": "return",
+          "label": "Retour"
+        },
+        {
+          "value": "shield",
+          "label": "Bouclier"
+        },
+        {
+          "value": "heart",
+          "label": "Cœur"
+        }
+      ],
+      "default": "cal"
+    },
+    {
+      "type": "text",
+      "id": "perk_2",
+      "label": "Texte 2",
+      "default": "30 jours pour essayer"
+    },
+    {
+      "type": "select",
+      "id": "perk_icon_3",
+      "label": "Icône 3",
+      "options": [
+        {
+          "value": "truck",
+          "label": "Camion"
+        },
+        {
+          "value": "cal",
+          "label": "30 jours"
+        },
+        {
+          "value": "return",
+          "label": "Retour"
+        },
+        {
+          "value": "shield",
+          "label": "Bouclier"
+        },
+        {
+          "value": "heart",
+          "label": "Cœur"
+        }
+      ],
+      "default": "return"
+    },
+    {
+      "type": "text",
+      "id": "perk_3",
+      "label": "Texte 3",
+      "default": "Retour simple"
+    },
+    {
+      "type": "header",
+      "content": "Couleur (si ton produit n'a pas d'option Couleur)"
+    },
+    {
+      "type": "text",
+      "id": "color_name",
+      "label": "Nom de la couleur (vide = cacher)"
+    },
+    {
+      "type": "color",
+      "id": "color_hex",
+      "label": "Pastille de couleur",
+      "default": "#dff1f2"
+    },
+    {
+      "type": "header",
+      "content": "Tailles"
+    },
+    {
+      "type": "text",
+      "id": "guide_label",
+      "label": "Lien guide des tailles : texte",
+      "default": "Guide des tailles"
+    },
+    {
+      "type": "url",
+      "id": "guide_link",
+      "label": "Lien guide des tailles : lien"
+    },
+    {
+      "type": "text",
+      "id": "half_title",
+      "label": "Encadré demi-pointure : titre"
+    },
+    {
+      "type": "text",
+      "id": "half_text",
+      "label": "Encadré demi-pointure : texte"
+    },
+    {
+      "type": "text",
+      "id": "default_values",
+      "label": "Choix sélectionnés par défaut",
+      "info": "Valeurs séparées par | (ex. 2,5 cm|39-40). Vide = première variante disponible."
+    },
+    {
+      "type": "text",
+      "id": "opt_hint",
+      "label": "Phrase sous le choix de hauteur"
+    },
+    {
+      "type": "header",
+      "content": "Packs"
+    },
+    {
+      "type": "text",
+      "id": "packs_title",
+      "label": "Titre des packs",
+      "default": "Économisez en pack"
+    },
+    {
+      "type": "text",
+      "id": "each_label",
+      "label": "Texte à côté du prix (vide = rien)",
+      "default": "la paire",
+      "info": "Le prix affiché est celui d'une paire ; le panier montre le total."
+    },
+    {
+      "type": "checkbox",
+      "id": "per_pair",
+      "label": "Choisir une pointure par paire",
+      "default": true,
+      "info": "Chaque paire du pack a sa propre pointure (utile pour la famille). Marche si le produit n'a qu'une option (Pointure)."
+    },
+    {
+      "type": "text",
+      "id": "pairs_label",
+      "label": "Titre du choix des pointures",
+      "default": "Pointure de chaque paire"
+    },
+    {
+      "type": "text",
+      "id": "ship_label",
+      "label": "Texte livraison offerte",
+      "default": "+ Livraison offerte"
+    },
+    {
+      "type": "image_picker",
+      "id": "ship_image",
+      "label": "Image livraison (vide = camion dessiné)"
+    },
+    {
+      "type": "text",
+      "id": "ship_value",
+      "label": "Prix de livraison barré (ex. 4,90 €, vide = rien)",
+      "info": "Mets seulement ton vrai tarif de livraison."
+    },
+    {
+      "type": "text",
+      "id": "gift_match",
+      "label": "Photo des paires offertes : morceau du nom de fichier",
+      "info": "Ex. rh-25 pour prendre cette photo du produit. Vide = première photo."
+    },
+    {
+      "type": "image_picker",
+      "id": "gift_image",
+      "label": "Image paire offerte (vide = 1re photo du produit)"
+    },
+    {
+      "type": "text",
+      "id": "free_word",
+      "label": "Mot à côté des cadeaux",
+      "default": "Gratuit"
+    },
+    {
+      "type": "text",
+      "id": "promo_text",
+      "label": "Bandeau promo au-dessus des packs",
+      "default": "Jusqu'à 2 paires offertes"
+    },
+    {
+      "type": "paragraph",
+      "content": "Les remises des packs sont affichées ici, mais c'est une réduction automatique Shopify qui les applique au panier (voir le guide)."
+    },
+    {
+      "type": "header",
+      "content": "Achat"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Bouton : texte",
+      "default": "Ajouter au panier"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment",
+      "label": "Afficher les logos de paiement",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tip_title",
+      "label": "Conseil : titre"
+    },
+    {
+      "type": "textarea",
+      "id": "tip_text",
+      "label": "Conseil : texte"
+    },
+    {
+      "type": "text",
+      "id": "reviews_anchor",
+      "label": "Ancre des avis (sans #)",
+      "default": "avis"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_caps",
+      "label": "Texte de la photo sous la galerie",
+      "info": "Affiche le texte alternatif de chaque photo sous la galerie.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Fond",
+      "default": "#f6fafc"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Texte et titres",
+      "default": "#13283a"
+    },
+    {
+      "type": "color",
+      "id": "color_btn",
+      "label": "Bouton : fond",
+      "default": "#13283a"
+    },
+    {
+      "type": "color",
+      "id": "color_btn_text",
+      "label": "Bouton : texte",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_btn_hover",
+      "label": "Bouton : survol",
+      "default": "#22405a"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Accent",
+      "default": "#6fcfc8"
+    },
+    {
+      "type": "color",
+      "id": "color_border",
+      "label": "Bordures",
+      "default": "#d3e3ec"
+    },
+    {
+      "type": "header",
+      "content": "Polices"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_head",
+      "label": "Police des titres",
+      "default": "archivo_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_body",
+      "label": "Police du texte",
+      "default": "karla_n4"
+    },
+    {
+      "type": "header",
+      "content": "Espacement"
+    },
+    {
+      "type": "range",
+      "id": "pad_top",
+      "label": "Marge haute",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "pad_bottom",
+      "label": "Marge basse",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pack",
+      "name": "Pack",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "range",
+          "id": "qty",
+          "label": "Nombre de paires",
+          "min": 1,
+          "max": 6,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titre",
+          "default": "Solo"
+        },
+        {
+          "type": "text",
+          "id": "note",
+          "label": "Petite ligne",
+          "default": "1 paire"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Pastille (optionnel)"
+        },
+        {
+          "type": "range",
+          "id": "free",
+          "label": "Paires offertes dans le pack",
+          "min": 0,
+          "max": 3,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "discount",
+          "label": "Remise affichée",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "%",
+          "default": 0
+        },
+        {
+          "type": "checkbox",
+          "id": "free_shipping",
+          "label": "Afficher « Livraison offerte »",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "selected",
+          "label": "Sélectionné par défaut",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "name": "Ligne dépliable",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titre",
+          "default": "Titre"
+        },
+        {
+          "type": "checkbox",
+          "id": "use_description",
+          "label": "Utiliser la description du produit",
+          "default": false
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Texte",
+          "default": "<p>Texte de la ligne.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Ouverte par défaut",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "SM Achat Semelle Heelo",
+      "blocks": [
+        {
+          "type": "pack",
+          "settings": {
+            "qty": 1,
+            "free": 0,
+            "discount": 0,
+            "free_shipping": false,
+            "title": "Solo",
+            "note": "1 paire",
+            "badge": "",
+            "selected": false
+          }
+        },
+        {
+          "type": "pack",
+          "settings": {
+            "qty": 2,
+            "free": 0,
+            "discount": 15,
+            "free_shipping": true,
+            "title": "Duo",
+            "note": "2 paires",
+            "badge": "Le plus choisi",
+            "selected": true
+          }
+        },
+        {
+          "type": "pack",
+          "settings": {
+            "qty": 3,
+            "free": 1,
+            "discount": 0,
+            "free_shipping": true,
+            "title": "Trio",
+            "note": "3 paires dont 1 offerte",
+            "badge": "",
+            "selected": false
+          }
+        },
+        {
+          "type": "pack",
+          "settings": {
+            "qty": 4,
+            "free": 2,
+            "discount": 0,
+            "free_shipping": true,
+            "title": "Family",
+            "note": "4 paires dont 2 offertes",
+            "badge": "Meilleure offre",
+            "selected": false
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "title": "Description",
+            "use_description": true,
+            "open": true,
+            "content": "<p>Une semelle en mousse épaisse et alvéolée qui amortit chaque pas. Elle se glisse à la place de la semelle d'origine de vos chaussures.</p>"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "title": "Dans quelles chaussures ?",
+            "content": "<p>Baskets, bottes, chaussures de ville ou de travail : retirez la semelle d'origine si elle s'enlève, puis glissez la Semelle Heelo à sa place.</p>"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "title": "Entretien",
+            "content": "<p>Lavez-la à la main à l'eau tiède savonneuse, puis laissez-la sécher à l'air libre, loin d'un radiateur.</p>"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "title": "Livraison et retours",
+            "content": "<p>Les délais et frais de livraison s'affichent au moment de payer. Vous avez 30 jours pour essayer : si elle ne vous convient pas, on vous rembourse.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

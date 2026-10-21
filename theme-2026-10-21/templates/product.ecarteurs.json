@@ -1,0 +1,323 @@
+{
+  "sections": {
+    "main": {
+      "type": "sm-product-gallery",
+      "settings": {
+        "subtitle": "Un moment pour vos orteils, le soir, pieds nus",
+        "color_name": "Beige",
+        "color_hex": "#ead9c6",
+        "launch_badge": "Nouveau",
+        "guide_label": "",
+        "half_title": "",
+        "half_text": "",
+        "tip_title": "Conseil d'utilisation",
+        "tip_text": "Commencez par 10 à 15 minutes, puis allongez petit à petit. Retirez-les si vous sentez une gêne.",
+        "bullets": "Silicone souple, un anneau par orteil\nÀ porter pieds nus, à la maison\nPendant vos étirements, le yoga ou devant la télé\nSe lave à l'eau et au savon",
+        "show_caps": true,
+        "default_size": ""
+      },
+      "blocks": {
+        "row_1": {
+          "type": "row",
+          "settings": {
+            "title": "Description",
+            "content": "<p>Des écarteurs en silicone souple, avec un anneau pour chaque orteil. Après une journée serrés dans la chaussure, vos orteils retrouvent de la place. À porter pieds nus, au repos ou pendant vos étirements.</p>",
+            "open": true,
+            "use_description": false
+          }
+        },
+        "row_2": {
+          "type": "row",
+          "settings": {
+            "title": "Caractéristiques",
+            "content": "<ul><li><strong>Couleur :</strong> beige translucide</li><li><strong>Matière :</strong> silicone souple</li><li><strong>Taille :</strong> unique adulte</li><li><strong>Vendus :</strong> par paire</li></ul>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_3": {
+          "type": "row",
+          "settings": {
+            "title": "Entretien",
+            "content": "<p>À l'eau tiède et au savon, puis séchage à l'air libre. Rangez-les à l'abri du soleil.</p>",
+            "open": false,
+            "use_description": false
+          }
+        },
+        "row_4": {
+          "type": "row",
+          "settings": {
+            "title": "Livraison et retours",
+            "content": "<p>Les délais et frais de livraison s'affichent au moment de payer. Ajouté à une commande de semelles, tout part dans le même colis. Vous avez 30 jours pour essayer : si ça ne vous convient pas, on vous rembourse.</p>",
+            "open": false,
+            "use_description": false
+          }
+        }
+      },
+      "block_order": [
+        "row_1",
+        "row_2",
+        "row_3",
+        "row_4"
+      ]
+    },
+    "ruban": {
+      "type": "sm-trust-bar",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "avantages": {
+      "type": "sm-features",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Ce que vous allez remarquer",
+        "show_numbers": false,
+        "ratio": "1 / 1"
+      },
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "title": "Les orteils écartés",
+            "text": "Un anneau par orteil, ils ne se touchent plus.",
+            "image": "shopify://shop_images/0_935ff6a8-2d74-435e-b23d-72a54cd281d9.jpg"
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "title": "Souples",
+            "text": "Le silicone se plie et suit la forme de vos orteils.",
+            "image": "shopify://shop_images/0_e667eb8d-e845-4953-9fc7-c78b0c5167a3.jpg"
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "title": "Avec vos étirements",
+            "text": "À garder pendant le yoga ou les étirements, pieds nus.",
+            "image": "shopify://shop_images/0_378fd0e0-e7e1-4f85-a5bf-32f281be37cb.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3"
+      ]
+    },
+    "etapes": {
+      "type": "sm-features",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Comment les utiliser",
+        "show_numbers": true,
+        "ratio": "1 / 1"
+      },
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "title": "Pieds nus, assis",
+            "text": "Glissez un orteil après l'autre dans les anneaux.",
+            "image": "shopify://shop_images/0_20808746-3a41-48d4-9afe-685c7f91f0e6.jpg"
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "title": "10 à 15 minutes",
+            "text": "Pour commencer, puis un peu plus chaque jour.",
+            "image": "shopify://shop_images/0_f62a1f39-e3ce-47b7-9847-06415f21ce5a.jpg"
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "title": "Lavez-les",
+            "text": "À l'eau et au savon, et laissez sécher.",
+            "image": "shopify://shop_images/0_c8d2d026-34bf-431c-9ec9-48b172d92b02.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3"
+      ]
+    },
+    "judgeme": {
+      "type": "sm-judgeme",
+      "settings": {
+        "heading": "Avis clients",
+        "color_bg": "#e4f0f6"
+      }
+    },
+    "faq": {
+      "type": "sm-faq",
+      "settings": {},
+      "blocks": {
+        "qa_1": {
+          "type": "qa",
+          "settings": {
+            "question": "Est-ce que ça corrige l'hallux valgus ?",
+            "answer": "<p>Non. Ce sont des accessoires de confort, pas un dispositif médical. Si vous avez une déformation ou une douleur, parlez-en à un professionnel de santé.</p>"
+          }
+        },
+        "qa_2": {
+          "type": "qa",
+          "settings": {
+            "question": "Combien de temps les porter ?",
+            "answer": "<p>10 à 15 minutes au début, puis jusqu'à 30 minutes ou plus si vous êtes à l'aise. Retirez-les en cas de gêne.</p>"
+          }
+        },
+        "qa_3": {
+          "type": "qa",
+          "settings": {
+            "question": "Peut-on marcher avec ?",
+            "answer": "<p>Ils sont faits pour être portés pieds nus, au repos ou pendant des étirements. On les déconseille dans les chaussures.</p>"
+          }
+        },
+        "qa_4": {
+          "type": "qa",
+          "settings": {
+            "question": "Quelle taille ?",
+            "answer": "<p>Taille unique adulte : le silicone s'étire pour s'adapter à la plupart des pieds.</p>"
+          }
+        },
+        "qa_5": {
+          "type": "qa",
+          "settings": {
+            "question": "Et s'ils ne me conviennent pas ?",
+            "answer": "<p>Vous avez 30 jours pour les essayer. S'ils ne vous plaisent pas, écrivez-nous et on vous rembourse.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "qa_1",
+        "qa_2",
+        "qa_3",
+        "qa_4",
+        "qa_5"
+      ]
+    },
+    "soins": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "collection": "soins-des-pieds",
+        "cards": "",
+        "count": 4,
+        "quick_add": true,
+        "hover_image": false,
+        "tag_label": "",
+        "eyebrow": "",
+        "heading": "Les autres soins des pieds",
+        "subheading": "Petits prix, dans le même colis que vos semelles.",
+        "all_label": "Voir la boutique",
+        "all_link": "/collections/soins-des-pieds"
+      }
+    },
+    "complements": {
+      "type": "sm-best-sellers",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Avec la Semelle Heelo, c'est encore mieux",
+        "subheading": "Notre best-seller. Livraison offerte dès 39 € d'achat.",
+        "collection": "best-sellers",
+        "cards": "semelle-nuage||Best-seller|hp-card-nuage.jpg|||dès\nclaquettes-comfort|Noir|Best-seller|hp-claquettes-c-noir-classique.jpg|hp-claquettes-m-noir-classique.jpg\ntongs-comfort|Noir||hp-tongs-c-noir.jpg|hp-tongs-m-noir.jpg\ntongs-comfort|Blanc crème||hp-tongs-c-blanc-creme.jpg|hp-tongs-m-blanc-creme.jpg",
+        "all_link": "/collections/all"
+      }
+    },
+    "garantie": {
+      "type": "sm-guarantee",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Satisfait ou remboursé 30 jours"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "infinity",
+            "text": "Remplacement en cas de défaut"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "headset",
+            "text": "Service client à votre écoute"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "text": "Retours simples sur toutes les commandes"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "lightbox": {
+      "type": "sm-lightbox",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "ruban",
+    "avantages",
+    "etapes",
+    "complements",
+    "judgeme",
+    "faq",
+    "soins",
+    "garantie",
+    "lightbox"
+  ]
+}
